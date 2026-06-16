@@ -5,8 +5,10 @@ export interface ApiDefinition {
   home: typeof routes['home']
   events: {
     index: typeof routes['events.index']
+    search: typeof routes['events.search']
     show: typeof routes['events.show']
   }
+  sitemap: typeof routes['sitemap']
   newAccount: {
     create: typeof routes['new_account.create']
     store: typeof routes['new_account.store']
@@ -41,6 +43,7 @@ export interface ApiDefinition {
   }
   orders: {
     store: typeof routes['orders.store']
+    pay: typeof routes['orders.pay']
   }
   admin: {
     events: {
@@ -63,6 +66,12 @@ export interface ApiDefinition {
     categories: typeof routes['admin.categories'] & {
       store: typeof routes['admin.categories.store']
       delete: typeof routes['admin.categories.delete']
+    }
+    homepage: typeof routes['admin.homepage'] & {
+      toggle: typeof routes['admin.homepage.toggle']
+    }
+    whatsapp: typeof routes['admin.whatsapp'] & {
+      store: typeof routes['admin.whatsapp.store']
     }
   }
 }

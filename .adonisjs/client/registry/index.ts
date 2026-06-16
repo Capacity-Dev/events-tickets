@@ -18,11 +18,23 @@ const routes = {
     tokens: [{"old":"/events","type":0,"val":"events","end":""}],
     types: placeholder as Registry['events.index']['types'],
   },
+  'events.search': {
+    methods: ["GET","HEAD"],
+    pattern: '/events/search',
+    tokens: [{"old":"/events/search","type":0,"val":"events","end":""},{"old":"/events/search","type":0,"val":"search","end":""}],
+    types: placeholder as Registry['events.search']['types'],
+  },
   'events.show': {
     methods: ["GET","HEAD"],
     pattern: '/events/:slug',
     tokens: [{"old":"/events/:slug","type":0,"val":"events","end":""},{"old":"/events/:slug","type":1,"val":"slug","end":""}],
     types: placeholder as Registry['events.show']['types'],
+  },
+  'sitemap': {
+    methods: ["GET","HEAD"],
+    pattern: '/sitemap.xml',
+    tokens: [{"old":"/sitemap.xml","type":0,"val":"sitemap.xml","end":""}],
+    types: placeholder as Registry['sitemap']['types'],
   },
   'new_account.create': {
     methods: ["GET","HEAD"],
@@ -77,6 +89,12 @@ const routes = {
     pattern: '/orders',
     tokens: [{"old":"/orders","type":0,"val":"orders","end":""}],
     types: placeholder as Registry['orders.store']['types'],
+  },
+  'orders.pay': {
+    methods: ["POST"],
+    pattern: '/orders/:id/pay',
+    tokens: [{"old":"/orders/:id/pay","type":0,"val":"orders","end":""},{"old":"/orders/:id/pay","type":1,"val":"id","end":""},{"old":"/orders/:id/pay","type":0,"val":"pay","end":""}],
+    types: placeholder as Registry['orders.pay']['types'],
   },
   'dashboard.organizer.events': {
     methods: ["GET","HEAD"],
@@ -215,6 +233,30 @@ const routes = {
     pattern: '/admin/categories/:id',
     tokens: [{"old":"/admin/categories/:id","type":0,"val":"admin","end":""},{"old":"/admin/categories/:id","type":0,"val":"categories","end":""},{"old":"/admin/categories/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['admin.categories.delete']['types'],
+  },
+  'admin.homepage': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/homepage',
+    tokens: [{"old":"/admin/homepage","type":0,"val":"admin","end":""},{"old":"/admin/homepage","type":0,"val":"homepage","end":""}],
+    types: placeholder as Registry['admin.homepage']['types'],
+  },
+  'admin.homepage.toggle': {
+    methods: ["POST"],
+    pattern: '/admin/homepage/:id/toggle-featured',
+    tokens: [{"old":"/admin/homepage/:id/toggle-featured","type":0,"val":"admin","end":""},{"old":"/admin/homepage/:id/toggle-featured","type":0,"val":"homepage","end":""},{"old":"/admin/homepage/:id/toggle-featured","type":1,"val":"id","end":""},{"old":"/admin/homepage/:id/toggle-featured","type":0,"val":"toggle-featured","end":""}],
+    types: placeholder as Registry['admin.homepage.toggle']['types'],
+  },
+  'admin.whatsapp': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/whatsapp',
+    tokens: [{"old":"/admin/whatsapp","type":0,"val":"admin","end":""},{"old":"/admin/whatsapp","type":0,"val":"whatsapp","end":""}],
+    types: placeholder as Registry['admin.whatsapp']['types'],
+  },
+  'admin.whatsapp.store': {
+    methods: ["POST"],
+    pattern: '/admin/whatsapp',
+    tokens: [{"old":"/admin/whatsapp","type":0,"val":"admin","end":""},{"old":"/admin/whatsapp","type":0,"val":"whatsapp","end":""}],
+    types: placeholder as Registry['admin.whatsapp.store']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

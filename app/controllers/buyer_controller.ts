@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 import Order from '#models/order'
 import TicketType from '#models/ticket_type'
 import OrderItem from '#models/order_item'
@@ -108,6 +109,54 @@ export default class BuyerController {
       await TicketType.query()
         .where('id', item.ticketTypeId)
         .increment('quantityReserved', item.quantity)
+    }
+
+    response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })
+  }
+
+  async pay({ params, response, auth }: HttpContext) {
+    const order = await Order.query()
+      .where('id', params.id)
+      .where('buyerId', auth.user!.id)
+      .first()
+
+    if (!order) return response.status(404).json({ error: 'Order not found' })
+    if (order.status !== 'pending') return response.status(400).json({ error: 'Order cannot be paid' })
+
+    order.status = 'paid'
+    order.paidAt = DateTime.now()
+    await order.save()
+
+    const orderItems = await OrderItem.query().where('orderId', order.id).preload('ticketType')
+
+    for (const item of orderItems) {
+      if (item.ticketTypeId) {
+        await TicketType.query()
+          .where('id', item.ticketTypeId)
+          .decrement('quantityReserved', item.quantity)
+        await TicketType.query()
+          .where('id', item.ticketTypeId)
+          .increment('quantitySold', item.quantity)
+      }
+
+      const eventId = item.ticketTypeId
+        ? (await TicketType.find(item.ticketTypeId))?.eventId
+        : null
+
+      for (let i = 0; i < item.quantity; i++) {
+        const uuid = crypto.randomUUID()
+        const num = `${String(Date.now()).slice(-6)}${String(i).padStart(2, '0')}`
+        await Ticket.create({
+          id: crypto.randomUUID(),
+          orderItemId: item.id,
+          eventId: eventId ?? '',
+          ticketTypeId: item.ticketTypeId ?? '',
+          ticketNumber: `TKT-${num}`,
+          uuid,
+          qrToken: uuid,
+          status: 'valid',
+        })
+      }
     }
 
     response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })

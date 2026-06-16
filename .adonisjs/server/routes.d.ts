@@ -6,7 +6,9 @@ export type ScannedRoutes = {
   ALL: {
     'home': { paramsTuple?: []; params?: {} }
     'events.index': { paramsTuple?: []; params?: {} }
+    'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
+    'sitemap': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
@@ -16,6 +18,7 @@ export type ScannedRoutes = {
     'dashboard.buyer.orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.buyer.tickets': { paramsTuple?: []; params?: {} }
     'orders.store': { paramsTuple?: []; params?: {} }
+    'orders.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.events': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.create': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.store': { paramsTuple?: []; params?: {} }
@@ -39,11 +42,17 @@ export type ScannedRoutes = {
     'admin.categories': { paramsTuple?: []; params?: {} }
     'admin.categories.store': { paramsTuple?: []; params?: {} }
     'admin.categories.delete': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.homepage': { paramsTuple?: []; params?: {} }
+    'admin.homepage.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.whatsapp': { paramsTuple?: []; params?: {} }
+    'admin.whatsapp.store': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
     'events.index': { paramsTuple?: []; params?: {} }
+    'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
+    'sitemap': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
     'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
@@ -60,11 +69,15 @@ export type ScannedRoutes = {
     'admin.fee.rules': { paramsTuple?: []; params?: {} }
     'admin.finances': { paramsTuple?: []; params?: {} }
     'admin.categories': { paramsTuple?: []; params?: {} }
+    'admin.homepage': { paramsTuple?: []; params?: {} }
+    'admin.whatsapp': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
     'events.index': { paramsTuple?: []; params?: {} }
+    'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
+    'sitemap': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
     'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
@@ -81,12 +94,15 @@ export type ScannedRoutes = {
     'admin.fee.rules': { paramsTuple?: []; params?: {} }
     'admin.finances': { paramsTuple?: []; params?: {} }
     'admin.categories': { paramsTuple?: []; params?: {} }
+    'admin.homepage': { paramsTuple?: []; params?: {} }
+    'admin.whatsapp': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
     'orders.store': { paramsTuple?: []; params?: {} }
+    'orders.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.events.store': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.payouts.request': { paramsTuple?: []; params?: {} }
@@ -95,6 +111,8 @@ export type ScannedRoutes = {
     'admin.fee.rules.store': { paramsTuple?: []; params?: {} }
     'admin.payouts.process': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.categories.store': { paramsTuple?: []; params?: {} }
+    'admin.homepage.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.whatsapp.store': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'dashboard.organizer.events.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

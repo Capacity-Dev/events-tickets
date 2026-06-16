@@ -31,6 +31,18 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'events.search': {
+    methods: ["GET","HEAD"]
+    pattern: '/events/search'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'events.show': {
     methods: ["GET","HEAD"]
     pattern: '/events/:slug'
@@ -38,6 +50,18 @@ export interface Registry {
       body: {}
       paramsTuple: [ParamValue]
       params: { slug: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'sitemap': {
+    methods: ["GET","HEAD"]
+    pattern: '/sitemap.xml'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
       query: {}
       response: unknown
       errorResponse: unknown
@@ -146,6 +170,18 @@ export interface Registry {
       body: {}
       paramsTuple: []
       params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'orders.pay': {
+    methods: ["POST"]
+    pattern: '/orders/:id/pay'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
       query: {}
       response: unknown
       errorResponse: unknown
@@ -422,6 +458,54 @@ export interface Registry {
       body: {}
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.homepage': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/homepage'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.homepage.toggle': {
+    methods: ["POST"]
+    pattern: '/admin/homepage/:id/toggle-featured'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.whatsapp': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/whatsapp'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.whatsapp.store': {
+    methods: ["POST"]
+    pattern: '/admin/whatsapp'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
       query: {}
       response: unknown
       errorResponse: unknown

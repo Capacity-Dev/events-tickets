@@ -9,7 +9,9 @@ import AdminController from '#controllers/admin_controller'
 router.get('/', [PublicController, 'home']).as('home')
 
 router.get('events', [PublicController, 'index']).as('events.index')
+router.get('events/search', [PublicController, 'search']).as('events.search')
 router.get('events/:slug', [PublicController, 'show']).as('events.show')
+router.get('sitemap.xml', [PublicController, 'sitemap']).as('sitemap')
 
 router
   .group(() => {
@@ -32,6 +34,7 @@ router
     router.get('dashboard/buyer/orders/:id', [BuyerController, 'showOrder']).as('dashboard.buyer.orders.show')
     router.get('dashboard/buyer/tickets', [BuyerController, 'tickets']).as('dashboard.buyer.tickets')
     router.post('orders', [BuyerController, 'store']).as('orders.store')
+router.post('orders/:id/pay', [BuyerController, 'pay']).as('orders.pay')
   })
   .use(middleware.auth())
 
@@ -66,6 +69,10 @@ router
     router.get('admin/categories', [AdminController, 'categories']).as('admin.categories')
     router.post('admin/categories', [AdminController, 'storeCategory']).as('admin.categories.store')
     router.delete('admin/categories/:id', [AdminController, 'deleteCategory']).as('admin.categories.delete')
+    router.get('admin/homepage', [AdminController, 'homepage']).as('admin.homepage')
+    router.post('admin/homepage/:id/toggle-featured', [AdminController, 'toggleFeatured']).as('admin.homepage.toggle')
+    router.get('admin/whatsapp', [AdminController, 'whatsappTemplates']).as('admin.whatsapp')
+    router.post('admin/whatsapp', [AdminController, 'storeWhatsappTemplate']).as('admin.whatsapp.store')
   })
   .use(middleware.auth())
   .use(middleware.admin())

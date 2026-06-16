@@ -181,4 +181,70 @@ export default class PublicController {
       head,
     })
   }
+
+  async search({ request }: HttpContext) {
+    const q = request.input('q', '')
+    const categorySlug = request.input('category', '')
+    const page = Number(request.input('page', 1))
+    const limit = 20
+
+    const query = Event.query()
+      .where('status', 'published')
+      .preload('category')
+      .orderBy('startDate', 'asc')
+
+    if (q) {
+      query.whereILike('title', `%${q}%`)
+    }
+
+    if (categorySlug) {
+      const category = await Category.findBy('slug', categorySlug)
+      if (category) {
+        query.where('categoryId', category.id)
+      }
+    }
+
+    const result = await query.paginate(page, limit)
+    const events = result.all().map((e) => ({
+      id: e.id,
+      title: e.title,
+      slug: e.slug,
+      category: e.category?.name ?? null,
+      date: e.startDate.toISO(),
+      venue: e.venueName,
+      status: e.status,
+    }))
+
+    return {
+      data: events,
+      meta: {
+        total: result.getMeta().total,
+        page: result.getMeta().currentPage,
+        lastPage: result.getMeta().lastPage,
+      },
+    }
+  }
+
+  async sitemap({ response }: HttpContext) {
+    const events = await Event.query()
+      .where('status', 'published')
+      .select('slug', 'updatedAt')
+      .orderBy('updatedAt', 'desc')
+
+    const baseUrl = env.get('APP_URL')
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
+    xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <priority>1.0</priority>\n  </url>\n`
+    xml += `  <url>\n    <loc>${baseUrl}/events</loc>\n    <priority>0.9</priority>\n  </url>\n`
+    for (const e of events) {
+      xml += `  <url>\n    <loc>${baseUrl}/events/${e.slug}</loc>\n`
+      if (e.updatedAt) {
+        xml += `    <lastmod>${e.updatedAt.toISODate()}</lastmod>\n`
+      }
+      xml += `    <priority>0.7</priority>\n  </url>\n`
+    }
+    xml += `</urlset>`
+
+    response.header('Content-Type', 'application/xml')
+    return xml
+  }
 }

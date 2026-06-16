@@ -17,6 +17,8 @@ const navItems = [
   { label: 'Fee Rules', href: '/admin/fee-rules', icon: '⚙️' },
   { label: 'Finances', href: '/admin/finances', icon: '💰' },
   { label: 'Categories', href: '/admin/categories', icon: '🏷️' },
+  { label: 'Homepage', href: '/admin/homepage', icon: '🏠' },
+  { label: 'WhatsApp', href: '/admin/whatsapp', icon: '💬' },
 ]
 
 export default function DashboardAdminLayout({

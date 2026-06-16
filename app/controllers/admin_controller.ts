@@ -6,6 +6,7 @@ import Category from '#models/category'
 import FeeRule from '#models/fee_rule'
 import Payout from '#models/payout'
 import Order from '#models/order'
+import WhatsAppTemplate from '#models/whatsapp_template'
 
 export default class AdminController {
   async pendingEvents({ inertia }: HttpContext) {
@@ -109,5 +110,40 @@ export default class AdminController {
     const cat = await Category.find(params.id)
     if (cat) await cat.delete()
     response.redirect().toRoute('admin.categories')
+  }
+
+  async homepage({ inertia }: HttpContext) {
+    const events = await Event.query()
+      .where('status', 'published')
+      .orderBy('isFeatured', 'desc')
+      .orderBy('startDate', 'asc')
+
+    return (inertia.render as any)('admin/homepage', { events })
+  }
+
+  async toggleFeatured({ params, response }: HttpContext) {
+    const event = await Event.find(params.id)
+    if (!event) return response.status(404).send('Not found')
+    event.isFeatured = !event.isFeatured
+    await event.save()
+    response.redirect().toRoute('admin.homepage')
+  }
+
+  async whatsappTemplates({ inertia }: HttpContext) {
+    const templates = await WhatsAppTemplate.query().orderBy('createdAt', 'desc')
+    return (inertia.render as any)('admin/whatsapp', { templates })
+  }
+
+  async storeWhatsappTemplate({ request, response }: HttpContext) {
+    const data = request.all()
+    await WhatsAppTemplate.create({
+      id: crypto.randomUUID(),
+      name: data.name,
+      category: data.category,
+      languageCode: data.languageCode ?? 'en_US',
+      status: 'pending_approval',
+      variables: data.variables ? JSON.parse(data.variables) : null,
+    })
+    response.redirect().toRoute('admin.whatsapp')
   }
 }

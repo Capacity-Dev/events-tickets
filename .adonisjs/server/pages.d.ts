@@ -16,7 +16,9 @@ declare module '@adonisjs/inertia/types' {
     'admin/events_pending': ExtractProps<(typeof import('../../inertia/pages/admin/events_pending.tsx'))['default']>
     'admin/fee_rules': ExtractProps<(typeof import('../../inertia/pages/admin/fee_rules.tsx'))['default']>
     'admin/finances': ExtractProps<(typeof import('../../inertia/pages/admin/finances.tsx'))['default']>
+    'admin/homepage': ExtractProps<(typeof import('../../inertia/pages/admin/homepage.tsx'))['default']>
     'admin/users': ExtractProps<(typeof import('../../inertia/pages/admin/users.tsx'))['default']>
+    'admin/whatsapp': ExtractProps<(typeof import('../../inertia/pages/admin/whatsapp.tsx'))['default']>
     'auth/login': ExtractProps<(typeof import('../../inertia/pages/auth/login.tsx'))['default']>
     'auth/signup': ExtractProps<(typeof import('../../inertia/pages/auth/signup.tsx'))['default']>
     'dashboard/buyer/orders_show': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/orders_show.tsx'))['default']>
