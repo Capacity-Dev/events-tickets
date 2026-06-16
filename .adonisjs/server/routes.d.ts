@@ -19,6 +19,10 @@ export type ScannedRoutes = {
     'dashboard.organizer.events.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.events.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.events.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
+    'dashboard.buyer.orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.buyer.tickets': { paramsTuple?: []; params?: {} }
+    'orders.store': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
@@ -29,6 +33,9 @@ export type ScannedRoutes = {
     'dashboard.organizer.events': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.create': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
+    'dashboard.buyer.orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.buyer.tickets': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
@@ -39,6 +46,9 @@ export type ScannedRoutes = {
     'dashboard.organizer.events': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.create': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
+    'dashboard.buyer.orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.buyer.tickets': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'new_account.store': { paramsTuple?: []; params?: {} }
@@ -46,6 +56,7 @@ export type ScannedRoutes = {
     'session.destroy': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.store': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'orders.store': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'dashboard.organizer.events.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

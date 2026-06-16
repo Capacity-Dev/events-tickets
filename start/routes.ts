@@ -3,6 +3,7 @@ import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
 import PublicController from '#controllers/public_controller'
 import OrganizerController from '#controllers/organizer_controller'
+import BuyerController from '#controllers/buyer_controller'
 
 router.get('/', [PublicController, 'home']).as('home')
 
@@ -37,3 +38,12 @@ router
   })
   .use(middleware.auth())
   .use(middleware.organizer())
+
+router
+  .group(() => {
+    router.get('dashboard/buyer/orders', [BuyerController, 'orders']).as('dashboard.buyer.orders')
+    router.get('dashboard/buyer/orders/:id', [BuyerController, 'showOrder']).as('dashboard.buyer.orders.show')
+    router.get('dashboard/buyer/tickets', [BuyerController, 'tickets']).as('dashboard.buyer.tickets')
+    router.post('orders', [BuyerController, 'store']).as('orders.store')
+  })
+  .use(middleware.auth())

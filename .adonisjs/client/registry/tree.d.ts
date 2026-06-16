@@ -27,5 +27,14 @@ export interface ApiDefinition {
         publish: typeof routes['dashboard.organizer.events.publish']
       }
     }
+    buyer: {
+      orders: typeof routes['dashboard.buyer.orders'] & {
+        show: typeof routes['dashboard.buyer.orders.show']
+      }
+      tickets: typeof routes['dashboard.buyer.tickets']
+    }
+  }
+  orders: {
+    store: typeof routes['orders.store']
   }
 }

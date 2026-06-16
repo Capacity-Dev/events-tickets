@@ -187,4 +187,52 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'dashboard.buyer.orders': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/buyer/orders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.buyer.orders.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/buyer/orders/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.buyer.tickets': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/buyer/tickets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'orders.store': {
+    methods: ["POST"]
+    pattern: '/orders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

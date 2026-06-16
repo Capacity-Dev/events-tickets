@@ -96,6 +96,30 @@ const routes = {
     tokens: [{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":1,"val":"id","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"publish","end":""}],
     types: placeholder as Registry['dashboard.organizer.events.publish']['types'],
   },
+  'dashboard.buyer.orders': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/buyer/orders',
+    tokens: [{"old":"/dashboard/buyer/orders","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders","type":0,"val":"orders","end":""}],
+    types: placeholder as Registry['dashboard.buyer.orders']['types'],
+  },
+  'dashboard.buyer.orders.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/buyer/orders/:id',
+    tokens: [{"old":"/dashboard/buyer/orders/:id","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders/:id","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders/:id","type":0,"val":"orders","end":""},{"old":"/dashboard/buyer/orders/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['dashboard.buyer.orders.show']['types'],
+  },
+  'dashboard.buyer.tickets': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/buyer/tickets',
+    tokens: [{"old":"/dashboard/buyer/tickets","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"tickets","end":""}],
+    types: placeholder as Registry['dashboard.buyer.tickets']['types'],
+  },
+  'orders.store': {
+    methods: ["POST"],
+    pattern: '/orders',
+    tokens: [{"old":"/orders","type":0,"val":"orders","end":""}],
+    types: placeholder as Registry['orders.store']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

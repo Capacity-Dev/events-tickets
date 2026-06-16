@@ -22,11 +22,11 @@
 ## User (Authenticated — Buyer + Organizer)
 
 ### Backend — Buyer
-- [ ] `GET /dashboard/buyer/orders` — order history
-- [ ] `GET /dashboard/buyer/tickets` — active tickets grid
-- [ ] `POST /orders` — create order (cart → checkout)
+- [x] `GET /dashboard/buyer/orders` — order history
+- [x] `GET /dashboard/buyer/tickets` — active tickets grid
+- [x] `POST /orders` — create order (cart → checkout)
 - [ ] `POST /orders/:id/pay` — initiate payment
-- [ ] `GET /orders/:id` — order detail
+- [x] `GET /orders/:id` — order detail
 - [ ] Guest checkout: session-based cart with 10min TTL (Redis)
 - [ ] Inventory locking via Redis + DB transactions
 
@@ -46,8 +46,9 @@
 - [ ] Profile settings: name, avatar, notification prefs
 
 ### Frontend (Inertia.js + React + shadcn/ui) — Buyer
-- [ ] Orders page: table with filters (status, date), expandable rows
-- [ ] Tickets page: grid of ticket cards, QR thumbnail, download PDF
+- [x] Orders page: table with filters (status, date), expandable rows
+- [x] Tickets page: grid of ticket cards, status badges
+- [x] Order detail page: item breakdown, total
 - [ ] Profile settings form
 
 ### Frontend (Inertia.js + React + shadcn/ui) — Organizer
@@ -102,9 +103,9 @@
 - [x] Create `categories` table
 - [x] Create `events` table (status, dates, venue, media, SEO)
 - [x] Create `ticket_types` table (price, inventory, sales window, status)
-- [ ] Create `orders` + `order_items` tables
-- [ ] Create `tickets` table (QR token, status, check-in tracking)
-- [ ] Create `ticket_inventory_locks` table (session-based reservation)
-- [ ] Create `fee_rules` + `event_fee_rules` + `organizer_fee_profiles` tables
-- [ ] Create `payouts` + `platform_revenue_logs` tables
-- [ ] Create `whatsapp_templates` + `notification_logs` tables
+- [x] Create `orders` + `order_items` tables
+- [x] Create `tickets` table (QR token, status, check-in tracking)
+- [x] Create `ticket_inventory_locks` table (session-based reservation)
+- [x] Create `fee_rules` + `event_fee_rules` + `organizer_fee_profiles` tables
+- [x] Create `payouts` + `platform_revenue_logs` tables
+- [x] Create `whatsapp_templates` + `notification_logs` tables
