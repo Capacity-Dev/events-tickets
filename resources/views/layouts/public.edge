@@ -1,7 +1,7 @@
-@let(appName = 'Events Tickets')
+@let(appName = t('app.name'))
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ locale ?? 'fr' }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,13 +21,16 @@
         <div class="inner">
           <a href="/" class="logo">{{ appName }}</a>
           <nav>
-            <a href="/events">Browse Events</a>
-            @if(user)
-              <span>{{ user.fullName ?? user.email }}</span>
-              <a href="/logout">Logout</a>
+            <a href="/events">{{ t('nav.browse') }}</a>
+            <a href="/lang/{{ locale === 'fr' ? 'en' : 'fr' }}" class="text-xs font-semibold">
+              {{ locale === 'fr' ? t('locale.en') : t('locale.fr') }}
+            </a>
+            @if(auth.user)
+              <span>{{ auth.user.fullName ?? auth.user.email }}</span>
+              <a href="/logout">{{ t('nav.logout') }}</a>
             @else
-              <a href="/login">Sign In</a>
-              <a href="/signup" class="btn btn-primary">Get Started</a>
+              <a href="/login">{{ t('nav.signin') }}</a>
+              <a href="/signup" class="btn btn-primary">{{ t('nav.get_started') }}</a>
             @endif
           </nav>
         </div>
@@ -38,7 +41,7 @@
       </main>
 
       <footer class="site-footer">
-        &copy; 2026 {{ appName }}. All rights reserved.
+        &copy; 2026 {{ appName }}. {{ t('footer.rights') }}
       </footer>
     </div>
   </body>

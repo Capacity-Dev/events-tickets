@@ -7,35 +7,35 @@
           </svg>
         </div>
 
-        <h1 class="font-heading text-[clamp(24px,3vw,32px)] mb-2">Achat confirmé !</h1>
-        <p class="text-muted-foreground mb-2">Votre commande a été enregistrée avec succès.</p>
-        <p class="text-sm font-semibold text-primary mb-8">N° de commande : {{ order.orderNumber }}</p>
+        <h1 class="font-heading text-[clamp(24px,3vw,32px)] mb-2">{{ t('order.confirmed') }}</h1>
+        <p class="text-muted-foreground mb-2">{{ t('order.success') }}</p>
+        <p class="text-sm font-semibold text-primary mb-8">{{ t('order.number') }} {{ order.orderNumber }}</p>
 
         <div class="bg-card border border-border rounded-[16px] p-6 sm:p-8 text-left mb-8">
-          <h2 class="font-heading text-lg mb-4">Détails de la commande</h2>
+          <h2 class="font-heading text-lg mb-4">{{ t('order.details') }}</h2>
           <div class="space-y-4">
             @each(item in order.items)
               <div class="flex justify-between items-center py-3 border-b border-border last:border-0">
                 <div>
                   <div class="font-semibold text-sm">{{ item.ticketType.name }}</div>
-                  <div class="text-xs text-muted-foreground">Qty: {{ item.quantity }}</div>
+                  <div class="text-xs text-muted-foreground">{{ t('order.qty') }} {{ item.quantity }}</div>
                 </div>
                 <div class="font-bold">${{ item.lineTotal }}</div>
               </div>
             @endeach
           </div>
           <div class="flex justify-between items-center pt-4 mt-2 border-t border-border font-bold text-lg">
-            <span>Total</span>
+            <span>{{ t('order.total') }}</span>
             <span>${{ order.totalGrossAmount }}</span>
           </div>
         </div>
 
         <p class="text-sm text-muted-foreground">
-          Un récapitulatif vous sera envoyé par email/WhatsApp avec vos billets.
+          {{ t('order.summary_sent') }}
         </p>
 
         <a href="/" class="btn-primary mt-6 inline-flex no-underline">
-          Retour à l'accueil
+          {{ t('order.back_home') }}
         </a>
       </div>
 

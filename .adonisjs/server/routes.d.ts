@@ -10,6 +10,7 @@ export type ScannedRoutes = {
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
     'webhooks.mbiyopay': { paramsTuple?: []; params?: {} }
+    'lang.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
     'buy': { paramsTuple?: []; params?: {} }
     'order.confirmation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'auth.google.redirect': { paramsTuple?: []; params?: {} }
@@ -59,6 +60,7 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
+    'lang.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
     'order.confirmation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'auth.google.redirect': { paramsTuple?: []; params?: {} }
     'auth.google.callback': { paramsTuple?: []; params?: {} }
@@ -88,6 +90,7 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
+    'lang.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
     'order.confirmation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'auth.google.redirect': { paramsTuple?: []; params?: {} }
     'auth.google.callback': { paramsTuple?: []; params?: {} }

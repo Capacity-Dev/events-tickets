@@ -18,6 +18,14 @@ router.get('sitemap.xml', [PublicController, 'sitemap']).as('sitemap')
 
 router.post('webhooks/mbiyopay', [WebhookController, 'mbiyopay']).as('webhooks.mbiyopay')
 
+router.get('lang/:locale', ({ params, session, response }) => {
+  const supported = ['fr', 'en']
+  if (supported.includes(params.locale)) {
+    session.put('locale', params.locale)
+  }
+  response.redirect().back()
+}).as('lang.switch')
+
 router.post('buy', [CartController, 'buy']).as('buy')
 router.get('order/:id', [CartController, 'confirmation']).as('order.confirmation')
 

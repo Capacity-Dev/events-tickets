@@ -12,6 +12,9 @@ export interface ApiDefinition {
   webhooks: {
     mbiyopay: typeof routes['webhooks.mbiyopay']
   }
+  lang: {
+    switch: typeof routes['lang.switch']
+  }
   buy: typeof routes['buy']
   order: {
     confirmation: typeof routes['order.confirmation']

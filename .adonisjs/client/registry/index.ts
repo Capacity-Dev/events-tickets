@@ -42,6 +42,12 @@ const routes = {
     tokens: [{"old":"/webhooks/mbiyopay","type":0,"val":"webhooks","end":""},{"old":"/webhooks/mbiyopay","type":0,"val":"mbiyopay","end":""}],
     types: placeholder as Registry['webhooks.mbiyopay']['types'],
   },
+  'lang.switch': {
+    methods: ["GET","HEAD"],
+    pattern: '/lang/:locale',
+    tokens: [{"old":"/lang/:locale","type":0,"val":"lang","end":""},{"old":"/lang/:locale","type":1,"val":"locale","end":""}],
+    types: placeholder as Registry['lang.switch']['types'],
+  },
   'buy': {
     methods: ["POST"],
     pattern: '/buy',

@@ -4,7 +4,7 @@
         <div class="absolute top-0 left-0 right-0 h-1 rounded-b-full" style="background: linear-gradient(90deg, var(--primary), var(--accent));"></div>
         <a href="/events" class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground mb-5 btn-ghost btn-sm no-underline -ml-2">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l-5 5 5 5"/></svg>
-          Back to events
+          {{ t('event.back') }}
         </a>
         <h1 class="font-heading text-[clamp(28px,4vw,44px)] mb-3 motion-safe:animate-[fadeInUp_0.5s_ease-out]">{{ event.title }}</h1>
         @if(event.category)
@@ -28,7 +28,7 @@
 
           @if(event.venueName)
             <div class="bg-muted rounded-[16px] p-6 sm:p-8 mt-8">
-              <div class="text-[11px] font-semibold uppercase tracking-[1px] text-muted-foreground mb-2">Venue</div>
+              <div class="text-[11px] font-semibold uppercase tracking-[1px] text-muted-foreground mb-2">{{ t('event.venue') }}</div>
               <div class="font-semibold text-[15px]">{{ event.venueName }}</div>
               @if(event.venueAddress)
                 <div class="text-sm text-muted-foreground mt-1">{{ event.venueAddress }}</div>
@@ -45,7 +45,7 @@
                 <path d="M2 9h16"/><path d="M7 2v3"/><path d="M13 2v3"/>
               </svg>
               <div>
-                <div class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Date &amp; Time</div>
+                <div class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.date_time') }}</div>
                 <div class="text-sm leading-relaxed">
                   {{ event.startDate.toFormat('EEEE, MMMM d, yyyy') }}<br />
                   {{ event.startDate.toFormat('h:mm a') }}
@@ -63,7 +63,7 @@
                   <circle cx="10" cy="9" r="2.5"/>
                 </svg>
                 <div>
-                  <div class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Location</div>
+                  <div class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.location') }}</div>
                   <div class="text-sm">{{ event.venueName }}</div>
                 </div>
               </div>
@@ -71,7 +71,7 @@
 
             @if(ticketTypes.length)
               <div>
-                <div class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-4">Tickets</div>
+                <div class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-4">{{ t('event.tickets') }}</div>
                 <div class="flex flex-col gap-3">
                   @each(ticket in ticketTypes)
                     <div class="flex justify-between items-start gap-4 p-4 sm:p-5 border border-border rounded-[12px] hover:border-primary hover:bg-primary/5 transition-all duration-200 card-hover">
@@ -90,11 +90,11 @@
                           @endif
                         ">
                           @if(ticket.status === 'sold_out')
-                            Sold out
+                            {{ t('event.sold_out') }}
                           @elseif(ticket.remaining > 0 && ticket.remaining <= 10)
-                            Only {{ ticket.remaining }} left
+                            {{ t('event.remaining', { count: ticket.remaining }) }}
                           @else
-                            {{ ticket.quantitySold }} sold
+                            {{ t('event.sold', { count: ticket.quantitySold }) }}
                           @endif
                         </div>
                       </div>
@@ -102,27 +102,27 @@
                         <div class="text-xl font-bold font-heading">${{ ticket.basePrice }}</div>
                         @if(ticket.status === 'active')
                           <button type="button" onclick="toggleBuyForm('{{ ticket.id }}')" class="btn-primary btn-sm w-full mt-2 whitespace-nowrap">
-                            Acheter
+                            {{ t('event.buy') }}
                           </button>
                           <form id="buy-form-{{ ticket.id }}" action="/buy" method="POST" class="hidden mt-3 pt-3 border-t border-border space-y-3">
                             {{ csrfField() }}
                             <input type="hidden" name="ticketTypeId" value="{{ ticket.id }}" />
                             <input type="hidden" name="quantity" value="1" />
                             <div>
-                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Nom complet *</label>
-                              <input type="text" name="name" required class="input-field min-h-10 mt-1" placeholder="Votre nom" />
+                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.name_label') }}</label>
+                              <input type="text" name="name" required class="input-field min-h-10 mt-1" placeholder="{{ t('event.name_placeholder') }}" />
                             </div>
                             <div>
-                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Téléphone (WhatsApp)</label>
-                              <input type="tel" name="phone" class="input-field min-h-10 mt-1" placeholder="+243XXXXXXXXX" />
+                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.phone_label') }}</label>
+                              <input type="tel" name="phone" class="input-field min-h-10 mt-1" placeholder="{{ t('event.phone_placeholder') }}" />
                             </div>
                             <div>
-                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Email</label>
-                              <input type="email" name="email" class="input-field min-h-10 mt-1" placeholder="vous@exemple.com" />
+                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.email_label') }}</label>
+                              <input type="email" name="email" class="input-field min-h-10 mt-1" placeholder="{{ t('event.email_placeholder') }}" />
                             </div>
-                            <p class="text-[10px] text-muted-foreground">Fournissez au moins un contact (téléphone ou email) pour recevoir vos billets.</p>
+                            <p class="text-[10px] text-muted-foreground">{{ t('event.contact_hint') }}</p>
                             <button type="submit" class="btn-primary btn-sm w-full">
-                              Confirmer l'achat
+                              {{ t('event.confirm_purchase') }}
                             </button>
                           </form>
                         @else
@@ -130,7 +130,7 @@
                             class="mt-2 px-5 py-2 rounded-[10px] border-none font-semibold text-[13px] cursor-not-allowed w-full bg-muted text-muted-foreground"
                             disabled
                           >
-                            {{ ticket.status === 'sold_out' ? 'Sold Out' : 'Unavailable' }}
+                            {{ ticket.status === 'sold_out' ? t('event.sold_out') : t('event.unavailable') }}
                           </button>
                         @endif
                       </div>
@@ -139,7 +139,7 @@
                 </div>
               </div>
             @else
-              <p class="text-sm text-muted-foreground">No tickets available yet.</p>
+              <p class="text-sm text-muted-foreground">{{ t('event.no_tickets') }}</p>
             @endif
           </div>
         </div>

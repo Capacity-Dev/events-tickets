@@ -79,6 +79,18 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'lang.switch': {
+    methods: ["GET","HEAD"]
+    pattern: '/lang/:locale'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { locale: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'buy': {
     methods: ["POST"]
     pattern: '/buy'

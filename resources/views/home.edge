@@ -4,13 +4,13 @@
         <div class="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary/5 via-transparent to-accent/5"></div>
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 md:py-32 text-center">
           <h1 class="font-heading text-[clamp(36px,5vw,60px)] text-foreground mb-4 leading-tight motion-safe:animate-[fadeInUp_0.6s_ease-out]">
-            Discover events in your city
+            {{ t('hero.title') }}
           </h1>
           <p class="text-[clamp(17px,2vw,20px)] text-muted-foreground max-w-[600px] mx-auto mb-10 leading-relaxed motion-safe:animate-[fadeInUp_0.6s_ease-out_0.1s_both]">
-            From live concerts to tech conferences — find and book tickets for the best events near you.
+            {{ t('hero.subtitle') }}
           </p>
           <a href="/events" class="btn-primary btn-lg no-underline motion-safe:animate-[fadeInUp_0.6s_ease-out_0.2s_both]">
-            Browse Events
+            {{ t('hero.cta') }}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="-mr-1"><path d="M5 3l5 5-5 5"/></svg>
           </a>
         </div>
@@ -20,17 +20,17 @@
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div class="flex items-center justify-between flex-wrap gap-4 mb-10">
             <div>
-              <h2 class="font-heading text-[clamp(24px,3vw,32px)]">Featured Events</h2>
+              <h2 class="font-heading text-[clamp(24px,3vw,32px)]">{{ t('section.featured') }}</h2>
               <div class="w-12 h-0.5 bg-primary rounded-full mt-3"></div>
             </div>
             <a href="/events" class="btn-ghost btn-sm gap-1.5 no-underline">
-              View all
+              {{ t('section.view_all') }}
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
             </a>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in featuredEvents)
-              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up ">
+              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up">
                 <div class="aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary overflow-hidden">
                   <span class="transition-transform duration-300 group-hover:scale-110">EV</span>
                 </div>
@@ -50,7 +50,7 @@
                   <div class="flex items-center justify-between pt-4 border-t border-border">
                     <div class="text-xl font-bold font-heading">
                       @if(event.minPrice)
-                        <span class="text-xs font-normal text-muted-foreground">from</span> ${{ event.minPrice }}
+                        <span class="text-xs font-normal text-muted-foreground">{{ t('events.from_price') }}</span> ${{ event.minPrice }}
                       @endif
                     </div>
                   </div>
@@ -65,17 +65,17 @@
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div class="flex items-center justify-between flex-wrap gap-4 mb-10">
             <div>
-              <h2 class="font-heading text-[clamp(24px,3vw,32px)]">Upcoming Events</h2>
+              <h2 class="font-heading text-[clamp(24px,3vw,32px)]">{{ t('section.upcoming') }}</h2>
               <div class="w-12 h-0.5 bg-primary rounded-full mt-3"></div>
             </div>
             <a href="/events" class="btn-ghost btn-sm gap-1.5 no-underline">
-              View all
+              {{ t('section.view_all') }}
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
             </a>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in recentEvents)
-              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up ">
+              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up">
                 <div class="aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary">
                   EV
                 </div>
@@ -95,7 +95,7 @@
                   <div class="flex items-center justify-between pt-4 border-t border-border">
                     <div class="text-xl font-bold font-heading">
                       @if(event.minPrice)
-                        <span class="text-xs font-normal text-muted-foreground">from</span> ${{ event.minPrice }}
+                        <span class="text-xs font-normal text-muted-foreground">{{ t('events.from_price') }}</span> ${{ event.minPrice }}
                       @endif
                     </div>
                   </div>
@@ -107,10 +107,10 @@
       @endif
 
       <section class="text-center py-20 sm:py-24 px-4 sm:px-6" style="background: linear-gradient(135deg, var(--primary) 0%, #BE123C 100%);">
-        <h2 class="font-heading text-[clamp(24px,3vw,32px)] text-white mb-3">Want to create your own event?</h2>
-        <p class="text-white/85 max-w-md mx-auto mb-8 leading-relaxed">Start selling tickets in minutes. Join thousands of organizers already using our platform.</p>
+        <h2 class="font-heading text-[clamp(24px,3vw,32px)] text-white mb-3">{{ t('section.cta_title') }}</h2>
+        <p class="text-white/85 max-w-md mx-auto mb-8 leading-relaxed">{{ t('section.cta_text') }}</p>
         <a href="/signup" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-[12px] font-semibold text-base border-2 border-white text-white hover:bg-white hover:text-primary transition-all duration-200 motion-safe:transition-all motion-safe:duration-200 no-underline hover:-translate-y-0.5 active:scale-[0.97]">
-          Get Started
+          {{ t('nav.get_started') }}
         </a>
       </section>
 

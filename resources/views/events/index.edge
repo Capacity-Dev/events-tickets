@@ -1,16 +1,16 @@
 @include('partials/header')
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-2 fade-in-up">
-        <h1 class="font-heading text-[clamp(28px,3.5vw,38px)]">Browse Events</h1>
-        <p class="text-muted-foreground mt-2 text-[15px]">{{ total }} event{{ total !== 1 ? 's' : '' }} found</p>
+        <h1 class="font-heading text-[clamp(28px,3.5vw,38px)]">{{ t('events.title') }}</h1>
+        <p class="text-muted-foreground mt-2 text-[15px]">{{ t('events.found', { count: total }) }}</p>
       </div>
 
       <form method="GET" action="/events" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-card border border-border rounded-[16px] p-4 sm:p-5 mb-8 flex flex-wrap gap-3 items-end fade-in-up stagger-1">
           <div class="flex flex-col gap-1.5 flex-1 min-w-[140px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Category</label>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('events.category') }}</label>
             <select name="category" onchange="this.form.submit()" class="select-field min-h-10">
-              <option value="">All Categories</option>
+              <option value="">{{ t('events.all_categories') }}</option>
               @each(cat in categories)
                 <option value="{{ cat.slug }}" {{ cat.slug === selectedCategory ? 'selected' : '' }}>
                   {{ cat.name }}
@@ -19,20 +19,20 @@
             </select>
           </div>
           <div class="flex flex-col gap-1.5 flex-1 min-w-[140px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Search</label>
-            <input type="text" name="q" placeholder="Search events..." value="{{ q }}" class="input-field min-h-10" />
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('search.label') }}</label>
+            <input type="text" name="q" placeholder="{{ t('events.search_placeholder') }}" value="{{ q }}" class="input-field min-h-10" />
           </div>
           <div class="flex flex-col gap-1.5 flex-1 min-w-[130px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">From</label>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('events.from_date') }}</label>
             <input type="date" name="from" value="{{ from }}" class="input-field min-h-10" />
           </div>
           <div class="flex flex-col gap-1.5 flex-1 min-w-[130px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">To</label>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('events.to_date') }}</label>
             <input type="date" name="to" value="{{ to }}" class="input-field min-h-10" />
           </div>
           <button type="submit" class="btn-primary min-w-[100px] h-10">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
-            Filter
+            {{ t('events.filter') }}
           </button>
         </div>
       </form>
@@ -61,7 +61,7 @@
                   <div class="flex items-center justify-between pt-4 border-t border-border">
                     <div class="text-xl font-bold font-heading">
                       @if(event.minPrice ?? event.min_price)
-                        <span class="text-xs font-normal text-muted-foreground">from</span> ${{ event.minPrice ?? event.min_price }}
+                        <span class="text-xs font-normal text-muted-foreground">{{ t('events.from_price') }}</span> ${{ event.minPrice ?? event.min_price }}
                       @endif
                     </div>
                   </div>
@@ -75,7 +75,7 @@
               @if(page > 1)
                 <a href="?page={{ page - 1 }}&{{ queryString }}" class="btn-outline btn-sm no-underline gap-1">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l-5 5 5 5"/></svg>
-                  Previous
+                  {{ t('events.prev') }}
                 </a>
               @endif
               @each(p in range(1, pages))
@@ -87,7 +87,7 @@
               @endeach
               @if(page < pages)
                 <a href="?page={{ page + 1 }}&{{ queryString }}" class="btn-outline btn-sm no-underline gap-1">
-                  Next
+                  {{ t('events.next') }}
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
                 </a>
               @endif
@@ -98,8 +98,8 @@
             <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
             </div>
-            <h3 class="font-body text-xl font-semibold tracking-normal mb-2">No events found</h3>
-            <p class="text-muted-foreground">Try adjusting your filters or check back later for new events.</p>
+            <h3 class="font-body text-xl font-semibold tracking-normal mb-2">{{ t('events.no_results') }}</h3>
+            <p class="text-muted-foreground">{{ t('events.no_results_hint') }}</p>
           </div>
         @endif
       </div>

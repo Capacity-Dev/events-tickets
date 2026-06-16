@@ -1,20 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ locale ?? 'fr' }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title inertia>
-      AdonisJS
-    </title>
-
+    <title inertia>{{ t('app.name') }}</title>
     @viteReactRefresh()
     @vite(['inertia/app.tsx'])
     @inertiaHead()
     @stack('dumper')
   </head>
-
   <body>
     @inertia()
   </body>
-
 </html>

@@ -1,6 +1,6 @@
-@let(appName = 'Events Tickets')
+@let(appName = t('app.name'))
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ locale ?? 'fr' }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,18 +27,19 @@
             {{ appName }}
           </a>
           <nav class="flex items-center gap-1 sm:gap-2">
-            <a href="/events" class="btn-ghost btn-sm no-underline">
-              Browse Events
+            <a href="/events" class="btn-ghost btn-sm no-underline">{{ t('nav.browse') }}</a>
+            <a href="/lang/{{ locale === 'fr' ? 'en' : 'fr' }}" class="btn-ghost btn-sm no-underline text-xs font-semibold">
+              {{ locale === 'fr' ? t('locale.en') : t('locale.fr') }}
             </a>
             @if(auth.user)
               <span class="text-sm text-muted-foreground hidden sm:inline px-2">{{ auth.user.fullName ?? auth.user.email }}</span>
               <form action="/logout" method="POST" class="inline">
                 {{ csrfField() }}
-                <button type="submit" class="btn-ghost btn-sm">Logout</button>
+                <button type="submit" class="btn-ghost btn-sm">{{ t('nav.logout') }}</button>
               </form>
             @else
-              <a href="/login" class="btn-ghost btn-sm no-underline">Sign In</a>
-              <a href="/signup" class="btn-primary btn-sm no-underline">Get Started</a>
+              <a href="/login" class="btn-ghost btn-sm no-underline">{{ t('nav.signin') }}</a>
+              <a href="/signup" class="btn-primary btn-sm no-underline">{{ t('nav.get_started') }}</a>
             @endif
           </nav>
         </div>
