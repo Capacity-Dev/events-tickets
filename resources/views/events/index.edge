@@ -1,38 +1,44 @@
 @include('partials/header')
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-2 fade-in-up">
-        <h1 class="font-heading text-[clamp(28px,3.5vw,38px)]">{{ t('events.title') }}</h1>
-        <p class="text-muted-foreground mt-2 text-[15px]">{{ t('events.found', { count: total }) }}</p>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6 fade-in-up">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+          <div>
+            <h1 class="font-heading text-[clamp(28px,3.5vw,38px)]">{{ t('events.title') }}</h1>
+            <p class="text-muted-foreground mt-1 text-sm">{{ t(total > 1 ? 'events.found_other' : 'events.found_one', { count: total }) }}</p>
+          </div>
+        </div>
       </div>
 
       <form method="GET" action="/events" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-card border border-border rounded-[16px] p-4 sm:p-5 mb-8 flex flex-wrap gap-3 items-end fade-in-up stagger-1">
-          <div class="flex flex-col gap-1.5 flex-1 min-w-[140px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('events.category') }}</label>
-            <select name="category" onchange="this.form.submit()" class="select-field min-h-10">
-              <option value="">{{ t('events.all_categories') }}</option>
-              @each(cat in categories)
-                <option value="{{ cat.slug }}" {{ cat.slug === selectedCategory ? 'selected' : '' }}>
-                  {{ cat.name }}
-                </option>
-              @endeach
-            </select>
+        <div class="bg-card border border-border rounded-[16px] p-4 sm:p-5 mb-10 flex flex-col sm:flex-row gap-3 items-stretch sm:items-end fade-in-up">
+          <div class="flex-1 min-w-0">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('events.category') }}</label>
+            <div class="relative">
+              <select name="category" onchange="this.form.submit()" class="select-field min-h-11 w-full pr-10">
+                <option value="">{{ t('events.all_categories') }}</option>
+                @each(cat in categories)
+                  <option value="{{ cat.slug }}" {{ cat.slug === selectedCategory ? 'selected' : '' }}>
+                    {{ cat.name }}
+                  </option>
+                @endeach
+              </select>
+            </div>
           </div>
-          <div class="flex flex-col gap-1.5 flex-1 min-w-[140px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('search.label') }}</label>
-            <input type="text" name="q" placeholder="{{ t('events.search_placeholder') }}" value="{{ q }}" class="input-field min-h-10" />
+          <div class="flex-1 min-w-0">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('search.label') }}</label>
+            <input type="text" name="q" placeholder="{{ t('events.search_placeholder') }}" value="{{ q }}" class="input-field min-h-11 w-full" />
           </div>
-          <div class="flex flex-col gap-1.5 flex-1 min-w-[130px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('events.from_date') }}</label>
-            <input type="date" name="from" value="{{ from }}" class="input-field min-h-10" />
+          <div class="w-full sm:w-[140px]">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('events.from_date') }}</label>
+            <input type="date" name="from" value="{{ from }}" class="input-field min-h-11 w-full" />
           </div>
-          <div class="flex flex-col gap-1.5 flex-1 min-w-[130px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('events.to_date') }}</label>
-            <input type="date" name="to" value="{{ to }}" class="input-field min-h-10" />
+          <div class="w-full sm:w-[140px]">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('events.to_date') }}</label>
+            <input type="date" name="to" value="{{ to }}" class="input-field min-h-11 w-full" />
           </div>
-          <button type="submit" class="btn-primary min-w-[100px] h-10">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
-            {{ t('events.filter') }}
+          <button type="submit" class="btn-primary min-h-11 px-6 gap-2 shrink-0">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+            <span>{{ t('events.filter') }}</span>
           </button>
         </div>
       </form>

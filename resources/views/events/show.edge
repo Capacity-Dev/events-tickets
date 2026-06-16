@@ -94,37 +94,16 @@
                           @elseif(ticket.remaining > 0 && ticket.remaining <= 10)
                             {{ t('event.remaining', { count: ticket.remaining }) }}
                           @else
-                            {{ t('event.sold', { count: ticket.quantitySold }) }}
+                            {{ t(ticket.quantitySold > 1 ? 'event.sold_other' : 'event.sold_one', { count: ticket.quantitySold }) }}
                           @endif
                         </div>
                       </div>
                       <div class="text-right flex-shrink-0 min-w-[100px]">
                         <div class="text-xl font-bold font-heading">${{ ticket.basePrice }}</div>
                         @if(ticket.status === 'active')
-                          <button type="button" onclick="toggleBuyForm('{{ ticket.id }}')" class="btn-primary btn-sm w-full mt-2 whitespace-nowrap">
+                          <button type="button" onclick="openBuyModal('{{ ticket.id }}', '{{ ticket.name }}', '{{ ticket.basePrice }}')" class="btn-primary btn-sm w-full mt-2 whitespace-nowrap">
                             {{ t('event.buy') }}
                           </button>
-                          <form id="buy-form-{{ ticket.id }}" action="/buy" method="POST" class="hidden mt-3 pt-3 border-t border-border space-y-3">
-                            {{ csrfField() }}
-                            <input type="hidden" name="ticketTypeId" value="{{ ticket.id }}" />
-                            <input type="hidden" name="quantity" value="1" />
-                            <div>
-                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.name_label') }}</label>
-                              <input type="text" name="name" required class="input-field min-h-10 mt-1" placeholder="{{ t('event.name_placeholder') }}" />
-                            </div>
-                            <div>
-                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.phone_label') }}</label>
-                              <input type="tel" name="phone" class="input-field min-h-10 mt-1" placeholder="{{ t('event.phone_placeholder') }}" />
-                            </div>
-                            <div>
-                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.email_label') }}</label>
-                              <input type="email" name="email" class="input-field min-h-10 mt-1" placeholder="{{ t('event.email_placeholder') }}" />
-                            </div>
-                            <p class="text-[10px] text-muted-foreground">{{ t('event.contact_hint') }}</p>
-                            <button type="submit" class="btn-primary btn-sm w-full">
-                              {{ t('event.confirm_purchase') }}
-                            </button>
-                          </form>
                         @else
                           <button
                             class="mt-2 px-5 py-2 rounded-[10px] border-none font-semibold text-[13px] cursor-not-allowed w-full bg-muted text-muted-foreground"
@@ -145,12 +124,52 @@
         </div>
       </div>
 
+<div id="buy-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden" onclick="if(event.target===this)closeBuyModal()">
+  <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="relative bg-card border border-border rounded-[20px] p-6 sm:p-8 w-full max-w-md mx-4 shadow-2xl motion-safe:animate-[modalIn_0.3s_ease-out] max-h-[90vh] overflow-y-auto">
+    <button type="button" onclick="closeBuyModal()" class="absolute top-4 right-4 btn-ghost btn-sm !min-h-9 !px-3 !rounded-full" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l8 8"/><path d="M12 4l-8 8"/></svg>
+    </button>
+    <div class="text-center mb-6">
+      <h3 class="font-heading text-xl mb-1" id="modal-ticket-name"></h3>
+      <p class="text-lg font-bold font-heading text-primary" id="modal-ticket-price"></p>
+    </div>
+    <form id="buy-form" action="/buy" method="POST" class="space-y-4">
+      {{ csrfField() }}
+      <input type="hidden" name="ticketTypeId" id="modal-ticket-id" />
+      <input type="hidden" name="quantity" value="1" />
+      <div>
+        <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.name_label') }}</label>
+        <input type="text" name="name" required class="input-field min-h-11 mt-1.5" placeholder="{{ t('event.name_placeholder') }}" />
+      </div>
+      <div>
+        <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.phone_label') }}</label>
+        <input type="tel" name="phone" class="input-field min-h-11 mt-1.5" placeholder="{{ t('event.phone_placeholder') }}" />
+      </div>
+      <div>
+        <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('event.email_label') }}</label>
+        <input type="email" name="email" class="input-field min-h-11 mt-1.5" placeholder="{{ t('event.email_placeholder') }}" />
+      </div>
+      <p class="text-xs text-muted-foreground">{{ t('event.contact_hint') }}</p>
+      <button type="submit" class="btn-primary w-full mt-2">
+        {{ t('event.confirm_purchase') }}
+      </button>
+    </form>
+  </div>
+</div>
+
 <script>
-function toggleBuyForm(id) {
-  const form = document.getElementById('buy-form-' + id)
-  const allForms = document.querySelectorAll('[id^="buy-form-"]')
-  allForms.forEach(f => { if (f.id !== 'buy-form-' + id) f.classList.add('hidden') })
-  form.classList.toggle('hidden')
+function openBuyModal(id, name, price) {
+  document.getElementById('modal-ticket-id').value = id
+  document.getElementById('modal-ticket-name').textContent = name
+  document.getElementById('modal-ticket-price').textContent = '$' + price
+  document.getElementById('buy-modal').classList.remove('hidden')
+  document.body.style.overflow = 'hidden'
+}
+
+function closeBuyModal() {
+  document.getElementById('buy-modal').classList.add('hidden')
+  document.body.style.overflow = ''
 }
 </script>
 
