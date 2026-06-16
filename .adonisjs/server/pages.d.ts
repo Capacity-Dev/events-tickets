@@ -21,6 +21,8 @@ declare module '@adonisjs/inertia/types' {
     'admin/whatsapp': ExtractProps<(typeof import('../../inertia/pages/admin/whatsapp.tsx'))['default']>
     'auth/login': ExtractProps<(typeof import('../../inertia/pages/auth/login.tsx'))['default']>
     'auth/signup': ExtractProps<(typeof import('../../inertia/pages/auth/signup.tsx'))['default']>
+    'checkout/cart': ExtractProps<(typeof import('../../inertia/pages/checkout/cart.tsx'))['default']>
+    'checkout/checkout': ExtractProps<(typeof import('../../inertia/pages/checkout/checkout.tsx'))['default']>
     'dashboard/buyer/orders_show': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/orders_show.tsx'))['default']>
     'dashboard/buyer/orders': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/orders.tsx'))['default']>
     'dashboard/buyer/tickets': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/tickets.tsx'))['default']>

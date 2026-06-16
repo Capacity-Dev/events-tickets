@@ -5,6 +5,8 @@ import PublicController from '#controllers/public_controller'
 import OrganizerController from '#controllers/organizer_controller'
 import BuyerController from '#controllers/buyer_controller'
 import AdminController from '#controllers/admin_controller'
+import GoogleAuthController from '#controllers/google_auth_controller'
+import CartController from '#controllers/cart_controller'
 
 router.get('/', [PublicController, 'home']).as('home')
 
@@ -12,6 +14,14 @@ router.get('events', [PublicController, 'index']).as('events.index')
 router.get('events/search', [PublicController, 'search']).as('events.search')
 router.get('events/:slug', [PublicController, 'show']).as('events.show')
 router.get('sitemap.xml', [PublicController, 'sitemap']).as('sitemap')
+
+router.get('cart', [CartController, 'cart']).as('cart.show')
+router.post('cart/add', [CartController, 'add']).as('cart.add')
+router.get('checkout', [CartController, 'checkout']).as('checkout')
+router.post('checkout', [CartController, 'storeGuestOrder']).as('checkout.store')
+
+router.get('auth/google', [GoogleAuthController, 'redirect']).as('auth.google.redirect')
+router.get('auth/google/callback', [GoogleAuthController, 'callback']).as('auth.google.callback')
 
 router
   .group(() => {

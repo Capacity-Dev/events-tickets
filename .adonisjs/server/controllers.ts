@@ -6,6 +6,8 @@
 export const controllers = {
   Admin: () => import('#controllers/admin_controller'),
   Buyer: () => import('#controllers/buyer_controller'),
+  Cart: () => import('#controllers/cart_controller'),
+  GoogleAuth: () => import('#controllers/google_auth_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   Organizer: () => import('#controllers/organizer_controller'),
   Public: () => import('#controllers/public_controller'),

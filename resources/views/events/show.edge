@@ -100,18 +100,25 @@
                       </div>
                       <div class="text-right flex-shrink-0">
                         <div class="text-xl font-bold text-[var(--color-text-primary)] font-[var(--font-heading)]">${{ ticket.basePrice }}</div>
-                        <button
-                          class="mt-1 px-5 py-1.5 rounded-[10px] border-none font-semibold text-[13px] cursor-pointer w-full transition-all duration-150
-                            @if(ticket.status === 'active')
-                              bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:bg-[#BE123C]
-                            @else
-                              bg-[var(--color-muted)] text-[var(--color-text-muted)] cursor-not-allowed
-                            @endif
-                          "
-                          {{ ticket.status !== 'active' ? 'disabled' : '' }}
-                        >
-                          {{ ticket.status === 'sold_out' ? 'Sold Out' : 'Select' }}
-                        </button>
+                        @if(ticket.status === 'active')
+                          <form action="/cart/add" method="POST" style="display:inline;">
+                            @csrfField()
+                            <input type="hidden" name="ticketTypeId" value="{{ ticket.id }}" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit"
+                              class="mt-1 px-5 py-1.5 rounded-[10px] border-none font-semibold text-[13px] cursor-pointer w-full transition-all duration-150 bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:bg-[#BE123C]"
+                            >
+                              Add to Cart
+                            </button>
+                          </form>
+                        @else
+                          <button
+                            class="mt-1 px-5 py-1.5 rounded-[10px] border-none font-semibold text-[13px] cursor-not-allowed w-full bg-[var(--color-muted)] text-[var(--color-text-muted)]"
+                            disabled
+                          >
+                            {{ ticket.status === 'sold_out' ? 'Sold Out' : 'Unavailable' }}
+                          </button>
+                        @endif
                       </div>
                     </div>
                   @endeach

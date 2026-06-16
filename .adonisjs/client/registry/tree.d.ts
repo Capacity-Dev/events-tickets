@@ -9,6 +9,19 @@ export interface ApiDefinition {
     show: typeof routes['events.show']
   }
   sitemap: typeof routes['sitemap']
+  cart: {
+    show: typeof routes['cart.show']
+    add: typeof routes['cart.add']
+  }
+  checkout: typeof routes['checkout'] & {
+    store: typeof routes['checkout.store']
+  }
+  auth: {
+    google: {
+      redirect: typeof routes['auth.google.redirect']
+      callback: typeof routes['auth.google.callback']
+    }
+  }
   newAccount: {
     create: typeof routes['new_account.create']
     store: typeof routes['new_account.store']

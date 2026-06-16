@@ -36,6 +36,42 @@ const routes = {
     tokens: [{"old":"/sitemap.xml","type":0,"val":"sitemap.xml","end":""}],
     types: placeholder as Registry['sitemap']['types'],
   },
+  'cart.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/cart',
+    tokens: [{"old":"/cart","type":0,"val":"cart","end":""}],
+    types: placeholder as Registry['cart.show']['types'],
+  },
+  'cart.add': {
+    methods: ["POST"],
+    pattern: '/cart/add',
+    tokens: [{"old":"/cart/add","type":0,"val":"cart","end":""},{"old":"/cart/add","type":0,"val":"add","end":""}],
+    types: placeholder as Registry['cart.add']['types'],
+  },
+  'checkout': {
+    methods: ["GET","HEAD"],
+    pattern: '/checkout',
+    tokens: [{"old":"/checkout","type":0,"val":"checkout","end":""}],
+    types: placeholder as Registry['checkout']['types'],
+  },
+  'checkout.store': {
+    methods: ["POST"],
+    pattern: '/checkout',
+    tokens: [{"old":"/checkout","type":0,"val":"checkout","end":""}],
+    types: placeholder as Registry['checkout.store']['types'],
+  },
+  'auth.google.redirect': {
+    methods: ["GET","HEAD"],
+    pattern: '/auth/google',
+    tokens: [{"old":"/auth/google","type":0,"val":"auth","end":""},{"old":"/auth/google","type":0,"val":"google","end":""}],
+    types: placeholder as Registry['auth.google.redirect']['types'],
+  },
+  'auth.google.callback': {
+    methods: ["GET","HEAD"],
+    pattern: '/auth/google/callback',
+    tokens: [{"old":"/auth/google/callback","type":0,"val":"auth","end":""},{"old":"/auth/google/callback","type":0,"val":"google","end":""},{"old":"/auth/google/callback","type":0,"val":"callback","end":""}],
+    types: placeholder as Registry['auth.google.callback']['types'],
+  },
   'new_account.create': {
     methods: ["GET","HEAD"],
     pattern: '/signup',

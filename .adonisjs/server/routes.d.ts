@@ -9,6 +9,12 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
+    'cart.show': { paramsTuple?: []; params?: {} }
+    'cart.add': { paramsTuple?: []; params?: {} }
+    'checkout': { paramsTuple?: []; params?: {} }
+    'checkout.store': { paramsTuple?: []; params?: {} }
+    'auth.google.redirect': { paramsTuple?: []; params?: {} }
+    'auth.google.callback': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
@@ -53,6 +59,10 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
+    'cart.show': { paramsTuple?: []; params?: {} }
+    'checkout': { paramsTuple?: []; params?: {} }
+    'auth.google.redirect': { paramsTuple?: []; params?: {} }
+    'auth.google.callback': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
     'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
@@ -78,6 +88,10 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
+    'cart.show': { paramsTuple?: []; params?: {} }
+    'checkout': { paramsTuple?: []; params?: {} }
+    'auth.google.redirect': { paramsTuple?: []; params?: {} }
+    'auth.google.callback': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
     'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
@@ -98,6 +112,8 @@ export type ScannedRoutes = {
     'admin.whatsapp': { paramsTuple?: []; params?: {} }
   }
   POST: {
+    'cart.add': { paramsTuple?: []; params?: {} }
+    'checkout.store': { paramsTuple?: []; params?: {} }
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
