@@ -1,15 +1,15 @@
 @include('partials/header')
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-2">
-        <h1 class="font-[var(--font-heading)] text-[clamp(28px,3.5vw,38px)]">Browse Events</h1>
-        <p class="text-[var(--color-text-secondary)] mt-2 text-[15px]">{{ total }} event{{ total !== 1 ? 's' : '' }} found</p>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-2 fade-in-up">
+        <h1 class="font-heading text-[clamp(28px,3.5vw,38px)]">Browse Events</h1>
+        <p class="text-muted-foreground mt-2 text-[15px]">{{ total }} event{{ total !== 1 ? 's' : '' }} found</p>
       </div>
 
-      <form method="GET" action="/events" class="max-w-7xl mx-auto px-4 sm:px-6">
-        <div class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[16px] p-5 mb-8 flex flex-wrap gap-3 items-end">
-          <div class="flex flex-col gap-1">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--color-text-muted)]">Category</label>
-            <select name="category" onchange="this.form.submit()" class="px-3 py-2 border border-[var(--color-border)] rounded-[6px] text-sm bg-[var(--color-surface)] min-h-[38px] focus:border-[var(--color-ring)] focus:outline-none focus:shadow-[0_0_0_3px_rgba(225,29,72,0.1)] transition-colors">
+      <form method="GET" action="/events" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-card border border-border rounded-[16px] p-4 sm:p-5 mb-8 flex flex-wrap gap-3 items-end fade-in-up stagger-1">
+          <div class="flex flex-col gap-1.5 flex-1 min-w-[140px]">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Category</label>
+            <select name="category" onchange="this.form.submit()" class="select-field min-h-10">
               <option value="">All Categories</option>
               @each(cat in categories)
                 <option value="{{ cat.slug }}" {{ cat.slug === selectedCategory ? 'selected' : '' }}>
@@ -18,47 +18,50 @@
               @endeach
             </select>
           </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--color-text-muted)]">Search</label>
-            <input type="text" name="q" placeholder="Search events..." value="{{ q }}" class="px-3 py-2 border border-[var(--color-border)] rounded-[6px] text-sm bg-[var(--color-surface)] min-h-[38px] focus:border-[var(--color-ring)] focus:outline-none focus:shadow-[0_0_0_3px_rgba(225,29,72,0.1)] transition-colors" />
+          <div class="flex flex-col gap-1.5 flex-1 min-w-[140px]">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Search</label>
+            <input type="text" name="q" placeholder="Search events..." value="{{ q }}" class="input-field min-h-10" />
           </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--color-text-muted)]">From</label>
-            <input type="date" name="from" value="{{ from }}" class="px-3 py-2 border border-[var(--color-border)] rounded-[6px] text-sm bg-[var(--color-surface)] min-h-[38px] focus:border-[var(--color-ring)] focus:outline-none focus:shadow-[0_0_0_3px_rgba(225,29,72,0.1)] transition-colors" />
+          <div class="flex flex-col gap-1.5 flex-1 min-w-[130px]">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">From</label>
+            <input type="date" name="from" value="{{ from }}" class="input-field min-h-10" />
           </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--color-text-muted)]">To</label>
-            <input type="date" name="to" value="{{ to }}" class="px-3 py-2 border border-[var(--color-border)] rounded-[6px] text-sm bg-[var(--color-surface)] min-h-[38px] focus:border-[var(--color-ring)] focus:outline-none focus:shadow-[0_0_0_3px_rgba(225,29,72,0.1)] transition-colors" />
+          <div class="flex flex-col gap-1.5 flex-1 min-w-[130px]">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">To</label>
+            <input type="date" name="to" value="{{ to }}" class="input-field min-h-10" />
           </div>
-          <button type="submit" class="px-6 py-2 rounded-[6px] border-none bg-[var(--color-primary)] text-[var(--color-on-primary)] font-semibold text-sm cursor-pointer min-h-[38px] hover:bg-[#BE123C] focus-visible:outline-2 focus-visible:outline-[var(--color-ring)] focus-visible:outline-offset-2 transition-all duration-150">
+          <button type="submit" class="btn-primary min-w-[100px] h-10">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
             Filter
           </button>
         </div>
       </form>
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if(events.length)
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in events)
-              <div class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-[3px] transition-all duration-250 flex flex-col">
-                <div class="aspect-[16/9] bg-gradient-to-br from-[#FECDD3] to-[#DBEAFE] flex items-center justify-center font-[var(--font-heading)] text-[28px] text-[var(--color-primary)]">
+              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up">
+                <a href="/events/{{ event.slug }}" class="block aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary no-underline overflow-hidden">
                   EV
-                </div>
-                <div class="p-5 flex flex-col flex-1">
+                </a>
+                <div class="p-5 sm:p-6 flex flex-col flex-1">
                   @if(event.category)
-                    <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-[var(--color-primary)] mb-2">{{ event.category.name }}</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-primary mb-2.5">{{ event.category.name }}</span>
                   @endif
-                  <h3 class="text-lg font-semibold font-[var(--font-body)] tracking-normal mb-2 leading-tight">
-                    <a href="/events/{{ event.slug }}" class="text-[var(--color-text-primary)] hover:text-[var(--color-primary)] no-underline">{{ event.title }}</a>
+                  <h3 class="text-lg font-semibold font-body tracking-normal mb-1.5 leading-tight">
+                    <a href="/events/{{ event.slug }}" class="text-foreground hover:text-primary no-underline transition-colors duration-150">
+                      {{ event.title }}
+                    </a>
                   </h3>
-                  <div class="flex flex-col gap-1 text-[13px] text-[var(--color-text-muted)] mb-4 flex-1">
+                  <div class="flex flex-col gap-1 text-sm text-muted-foreground mb-5 flex-1">
                     <span class="flex items-center gap-1.5">{{ event.formattedDate ?? event.startDate }}</span>
                     <span class="flex items-center gap-1.5">{{ event.venueName }}</span>
                   </div>
-                  <div class="flex items-center justify-between pt-3 border-t border-[var(--color-muted)]">
-                    <div class="text-lg font-bold text-[var(--color-text-primary)]">
+                  <div class="flex items-center justify-between pt-4 border-t border-border">
+                    <div class="text-xl font-bold font-heading">
                       @if(event.minPrice ?? event.min_price)
-                        <span class="text-xs font-normal text-[var(--color-text-muted)]">from</span> ${{ event.minPrice ?? event.min_price }}
+                        <span class="text-xs font-normal text-muted-foreground">from</span> ${{ event.minPrice ?? event.min_price }}
                       @endif
                     </div>
                   </div>
@@ -68,31 +71,35 @@
           </div>
 
           @if(pages > 1)
-            <div class="flex justify-center gap-2 py-10">
+            <div class="flex justify-center items-center gap-2 py-12 flex-wrap">
               @if(page > 1)
-                <a href="{{ queryString }}&page={{ page - 1 }}" class="px-4 py-2 border border-[var(--color-border)] rounded-[6px] text-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[#FFF1F2] transition-all duration-150 min-w-[38px] text-center no-underline">
-                  &larr; Previous
+                <a href="?page={{ page - 1 }}&{{ queryString }}" class="btn-outline btn-sm no-underline gap-1">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l-5 5 5 5"/></svg>
+                  Previous
                 </a>
               @endif
               @each(p in range(1, pages))
                 @if(p === page)
-                  <span class="px-4 py-2 rounded-[6px] text-sm font-medium bg-[var(--color-primary)] text-[var(--color-on-primary)] min-w-[38px] text-center">{{ p }}</span>
+                  <span class="btn-primary btn-sm min-w-[38px] justify-center cursor-default">{{ p }}</span>
                 @else
-                  <a href="{{ queryString }}&page={{ p }}" class="px-4 py-2 border border-[var(--color-border)] rounded-[6px] text-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[#FFF1F2] transition-all duration-150 min-w-[38px] text-center no-underline">{{ p }}</a>
+                  <a href="?page={{ p }}&{{ queryString }}" class="btn-outline btn-sm min-w-[38px] justify-center no-underline">{{ p }}</a>
                 @endif
               @endeach
               @if(page < pages)
-                <a href="{{ queryString }}&page={{ page + 1 }}" class="px-4 py-2 border border-[var(--color-border)] rounded-[6px] text-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[#FFF1F2] transition-all duration-150 min-w-[38px] text-center no-underline">
-                  Next &rarr;
+                <a href="?page={{ page + 1 }}&{{ queryString }}" class="btn-outline btn-sm no-underline gap-1">
+                  Next
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
                 </a>
               @endif
             </div>
           @endif
         @else
-          <div class="text-center py-16 px-4 text-[var(--color-text-secondary)]">
-            <div class="text-5xl mb-4 opacity-30">—</div>
-            <h3 class="font-[var(--font-body)] text-xl font-semibold tracking-normal mb-2 text-[var(--color-text-primary)]">No events found</h3>
-            <p class="text-[var(--color-text-muted)]">Try adjusting your filters or check back later for new events.</p>
+          <div class="text-center py-20 px-4">
+            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <h3 class="font-body text-xl font-semibold tracking-normal mb-2">No events found</h3>
+            <p class="text-muted-foreground">Try adjusting your filters or check back later for new events.</p>
           </div>
         @endif
       </div>

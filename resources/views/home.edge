@@ -1,54 +1,56 @@
 @include('partials/header')
 
-      <section class="relative overflow-hidden py-20 px-4 sm:px-6 text-center max-w-7xl mx-auto">
-        <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at 20% 50%, rgba(225,29,72,0.06) 0%, transparent 70%), radial-gradient(ellipse at 80% 30%, rgba(37,99,235,0.05) 0%, transparent 70%);"></div>
-        <div class="relative">
-          <h1 class="font-[var(--font-heading)] text-[clamp(36px,5vw,60px)] text-[var(--color-text-primary)] mb-4 leading-tight">
+      <section class="relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary/5 via-transparent to-accent/5"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 md:py-32 text-center">
+          <h1 class="font-heading text-[clamp(36px,5vw,60px)] text-foreground mb-4 leading-tight motion-safe:animate-[fadeInUp_0.6s_ease-out]">
             Discover events in your city
           </h1>
-          <p class="text-[clamp(17px,2vw,20px)] text-[var(--color-text-secondary)] max-w-[600px] mx-auto mb-8 leading-relaxed">
+          <p class="text-[clamp(17px,2vw,20px)] text-muted-foreground max-w-[600px] mx-auto mb-10 leading-relaxed motion-safe:animate-[fadeInUp_0.6s_ease-out_0.1s_both]">
             From live concerts to tech conferences — find and book tickets for the best events near you.
           </p>
-          <a href="/events" class="inline-flex items-center gap-2 px-9 py-3.5 rounded-[16px] font-semibold text-base bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:bg-[#BE123C] hover:-translate-y-[2px] hover:shadow-lg transition-all duration-200">
+          <a href="/events" class="btn-primary btn-lg no-underline motion-safe:animate-[fadeInUp_0.6s_ease-out_0.2s_both]">
             Browse Events
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l5 5-5 5"/></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="-mr-1"><path d="M5 3l5 5-5 5"/></svg>
           </a>
         </div>
       </section>
 
       @if(featuredEvents.length)
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-          <div class="flex items-center justify-between flex-wrap gap-3 mb-8">
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <div class="flex items-center justify-between flex-wrap gap-4 mb-10">
             <div>
-              <h2 class="font-[var(--font-heading)] text-[clamp(24px,3vw,32px)]">Featured Events</h2>
-              <div class="w-10 h-[3px] bg-[var(--color-primary)] rounded-full mt-2"></div>
+              <h2 class="font-heading text-[clamp(24px,3vw,32px)]">Featured Events</h2>
+              <div class="w-12 h-0.5 bg-primary rounded-full mt-3"></div>
             </div>
-            <a href="/events" class="text-sm font-semibold text-[var(--color-accent)] px-4 py-2 rounded-[6px] hover:bg-[var(--color-muted)] flex items-center gap-1 transition-all">
+            <a href="/events" class="btn-ghost btn-sm gap-1.5 no-underline">
               View all
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
             </a>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in featuredEvents)
-              <div class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-[3px] transition-all duration-250 flex flex-col">
-                <div class="aspect-[16/9] bg-gradient-to-br from-[#FECDD3] to-[#DBEAFE] flex items-center justify-center font-[var(--font-heading)] text-[28px] text-[var(--color-primary)]">
-                  EV
+              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up ">
+                <div class="aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary overflow-hidden">
+                  <span class="transition-transform duration-300 group-hover:scale-110">EV</span>
                 </div>
-                <div class="p-5 flex flex-col flex-1">
+                <div class="p-5 sm:p-6 flex flex-col flex-1">
                   @if(event.category)
-                    <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-[var(--color-primary)] mb-2">{{ event.category.name }}</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-primary mb-2.5">{{ event.category.name }}</span>
                   @endif
-                  <h3 class="text-lg font-semibold font-[var(--font-body)] tracking-normal mb-2 leading-tight">
-                    <a href="/events/{{ event.slug }}" class="text-[var(--color-text-primary)] hover:text-[var(--color-primary)] no-underline">{{ event.title }}</a>
+                  <h3 class="text-lg font-semibold font-body tracking-normal mb-1.5 leading-tight">
+                    <a href="/events/{{ event.slug }}" class="text-foreground hover:text-primary no-underline transition-colors duration-150">
+                      {{ event.title }}
+                    </a>
                   </h3>
-                  <div class="flex flex-col gap-1 text-[13px] text-[var(--color-text-muted)] mb-4 flex-1">
+                  <div class="flex flex-col gap-1 text-sm text-muted-foreground mb-5 flex-1">
                     <span class="flex items-center gap-1.5">{{ event.formattedDate }}</span>
                     <span class="flex items-center gap-1.5">{{ event.venueName }}</span>
                   </div>
-                  <div class="flex items-center justify-between pt-3 border-t border-[var(--color-muted)]">
-                    <div class="text-lg font-bold text-[var(--color-text-primary)]">
+                  <div class="flex items-center justify-between pt-4 border-t border-border">
+                    <div class="text-xl font-bold font-heading">
                       @if(event.minPrice)
-                        <span class="text-xs font-normal text-[var(--color-text-muted)]">from</span> ${{ event.minPrice }}
+                        <span class="text-xs font-normal text-muted-foreground">from</span> ${{ event.minPrice }}
                       @endif
                     </div>
                   </div>
@@ -60,38 +62,40 @@
       @endif
 
       @if(recentEvents.length)
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-          <div class="flex items-center justify-between flex-wrap gap-3 mb-8">
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <div class="flex items-center justify-between flex-wrap gap-4 mb-10">
             <div>
-              <h2 class="font-[var(--font-heading)] text-[clamp(24px,3vw,32px)]">Upcoming Events</h2>
-              <div class="w-10 h-[3px] bg-[var(--color-primary)] rounded-full mt-2"></div>
+              <h2 class="font-heading text-[clamp(24px,3vw,32px)]">Upcoming Events</h2>
+              <div class="w-12 h-0.5 bg-primary rounded-full mt-3"></div>
             </div>
-            <a href="/events" class="text-sm font-semibold text-[var(--color-accent)] px-4 py-2 rounded-[6px] hover:bg-[var(--color-muted)] flex items-center gap-1 transition-all">
+            <a href="/events" class="btn-ghost btn-sm gap-1.5 no-underline">
               View all
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
             </a>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in recentEvents)
-              <div class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-[3px] transition-all duration-250 flex flex-col">
-                <div class="aspect-[16/9] bg-gradient-to-br from-[#FECDD3] to-[#DBEAFE] flex items-center justify-center font-[var(--font-heading)] text-[28px] text-[var(--color-primary)]">
+              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up ">
+                <div class="aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary">
                   EV
                 </div>
-                <div class="p-5 flex flex-col flex-1">
+                <div class="p-5 sm:p-6 flex flex-col flex-1">
                   @if(event.category)
-                    <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-[var(--color-primary)] mb-2">{{ event.category.name }}</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-primary mb-2.5">{{ event.category.name }}</span>
                   @endif
-                  <h3 class="text-lg font-semibold font-[var(--font-body)] tracking-normal mb-2 leading-tight">
-                    <a href="/events/{{ event.slug }}" class="text-[var(--color-text-primary)] hover:text-[var(--color-primary)] no-underline">{{ event.title }}</a>
+                  <h3 class="text-lg font-semibold font-body tracking-normal mb-1.5 leading-tight">
+                    <a href="/events/{{ event.slug }}" class="text-foreground hover:text-primary no-underline transition-colors duration-150">
+                      {{ event.title }}
+                    </a>
                   </h3>
-                  <div class="flex flex-col gap-1 text-[13px] text-[var(--color-text-muted)] mb-4 flex-1">
+                  <div class="flex flex-col gap-1 text-sm text-muted-foreground mb-5 flex-1">
                     <span class="flex items-center gap-1.5">{{ event.formattedDate }}</span>
                     <span class="flex items-center gap-1.5">{{ event.venueName }}</span>
                   </div>
-                  <div class="flex items-center justify-between pt-3 border-t border-[var(--color-muted)]">
-                    <div class="text-lg font-bold text-[var(--color-text-primary)]">
+                  <div class="flex items-center justify-between pt-4 border-t border-border">
+                    <div class="text-xl font-bold font-heading">
                       @if(event.minPrice)
-                        <span class="text-xs font-normal text-[var(--color-text-muted)]">from</span> ${{ event.minPrice }}
+                        <span class="text-xs font-normal text-muted-foreground">from</span> ${{ event.minPrice }}
                       @endif
                     </div>
                   </div>
@@ -102,10 +106,10 @@
         </section>
       @endif
 
-      <section class="text-center py-16 px-4 sm:px-6" style="background: linear-gradient(135deg, var(--color-primary) 0%, #BE123C 100%);">
-        <h2 class="font-[var(--font-heading)] text-[clamp(24px,3vw,32px)] text-white mb-3">Want to create your own event?</h2>
-        <p class="text-white/90 mb-6 max-w-md mx-auto">Start selling tickets in minutes. Join thousands of organizers already using our platform.</p>
-        <a href="/signup" class="inline-flex px-8 py-3 rounded-[16px] font-semibold text-base border-2 border-white text-white hover:bg-white hover:text-[var(--color-primary)] transition-all duration-200">
+      <section class="text-center py-20 sm:py-24 px-4 sm:px-6" style="background: linear-gradient(135deg, var(--primary) 0%, #BE123C 100%);">
+        <h2 class="font-heading text-[clamp(24px,3vw,32px)] text-white mb-3">Want to create your own event?</h2>
+        <p class="text-white/85 max-w-md mx-auto mb-8 leading-relaxed">Start selling tickets in minutes. Join thousands of organizers already using our platform.</p>
+        <a href="/signup" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-[12px] font-semibold text-base border-2 border-white text-white hover:bg-white hover:text-primary transition-all duration-200 motion-safe:transition-all motion-safe:duration-200 no-underline hover:-translate-y-0.5 active:scale-[0.97]">
           Get Started
         </a>
       </section>
