@@ -1,0 +1,184 @@
+import type { HttpContext } from '@adonisjs/core/http'
+import env from '#start/env'
+import Event from '#models/event'
+import Category from '#models/category'
+
+export default class PublicController {
+  async home({ view }: HttpContext) {
+    const enrich = (events: Event[]) =>
+      events.map((e) => {
+        const serialized = e.toJSON() as Record<string, unknown>
+        serialized.minPrice = (e as unknown as { minPrice: number | null }).minPrice ?? null
+        serialized.formattedDate = e.startDate.toFormat('MMMM d, yyyy · h:mm a')
+        return serialized
+      })
+
+    const featuredEvents = await Event.query()
+      .where('status', 'published')
+      .andWhere('isFeatured', true)
+      .preload('category')
+      .select('*')
+      .select(
+        Event.query()
+          .from('ticket_types')
+          .whereRaw('ticket_types.event_id = events.id')
+          .andWhere('ticket_types.status', 'active')
+          .min('base_price')
+          .as('min_price')
+      )
+      .orderBy('startDate', 'asc')
+      .limit(6)
+
+    const recentEvents = await Event.query()
+      .where('status', 'published')
+      .andWhere('isFeatured', false)
+      .preload('category')
+      .select('*')
+      .select(
+        Event.query()
+          .from('ticket_types')
+          .whereRaw('ticket_types.event_id = events.id')
+          .andWhere('ticket_types.status', 'active')
+          .min('base_price')
+          .as('min_price')
+      )
+      .orderBy('startDate', 'asc')
+      .limit(6)
+
+    return view.render('home', {
+      featuredEvents: enrich(featuredEvents),
+      recentEvents: enrich(recentEvents),
+    })
+  }
+
+  async index({ view, request }: HttpContext) {
+    const page = Number(request.input('page', 1))
+    const categorySlug = request.input('category', '')
+    const q = request.input('q', '')
+    const from = request.input('from', '')
+    const to = request.input('to', '')
+    const limit = 12
+
+    const query = Event.query()
+      .where('events.status', 'published')
+      .preload('category')
+      .orderBy('startDate', 'asc')
+
+    if (categorySlug) {
+      const category = await Category.findBy('slug', categorySlug)
+      if (category) {
+        query.where('categoryId', category.id)
+      }
+    }
+
+    if (from) {
+      query.where('startDate', '>=', new Date(from))
+    }
+
+    if (to) {
+      query.where('startDate', '<=', new Date(to))
+    }
+
+    if (q) {
+      query.whereILike('title', `%${q}%`)
+    }
+
+    const events = await query.paginate(page, limit)
+    const categories = await Category.query().orderBy('displayOrder', 'asc')
+
+    const queryString = new URLSearchParams()
+    if (categorySlug) queryString.set('category', categorySlug)
+    if (q) queryString.set('q', q)
+    if (from) queryString.set('from', from)
+    if (to) queryString.set('to', to)
+
+    return view.render('events/index', {
+      events: events.all(),
+      total: events.getMeta().total,
+      page: events.getMeta().currentPage,
+      pages: events.getMeta().lastPage,
+      categories,
+      selectedCategory: categorySlug,
+      q,
+      from,
+      to,
+      queryString: queryString.toString(),
+      head: '<meta name="description" content="Browse and discover events in your city. Find concerts, conferences, workshops, and more." />',
+    })
+  }
+
+  async show({ view, response, params }: HttpContext) {
+    const event = await Event.query()
+      .where('slug', params.slug)
+      .where('status', 'published')
+      .preload('category')
+      .preload('organizer')
+      .first()
+
+    if (!event) {
+      return response.status(404).send('Event not found')
+    }
+
+    const ticketTypes = await event
+      .related('ticketTypes')
+      .query()
+      .orderBy('sortOrder', 'asc')
+
+    const enrichedTicketTypes = ticketTypes.map((t) => {
+      const sold = t.quantitySold ?? 0
+      const reserved = t.quantityReserved ?? 0
+      const remaining = t.quantityTotal - sold - reserved
+      let availabilityClass = ''
+      if (t.status === 'sold_out') {
+        availabilityClass = 'sold-out'
+      } else if (remaining > 0 && remaining <= 10) {
+        availabilityClass = 'low'
+      }
+      return {
+        ...t.toJSON(),
+        remaining: Math.max(remaining, 0),
+        availabilityClass,
+      }
+    })
+
+    const appUrlVal = env.get('APP_URL')
+    const safeDesc = event.description
+      ? event.description.replace(/"/g, '\\"').slice(0, 500)
+      : ''
+    const head = `
+    <meta name="description" content="${event.description ? event.description.slice(0, 160) : 'Event details'}" />
+    <meta property="og:title" content="${event.title}" />
+    <meta property="og:description" content="${event.description ? event.description.slice(0, 200) : ''}" />
+    <meta property="og:url" content="${appUrlVal}/events/${event.slug}" />
+    <meta property="og:type" content="event" />
+    ${event.coverImageUrl ? `<meta property="og:image" content="${event.coverImageUrl}" />` : ''}
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": "${event.title}",
+        "description": "${safeDesc}",
+        "startDate": "${event.startDate.toISO()}",
+        ${event.endDate ? `"endDate": "${event.endDate.toISO()}",` : ''}
+        "location": {
+          "@type": "Place",
+          "name": "${event.venueName ?? ''}",
+          "address": "${event.venueAddress ?? ''}"
+        },
+        "organizer": {
+          "@type": "Person",
+          "name": "${event.organizer.fullName ?? 'Organizer'}"
+        }
+      }
+    </script>
+  `
+
+    return view.render('events/show', {
+      event,
+      ticketTypes: enrichedTicketTypes,
+      appUrl: appUrlVal,
+      head,
+    })
+  }
+}

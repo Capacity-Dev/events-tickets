@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: 'Righteous', cursive;
+  --font-body: 'Poppins', sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-amber: var(--amber);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  --primary: #E11D48;
+  --primary-foreground: #FFFFFF;
+  --accent: #2563EB;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --success: #16A34A;
+  --amber: #D97706;
+
+  --background: #FFF1F2;
+  --foreground: #1F0A14;
+  --card: #FFFFFF;
+  --card-foreground: #1F0A14;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F0A14;
+  --secondary: #FECDD3;
+  --secondary-foreground: #881337;
+  --muted: #F0ECF2;
+  --muted-foreground: #6B4452;
+  --border: #FECDD3;
+  --input: #FECDD3;
+  --ring: #E11D48;
+
+  --text-secondary: #6B4452;
+  --text-muted: #9D7B87;
+
+  --chart-1: #E11D48;
+  --chart-2: #FB7185;
+  --chart-3: #2563EB;
+  --chart-4: #F472B6;
+  --chart-5: #D946EF;
+
+  --sidebar: #FFF1F2;
+  --sidebar-foreground: #1F0A14;
+  --sidebar-primary: #E11D48;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FECDD3;
+  --sidebar-accent-foreground: #881337;
+  --sidebar-border: #FECDD3;
+  --sidebar-ring: #E11D48;
+}
+
+.dark {
+  --background: #12070B;
+  --foreground: #FDF2F4;
+  --card: #1F0F14;
+  --card-foreground: #FDF2F4;
+  --popover: #1F0F14;
+  --popover-foreground: #FDF2F4;
+  --primary: #FB7185;
+  --primary-foreground: #12070B;
+  --secondary: #2D1A20;
+  --secondary-foreground: #FDF2F4;
+  --muted: #2D1A20;
+  --muted-foreground: #9D7B87;
+  --accent: #60A5FA;
+  --accent-foreground: #12070B;
+  --destructive: #F87171;
+  --destructive-foreground: #12070B;
+  --border: #2D1A20;
+  --input: #2D1A20;
+  --ring: #FB7185;
+
+  --text-secondary: #9D7B87;
+  --text-muted: #6B4452;
+
+  --chart-1: #FB7185;
+  --chart-2: #F43F5E;
+  --chart-3: #60A5FA;
+  --chart-4: #F472B6;
+  --chart-5: #D946EF;
+
+  --sidebar: #12070B;
+  --sidebar-foreground: #FDF2F4;
+  --sidebar-primary: #FB7185;
+  --sidebar-primary-foreground: #12070B;
+  --sidebar-accent: #2D1A20;
+  --sidebar-accent-foreground: #FDF2F4;
+  --sidebar-border: #2D1A20;
+  --sidebar-ring: #FB7185;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}

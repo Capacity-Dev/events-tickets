@@ -1,0 +1,45 @@
+@set('appName', 'Events Tickets')
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      @if(title)
+        {{ title }} — {{ appName }}
+      @else
+        {{ appName }}
+      @endif
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Righteous&display=swap" rel="stylesheet" />
+    @vite(['resources/js/public.js'])
+    @if(head)
+      {{! head }}
+    @endif
+  </head>
+  <body class="bg-[var(--color-background)] text-[var(--color-text-primary)] font-[var(--font-body)] antialiased">
+    <div class="flex flex-col min-h-screen">
+      <header class="bg-[var(--color-surface)] border-b border-[var(--color-border)] sticky top-0 z-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-[68px] flex items-center justify-between">
+          <a href="/" class="font-[var(--font-heading)] text-[22px] text-[var(--color-primary)] tracking-tight hover:opacity-85">
+            {{ appName }}
+          </a>
+          <nav class="flex items-center gap-1">
+            <a href="/events" class="text-sm font-medium text-[var(--color-text-secondary)] px-3 py-2 rounded-[6px] hover:text-[var(--color-primary)] hover:bg-[var(--color-muted)] transition-all duration-150">
+              Browse Events
+            </a>
+            @if(user)
+              <span class="text-sm text-[var(--color-text-muted)] px-2">{{ user.fullName ?? user.email }}</span>
+              <a href="/logout" class="text-sm text-[var(--color-text-secondary)] px-3 py-2 rounded-[6px] hover:text-[var(--color-primary)]">Logout</a>
+            @else
+              <a href="/login" class="text-sm font-medium text-[var(--color-text-secondary)] px-3 py-2 rounded-[6px] hover:text-[var(--color-primary)] hover:bg-[var(--color-muted)]">Sign In</a>
+              <a href="/signup" class="inline-flex items-center px-5 py-2 rounded-[10px] font-semibold text-sm bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:bg-[#BE123C] hover:-translate-y-[1px] hover:shadow-md transition-all duration-200">
+                Get Started
+              </a>
+            @endif
+          </nav>
+        </div>
+      </header>
+      <main class="flex-1">

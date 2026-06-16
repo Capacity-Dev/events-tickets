@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "resources/css/app.css",
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "~/components",
+    "utils": "~/lib/utils",
+    "ui": "~/components/ui",
+    "hooks": "~/hooks"
+  },
+  "resolvedPaths": {
+    "cwd": "/Users/abijah/Desktop/events-tickets",
+    "tailwindCss": "/Users/abijah/Desktop/events-tickets/resources/css/app.css",
+    "utils": "/Users/abijah/Desktop/events-tickets/inertia/lib/utils",
+    "components": "/Users/abijah/Desktop/events-tickets/inertia/components",
+    "lib": "/Users/abijah/Desktop/events-tickets/inertia/lib",
+    "hooks": "/Users/abijah/Desktop/events-tickets/inertia/hooks",
+    "ui": "/Users/abijah/Desktop/events-tickets/inertia/components/ui"
+  }
+}
