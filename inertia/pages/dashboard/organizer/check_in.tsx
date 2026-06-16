@@ -16,7 +16,7 @@ export default function OrganizerCheckIn({ event }: { event: any }) {
         </div>
         <div className="p-4 flex justify-between text-sm">
           <span className="text-muted-foreground">Status</span>
-          <span className="text-green-600 font-medium">{event.status}</span>
+          <span className="text-success font-medium">{event.status}</span>
         </div>
       </div>
     </div>

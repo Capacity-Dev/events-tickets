@@ -10,7 +10,7 @@
       </div>
 
       <form method="GET" action="/events" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-card border border-border rounded-[16px] p-4 sm:p-5 mb-10 flex flex-col sm:flex-row gap-3 items-stretch sm:items-end fade-in-up">
+        <div class="bg-card border border-border rounded-xl p-4 sm:p-5 mb-10 flex flex-col sm:flex-row gap-3 items-stretch sm:items-end fade-in-up">
           <div class="flex-1 min-w-0">
             <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('events.category') }}</label>
             <div class="relative">
@@ -47,7 +47,7 @@
         @if(events.length)
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in events)
-              <div class="bg-card border border-border rounded-[16px] overflow-hidden card-hover flex flex-col fade-in-up">
+              <div class="bg-card border border-border rounded-xl overflow-hidden card-hover flex flex-col fade-in-up">
                 <a href="/events/{{ event.slug }}" class="block aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary no-underline overflow-hidden">
                   EV
                 </a>

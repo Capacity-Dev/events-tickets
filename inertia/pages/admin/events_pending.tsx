@@ -35,7 +35,7 @@ export default function AdminPendingEvents({ events }: { events: any[] }) {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <form action={`/admin/events/${event.id}/approve`} method="POST" className="inline">
-                      <button type="submit" className="inline-flex items-center justify-center rounded-lg bg-green-600 text-white h-7 px-3 text-xs font-medium border-none cursor-pointer hover:bg-green-700">Approve</button>
+                      <button type="submit" className="inline-flex items-center justify-center rounded-lg bg-success text-success-foreground h-7 px-3 text-xs font-medium border-none cursor-pointer hover:brightness-90">Approve</button>
                     </form>
                     <form action={`/admin/events/${event.id}/reject`} method="POST" className="inline">
                       <button type="submit" className="inline-flex items-center justify-center rounded-lg border border-destructive text-destructive h-7 px-3 text-xs font-medium bg-transparent cursor-pointer hover:bg-destructive/10">Reject</button>

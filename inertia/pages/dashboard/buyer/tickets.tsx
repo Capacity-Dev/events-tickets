@@ -21,7 +21,7 @@ export default function BuyerTickets({ tickets }: { tickets: any[] }) {
                   <p className="text-sm text-muted-foreground">{ticket.ticketType?.name ?? 'Unknown type'}</p>
                 </div>
                 <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                  ticket.status === 'valid' ? 'bg-green-100 text-green-700' :
+                  ticket.status === 'valid' ? 'bg-success/10 text-success' :
                   ticket.status === 'used' ? 'bg-muted text-muted-foreground' :
                   'bg-destructive/10 text-destructive'
                 }`}>
