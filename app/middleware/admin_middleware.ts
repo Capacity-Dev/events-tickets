@@ -1,0 +1,17 @@
+import type { HttpContext } from '@adonisjs/core/http'
+import type { NextFn } from '@adonisjs/core/types/http'
+
+export default class AdminMiddleware {
+  async handle({ auth, response }: HttpContext, next: NextFn) {
+    const user = auth.user
+    if (!user || !user.roleId) {
+      return response.redirect().toRoute('home')
+    }
+    const { default: Role } = await import('#models/role')
+    const role = await Role.find(user.roleId)
+    if (!role || role.name !== 'admin') {
+      return response.redirect().toRoute('home')
+    }
+    return next()
+  }
+}

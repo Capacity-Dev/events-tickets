@@ -17,6 +17,12 @@ export interface ApiDefinition {
     destroy: typeof routes['session.destroy']
   }
   dashboard: {
+    buyer: {
+      orders: typeof routes['dashboard.buyer.orders'] & {
+        show: typeof routes['dashboard.buyer.orders.show']
+      }
+      tickets: typeof routes['dashboard.buyer.tickets']
+    }
     organizer: {
       events: typeof routes['dashboard.organizer.events'] & {
         create: typeof routes['dashboard.organizer.events.create']
@@ -26,15 +32,37 @@ export interface ApiDefinition {
         destroy: typeof routes['dashboard.organizer.events.destroy']
         publish: typeof routes['dashboard.organizer.events.publish']
       }
-    }
-    buyer: {
-      orders: typeof routes['dashboard.buyer.orders'] & {
-        show: typeof routes['dashboard.buyer.orders.show']
+      analytics: typeof routes['dashboard.organizer.analytics']
+      checkin: typeof routes['dashboard.organizer.checkin']
+      payouts: typeof routes['dashboard.organizer.payouts'] & {
+        request: typeof routes['dashboard.organizer.payouts.request']
       }
-      tickets: typeof routes['dashboard.buyer.tickets']
     }
   }
   orders: {
     store: typeof routes['orders.store']
+  }
+  admin: {
+    events: {
+      pending: typeof routes['admin.events.pending']
+      approve: typeof routes['admin.events.approve']
+      reject: typeof routes['admin.events.reject']
+    }
+    users: typeof routes['admin.users'] & {
+      role: typeof routes['admin.users.role']
+    }
+    fee: {
+      rules: typeof routes['admin.fee.rules'] & {
+        store: typeof routes['admin.fee.rules.store']
+      }
+    }
+    finances: typeof routes['admin.finances']
+    payouts: {
+      process: typeof routes['admin.payouts.process']
+    }
+    categories: typeof routes['admin.categories'] & {
+      store: typeof routes['admin.categories.store']
+      delete: typeof routes['admin.categories.delete']
+    }
   }
 }

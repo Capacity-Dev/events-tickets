@@ -54,6 +54,30 @@ const routes = {
     tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
     types: placeholder as Registry['session.destroy']['types'],
   },
+  'dashboard.buyer.orders': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/buyer/orders',
+    tokens: [{"old":"/dashboard/buyer/orders","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders","type":0,"val":"orders","end":""}],
+    types: placeholder as Registry['dashboard.buyer.orders']['types'],
+  },
+  'dashboard.buyer.orders.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/buyer/orders/:id',
+    tokens: [{"old":"/dashboard/buyer/orders/:id","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders/:id","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders/:id","type":0,"val":"orders","end":""},{"old":"/dashboard/buyer/orders/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['dashboard.buyer.orders.show']['types'],
+  },
+  'dashboard.buyer.tickets': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/buyer/tickets',
+    tokens: [{"old":"/dashboard/buyer/tickets","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"tickets","end":""}],
+    types: placeholder as Registry['dashboard.buyer.tickets']['types'],
+  },
+  'orders.store': {
+    methods: ["POST"],
+    pattern: '/orders',
+    tokens: [{"old":"/orders","type":0,"val":"orders","end":""}],
+    types: placeholder as Registry['orders.store']['types'],
+  },
   'dashboard.organizer.events': {
     methods: ["GET","HEAD"],
     pattern: '/dashboard/organizer/events',
@@ -96,29 +120,101 @@ const routes = {
     tokens: [{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":1,"val":"id","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"publish","end":""}],
     types: placeholder as Registry['dashboard.organizer.events.publish']['types'],
   },
-  'dashboard.buyer.orders': {
+  'dashboard.organizer.analytics': {
     methods: ["GET","HEAD"],
-    pattern: '/dashboard/buyer/orders',
-    tokens: [{"old":"/dashboard/buyer/orders","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders","type":0,"val":"orders","end":""}],
-    types: placeholder as Registry['dashboard.buyer.orders']['types'],
+    pattern: '/dashboard/organizer/events/:id/analytics',
+    tokens: [{"old":"/dashboard/organizer/events/:id/analytics","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/:id/analytics","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/:id/analytics","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/:id/analytics","type":1,"val":"id","end":""},{"old":"/dashboard/organizer/events/:id/analytics","type":0,"val":"analytics","end":""}],
+    types: placeholder as Registry['dashboard.organizer.analytics']['types'],
   },
-  'dashboard.buyer.orders.show': {
+  'dashboard.organizer.checkin': {
     methods: ["GET","HEAD"],
-    pattern: '/dashboard/buyer/orders/:id',
-    tokens: [{"old":"/dashboard/buyer/orders/:id","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders/:id","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders/:id","type":0,"val":"orders","end":""},{"old":"/dashboard/buyer/orders/:id","type":1,"val":"id","end":""}],
-    types: placeholder as Registry['dashboard.buyer.orders.show']['types'],
+    pattern: '/dashboard/organizer/check-in/:id',
+    tokens: [{"old":"/dashboard/organizer/check-in/:id","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/check-in/:id","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/check-in/:id","type":0,"val":"check-in","end":""},{"old":"/dashboard/organizer/check-in/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['dashboard.organizer.checkin']['types'],
   },
-  'dashboard.buyer.tickets': {
+  'dashboard.organizer.payouts': {
     methods: ["GET","HEAD"],
-    pattern: '/dashboard/buyer/tickets',
-    tokens: [{"old":"/dashboard/buyer/tickets","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"tickets","end":""}],
-    types: placeholder as Registry['dashboard.buyer.tickets']['types'],
+    pattern: '/dashboard/organizer/payouts',
+    tokens: [{"old":"/dashboard/organizer/payouts","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/payouts","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/payouts","type":0,"val":"payouts","end":""}],
+    types: placeholder as Registry['dashboard.organizer.payouts']['types'],
   },
-  'orders.store': {
+  'dashboard.organizer.payouts.request': {
     methods: ["POST"],
-    pattern: '/orders',
-    tokens: [{"old":"/orders","type":0,"val":"orders","end":""}],
-    types: placeholder as Registry['orders.store']['types'],
+    pattern: '/dashboard/organizer/payouts',
+    tokens: [{"old":"/dashboard/organizer/payouts","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/payouts","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/payouts","type":0,"val":"payouts","end":""}],
+    types: placeholder as Registry['dashboard.organizer.payouts.request']['types'],
+  },
+  'admin.events.pending': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/events/pending',
+    tokens: [{"old":"/admin/events/pending","type":0,"val":"admin","end":""},{"old":"/admin/events/pending","type":0,"val":"events","end":""},{"old":"/admin/events/pending","type":0,"val":"pending","end":""}],
+    types: placeholder as Registry['admin.events.pending']['types'],
+  },
+  'admin.events.approve': {
+    methods: ["POST"],
+    pattern: '/admin/events/:id/approve',
+    tokens: [{"old":"/admin/events/:id/approve","type":0,"val":"admin","end":""},{"old":"/admin/events/:id/approve","type":0,"val":"events","end":""},{"old":"/admin/events/:id/approve","type":1,"val":"id","end":""},{"old":"/admin/events/:id/approve","type":0,"val":"approve","end":""}],
+    types: placeholder as Registry['admin.events.approve']['types'],
+  },
+  'admin.events.reject': {
+    methods: ["POST"],
+    pattern: '/admin/events/:id/reject',
+    tokens: [{"old":"/admin/events/:id/reject","type":0,"val":"admin","end":""},{"old":"/admin/events/:id/reject","type":0,"val":"events","end":""},{"old":"/admin/events/:id/reject","type":1,"val":"id","end":""},{"old":"/admin/events/:id/reject","type":0,"val":"reject","end":""}],
+    types: placeholder as Registry['admin.events.reject']['types'],
+  },
+  'admin.users': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/users',
+    tokens: [{"old":"/admin/users","type":0,"val":"admin","end":""},{"old":"/admin/users","type":0,"val":"users","end":""}],
+    types: placeholder as Registry['admin.users']['types'],
+  },
+  'admin.users.role': {
+    methods: ["PATCH"],
+    pattern: '/admin/users/:id/role',
+    tokens: [{"old":"/admin/users/:id/role","type":0,"val":"admin","end":""},{"old":"/admin/users/:id/role","type":0,"val":"users","end":""},{"old":"/admin/users/:id/role","type":1,"val":"id","end":""},{"old":"/admin/users/:id/role","type":0,"val":"role","end":""}],
+    types: placeholder as Registry['admin.users.role']['types'],
+  },
+  'admin.fee.rules': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/fee-rules',
+    tokens: [{"old":"/admin/fee-rules","type":0,"val":"admin","end":""},{"old":"/admin/fee-rules","type":0,"val":"fee-rules","end":""}],
+    types: placeholder as Registry['admin.fee.rules']['types'],
+  },
+  'admin.fee.rules.store': {
+    methods: ["POST"],
+    pattern: '/admin/fee-rules',
+    tokens: [{"old":"/admin/fee-rules","type":0,"val":"admin","end":""},{"old":"/admin/fee-rules","type":0,"val":"fee-rules","end":""}],
+    types: placeholder as Registry['admin.fee.rules.store']['types'],
+  },
+  'admin.finances': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/finances',
+    tokens: [{"old":"/admin/finances","type":0,"val":"admin","end":""},{"old":"/admin/finances","type":0,"val":"finances","end":""}],
+    types: placeholder as Registry['admin.finances']['types'],
+  },
+  'admin.payouts.process': {
+    methods: ["POST"],
+    pattern: '/admin/payouts/:id/process',
+    tokens: [{"old":"/admin/payouts/:id/process","type":0,"val":"admin","end":""},{"old":"/admin/payouts/:id/process","type":0,"val":"payouts","end":""},{"old":"/admin/payouts/:id/process","type":1,"val":"id","end":""},{"old":"/admin/payouts/:id/process","type":0,"val":"process","end":""}],
+    types: placeholder as Registry['admin.payouts.process']['types'],
+  },
+  'admin.categories': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/categories',
+    tokens: [{"old":"/admin/categories","type":0,"val":"admin","end":""},{"old":"/admin/categories","type":0,"val":"categories","end":""}],
+    types: placeholder as Registry['admin.categories']['types'],
+  },
+  'admin.categories.store': {
+    methods: ["POST"],
+    pattern: '/admin/categories',
+    tokens: [{"old":"/admin/categories","type":0,"val":"admin","end":""},{"old":"/admin/categories","type":0,"val":"categories","end":""}],
+    types: placeholder as Registry['admin.categories.store']['types'],
+  },
+  'admin.categories.delete': {
+    methods: ["DELETE"],
+    pattern: '/admin/categories/:id',
+    tokens: [{"old":"/admin/categories/:id","type":0,"val":"admin","end":""},{"old":"/admin/categories/:id","type":0,"val":"categories","end":""},{"old":"/admin/categories/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['admin.categories.delete']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

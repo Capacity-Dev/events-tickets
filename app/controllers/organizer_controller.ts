@@ -1,7 +1,9 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 import Event from '#models/event'
 import Category from '#models/category'
 import TicketType from '#models/ticket_type'
+import Payout from '#models/payout'
 
 export default class OrganizerController {
   async index({ inertia, auth }: HttpContext) {
@@ -155,5 +157,53 @@ export default class OrganizerController {
     await event.save()
 
     response.redirect().toRoute('dashboard.organizer.events')
+  }
+
+  async analytics({ inertia, params, auth }: HttpContext) {
+    const event = await Event.query()
+      .where('id', params.id)
+      .where('organizerId', auth.user!.id)
+      .preload('ticketTypes')
+      .first()
+
+    if (!event) return inertia.render('errors/not_found', {} as any)
+
+    return (inertia.render as any)('dashboard/organizer/analytics', { event })
+  }
+
+  async checkIn({ inertia, params, auth }: HttpContext) {
+    const event = await Event.query()
+      .where('id', params.id)
+      .where('organizerId', auth.user!.id)
+      .first()
+
+    if (!event) return inertia.render('errors/not_found', {} as any)
+
+    return (inertia.render as any)('dashboard/organizer/check_in', { event })
+  }
+
+  async payouts({ inertia, auth }: HttpContext) {
+    const payouts = await Payout.query()
+      .where('organizerId', auth.user!.id)
+      .orderBy('createdAt', 'desc')
+
+    return (inertia.render as any)('dashboard/organizer/payouts', { payouts })
+  }
+
+  async requestPayout({ request, response, auth }: HttpContext) {
+    const data = request.all()
+
+    await Payout.create({
+      id: crypto.randomUUID(),
+      organizerId: auth.user!.id,
+      eventId: data.eventId ?? null,
+      amount: data.amount,
+      currency: data.currency ?? 'USD',
+      status: 'pending',
+      payoutMethod: data.payoutMethod ?? null,
+      requestedAt: DateTime.now(),
+    })
+
+    response.redirect().toRoute('dashboard.organizer.payouts')
   }
 }

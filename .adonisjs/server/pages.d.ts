@@ -12,13 +12,21 @@ type ExtractProps<T> =
 
 declare module '@adonisjs/inertia/types' {
   export interface InertiaPages {
+    'admin/categories': ExtractProps<(typeof import('../../inertia/pages/admin/categories.tsx'))['default']>
+    'admin/events_pending': ExtractProps<(typeof import('../../inertia/pages/admin/events_pending.tsx'))['default']>
+    'admin/fee_rules': ExtractProps<(typeof import('../../inertia/pages/admin/fee_rules.tsx'))['default']>
+    'admin/finances': ExtractProps<(typeof import('../../inertia/pages/admin/finances.tsx'))['default']>
+    'admin/users': ExtractProps<(typeof import('../../inertia/pages/admin/users.tsx'))['default']>
     'auth/login': ExtractProps<(typeof import('../../inertia/pages/auth/login.tsx'))['default']>
     'auth/signup': ExtractProps<(typeof import('../../inertia/pages/auth/signup.tsx'))['default']>
     'dashboard/buyer/orders_show': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/orders_show.tsx'))['default']>
     'dashboard/buyer/orders': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/orders.tsx'))['default']>
     'dashboard/buyer/tickets': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/tickets.tsx'))['default']>
+    'dashboard/organizer/analytics': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/analytics.tsx'))['default']>
+    'dashboard/organizer/check_in': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/check_in.tsx'))['default']>
     'dashboard/organizer/events_create': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/events_create.tsx'))['default']>
     'dashboard/organizer/events': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/events.tsx'))['default']>
+    'dashboard/organizer/payouts': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/payouts.tsx'))['default']>
     'errors/not_found': ExtractProps<(typeof import('../../inertia/pages/errors/not_found.tsx'))['default']>
     'errors/server_error': ExtractProps<(typeof import('../../inertia/pages/errors/server_error.tsx'))['default']>
     'home': ExtractProps<(typeof import('../../inertia/pages/home.tsx'))['default']>

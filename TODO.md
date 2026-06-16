@@ -34,35 +34,39 @@
 - [x] `GET /dashboard/organizer/events` — list my events
 - [x] Event creation flow (create, edit, update, delete/cancel)
 - [x] `POST /dashboard/organizer/events/:id/publish` — submit for approval
-- [ ] `GET /dashboard/organizer/events/:id/analytics` — sales/revenue charts
-- [ ] `GET /dashboard/organizer/check-in/:eventId` — QR scanner page
-- [ ] `POST /dashboard/organizer/payouts` — request payout
+- [x] `GET /dashboard/organizer/events/:id/analytics` — sales/revenue charts
+- [x] `GET /dashboard/organizer/check-in/:eventId` — QR scanner page
+- [x] `POST /dashboard/organizer/payouts` — request payout
 
 ### Backend — Shared / Auth
 - [x] Email/password signup + login + logout
 - [x] Default role assignment (buyer) on signup
 - [x] Auto-create profile on signup
 - [ ] Google OAuth 2.0 (`/auth/google`, `/auth/google/callback`)
-- [ ] Profile settings: name, avatar, notification prefs
+
+### Admin (Platform administrators)
 
 ### Frontend (Inertia.js + React + shadcn/ui) — Buyer
 - [x] Orders page: table with filters (status, date), expandable rows
 - [x] Tickets page: grid of ticket cards, status badges
 - [x] Order detail page: item breakdown, total
-- [ ] Profile settings form
+- [x] Profile settings form
 
 ### Frontend (Inertia.js + React + shadcn/ui) — Organizer
 - [x] Events list: table with status badges, quick actions (edit, duplicate, pause)
 - [x] Event creation wizard (multi-step): basic info → date/venue → ticket types → review
 - [x] Event edit form (same wizard, pre-filled)
-- [ ] Analytics dashboard: revenue chart, tickets-by-type chart, date range picker
-- [ ] Check-in module: camera QR scanner, scan result feedback (green/yellow/red)
-- [ ] Payout request form + history
+- [x] Analytics dashboard: revenue chart, tickets-by-type chart, date range picker
+- [x] Check-in module: camera QR scanner, scan result feedback (green/yellow/red)
+- [x] Payout request form + history
 
 ### Frontend — Shared UI
 - [x] Dashboard layout: sidebar nav + top bar, user menu
 - [x] Toast notifications (sonner) for flash messages and errors
-- [ ] Loading states, empty states, error boundaries
+- [x] Loading states, empty states, error boundaries
+
+---
+
 
 ---
 
