@@ -79,21 +79,9 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'cart.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/cart'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'cart.add': {
+  'buy': {
     methods: ["POST"]
-    pattern: '/cart/add'
+    pattern: '/buy'
     types: {
       body: {}
       paramsTuple: []
@@ -103,25 +91,13 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'checkout': {
+  'order.confirmation': {
     methods: ["GET","HEAD"]
-    pattern: '/checkout'
+    pattern: '/order/:id'
     types: {
       body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'checkout.store': {
-    methods: ["POST"]
-    pattern: '/checkout'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
       query: {}
       response: unknown
       errorResponse: unknown

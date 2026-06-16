@@ -5,6 +5,8 @@ import User from './user.js'
 import FeeRule from './fee_rule.js'
 
 export default class OrganizerFeeProfile extends OrganizerFeeProfileSchema {
+  static $selfAssignPrimaryKey = true
+
   @belongsTo(() => User)
   declare organizer: BelongsTo<typeof User>
 

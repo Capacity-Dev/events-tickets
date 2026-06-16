@@ -6,6 +6,8 @@ import Category from './category.js'
 import TicketType from './ticket_type.js'
 
 export default class Event extends EventSchema {
+  static $selfAssignPrimaryKey = true
+
   @belongsTo(() => User, { foreignKey: 'organizerId' })
   declare organizer: BelongsTo<typeof User>
 

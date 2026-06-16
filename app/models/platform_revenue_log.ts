@@ -5,6 +5,8 @@ import Order from './order.js'
 import FeeRule from './fee_rule.js'
 
 export default class PlatformRevenueLog extends PlatformRevenueLogSchema {
+  static $selfAssignPrimaryKey = true
+
   @belongsTo(() => Order)
   declare order: BelongsTo<typeof Order>
 

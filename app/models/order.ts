@@ -5,6 +5,7 @@ import User from './user.js'
 import OrderItem from './order_item.js'
 
 export default class Order extends OrderSchema {
+  static $selfAssignPrimaryKey = true
   @belongsTo(() => User, { foreignKey: 'buyerId' })
   declare buyer: BelongsTo<typeof User>
 

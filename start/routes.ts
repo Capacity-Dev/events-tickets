@@ -18,10 +18,8 @@ router.get('sitemap.xml', [PublicController, 'sitemap']).as('sitemap')
 
 router.post('webhooks/mbiyopay', [WebhookController, 'mbiyopay']).as('webhooks.mbiyopay')
 
-router.get('cart', [CartController, 'cart']).as('cart.show')
-router.post('cart/add', [CartController, 'add']).as('cart.add')
-router.get('checkout', [CartController, 'checkout']).as('checkout')
-router.post('checkout', [CartController, 'storeGuestOrder']).as('checkout.store')
+router.post('buy', [CartController, 'buy']).as('buy')
+router.get('order/:id', [CartController, 'confirmation']).as('order.confirmation')
 
 router.get('auth/google', [GoogleAuthController, 'redirect']).as('auth.google.redirect')
 router.get('auth/google/callback', [GoogleAuthController, 'callback']).as('auth.google.callback')

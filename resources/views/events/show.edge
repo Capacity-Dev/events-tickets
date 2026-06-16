@@ -22,7 +22,7 @@
 
           @if(event.description)
             <div class="text-base leading-relaxed text-muted-foreground space-y-4">
-              {{! event.description }}
+              {{{ event.description }}}
             </div>
           @endif
 
@@ -101,13 +101,28 @@
                       <div class="text-right flex-shrink-0 min-w-[100px]">
                         <div class="text-xl font-bold font-heading">${{ ticket.basePrice }}</div>
                         @if(ticket.status === 'active')
-                          <form action="/cart/add" method="POST">
+                          <button type="button" onclick="toggleBuyForm('{{ ticket.id }}')" class="btn-primary btn-sm w-full mt-2 whitespace-nowrap">
+                            Acheter
+                          </button>
+                          <form id="buy-form-{{ ticket.id }}" action="/buy" method="POST" class="hidden mt-3 pt-3 border-t border-border space-y-3">
                             {{ csrfField() }}
                             <input type="hidden" name="ticketTypeId" value="{{ ticket.id }}" />
                             <input type="hidden" name="quantity" value="1" />
-                            <button type="submit" class="btn-primary btn-sm w-full mt-2 text-[13px]">
-                              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h6"/><path d="M3 4h10l-1.2 7.2a2 2 0 0 1-2 1.8H6.2a2 2 0 0 1-2-1.8L3 4z"/><path d="M6 2v2"/><path d="M10 2v2"/></svg>
-                              Add to Cart
+                            <div>
+                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Nom complet *</label>
+                              <input type="text" name="name" required class="input-field min-h-10 mt-1" placeholder="Votre nom" />
+                            </div>
+                            <div>
+                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Téléphone (WhatsApp)</label>
+                              <input type="tel" name="phone" class="input-field min-h-10 mt-1" placeholder="+243XXXXXXXXX" />
+                            </div>
+                            <div>
+                              <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">Email</label>
+                              <input type="email" name="email" class="input-field min-h-10 mt-1" placeholder="vous@exemple.com" />
+                            </div>
+                            <p class="text-[10px] text-muted-foreground">Fournissez au moins un contact (téléphone ou email) pour recevoir vos billets.</p>
+                            <button type="submit" class="btn-primary btn-sm w-full">
+                              Confirmer l'achat
                             </button>
                           </form>
                         @else
@@ -129,5 +144,14 @@
           </div>
         </div>
       </div>
+
+<script>
+function toggleBuyForm(id) {
+  const form = document.getElementById('buy-form-' + id)
+  const allForms = document.querySelectorAll('[id^="buy-form-"]')
+  allForms.forEach(f => { if (f.id !== 'buy-form-' + id) f.classList.add('hidden') })
+  form.classList.toggle('hidden')
+}
+</script>
 
 @include('partials/footer')

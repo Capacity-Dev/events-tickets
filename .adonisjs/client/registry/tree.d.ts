@@ -12,12 +12,9 @@ export interface ApiDefinition {
   webhooks: {
     mbiyopay: typeof routes['webhooks.mbiyopay']
   }
-  cart: {
-    show: typeof routes['cart.show']
-    add: typeof routes['cart.add']
-  }
-  checkout: typeof routes['checkout'] & {
-    store: typeof routes['checkout.store']
+  buy: typeof routes['buy']
+  order: {
+    confirmation: typeof routes['order.confirmation']
   }
   auth: {
     google: {

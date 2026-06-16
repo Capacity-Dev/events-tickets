@@ -6,6 +6,7 @@ import Ticket from '#models/ticket'
 import User from '#models/user'
 import Role from '#models/role'
 import Profile from '#models/profile'
+import Event from '#models/event'
 import { DateTime } from 'luxon'
 
 export default class CartController {
@@ -38,6 +39,113 @@ export default class CartController {
     response.redirect().back()
   }
 
+  async buy({ request, response, auth, session }: HttpContext) {
+    const ticketTypeId = request.input('ticketTypeId')
+    const quantity = Number(request.input('quantity', 1))
+    const name = request.input('name', '').trim()
+    const phone = request.input('phone', '').trim()
+    const email = request.input('email', '').trim().toLowerCase()
+
+    if (!name) {
+      session.flash('error', 'Veuillez entrer votre nom')
+      response.redirect().back()
+      return
+    }
+
+    if (!phone && !email) {
+      session.flash('error', 'Veuillez fournir un téléphone ou un email')
+      response.redirect().back()
+      return
+    }
+
+    const ticketType = await TicketType.find(ticketTypeId)
+    if (!ticketType || ticketType.status !== 'active') {
+      response.redirect().back()
+      return
+    }
+
+    const remaining = ticketType.quantityTotal - (ticketType.quantitySold ?? 0) - (ticketType.quantityReserved ?? 0)
+    if (remaining < quantity) {
+      session.flash('error', 'Plus assez de places disponibles')
+      response.redirect().back()
+      return
+    }
+
+    const event = await Event.find(ticketType.eventId)
+    if (!event || event.status !== 'published') {
+      response.redirect().back()
+      return
+    }
+
+    const now = new Date()
+    const orderId = crypto.randomUUID()
+    const orderNumber = `ORD-${now.getFullYear()}-${String(now.getTime()).slice(-6)}`
+    const lineTotal = Number(ticketType.basePrice) * quantity
+
+    await Order.create({
+      id: orderId,
+      orderNumber,
+      buyerId: auth.user?.id ?? null,
+      guestEmail: email || null,
+      guestPhone: phone || null,
+      status: 'paid',
+      totalGrossAmount: lineTotal,
+      platformFeeAmount: 0,
+      organizerNetAmount: lineTotal,
+      paymentProcessorFee: 0,
+      currency: 'USD',
+      paidAt: DateTime.now(),
+    })
+
+    await this.createOrderItemsAndTickets(orderId, ticketType, quantity, lineTotal)
+
+    session.flash('success', 'Achat réussi ! Votre commande est confirmée.')
+    response.redirect().toRoute('order.confirmation', { id: orderId })
+  }
+
+  private async createOrderItemsAndTickets(orderId: string, ticketType: TicketType, quantity: number, lineTotal: number) {
+    const orderItemId = crypto.randomUUID()
+    await OrderItem.create({
+      id: orderItemId,
+      orderId: orderId,
+      ticketTypeId: ticketType.id,
+      unitPrice: Number(ticketType.basePrice),
+      quantity,
+      lineTotal,
+    })
+
+    await TicketType.query().where('id', ticketType.id).increment('quantitySold', quantity)
+    await TicketType.query().where('id', ticketType.id).decrement('quantityReserved', quantity)
+
+    for (let i = 0; i < quantity; i++) {
+      const uuid = crypto.randomUUID()
+      const num = `${String(Date.now()).slice(-6)}${String(i).padStart(2, '0')}`
+      await Ticket.create({
+        id: crypto.randomUUID(),
+        orderItemId: orderItemId,
+        eventId: ticketType.eventId,
+        ticketTypeId: ticketType.id,
+        ticketNumber: `TKT-${num}`,
+        uuid,
+        qrToken: uuid,
+        status: 'valid',
+      })
+    }
+  }
+
+  async confirmation({ params, view }: HttpContext) {
+    const order = await Order.query()
+      .where('id', params.id)
+      .preload('items', (q) => q.preload('ticketType'))
+      .first()
+
+    if (!order) {
+      return view.render('errors/not_found')
+    }
+
+    return view.render('checkout/confirmation', { order })
+  }
+
   async cart({ inertia, session }: HttpContext) {
     const cart = (session.get('cart') ?? []) as Array<{ ticketTypeId: string; name: string; price: number; quantity: number }>
     const total = cart.reduce((sum, c) => sum + c.price * c.quantity, 0)
@@ -50,10 +158,25 @@ export default class CartController {
   }
 
   async storeGuestOrder({ request, response, session, auth }: HttpContext) {
-    const cart = (session.get('cart') ?? []) as Array<{ ticketTypeId: string; name: string; price: number; quantity: number }>
+    let cart = (session.get('cart') ?? []) as Array<{ ticketTypeId: string; name: string; price: number; quantity: number }>
+
+    const directTicketTypeId = request.input('ticketTypeId')
+    const directQuantity = Number(request.input('quantity', 1))
+
+    if (cart.length === 0 && directTicketTypeId) {
+      const ticketType = await TicketType.find(directTicketTypeId)
+      if (ticketType) {
+        cart = [{
+          ticketTypeId: directTicketTypeId,
+          name: ticketType.name,
+          price: Number(ticketType.basePrice),
+          quantity: directQuantity,
+        }]
+      }
+    }
 
     if (cart.length === 0) {
-      session.flash('error', 'Cart is empty')
+      session.flash('error', 'No items to purchase')
       return response.redirect().back()
     }
 
@@ -85,18 +208,21 @@ export default class CartController {
       buyerId = user.id
     }
 
+    if (!auth.user && !email) {
+      session.flash('error', 'Email required for purchase')
+      return response.redirect().back()
+    }
+
     const now = new Date()
     const orderNumber = `ORD-${now.getFullYear()}-${String(now.getTime()).slice(-6)}`
 
     let totalGross = 0
-    const itemData: Array<{ ticketTypeId: string; name: string; price: number; quantity: number }> = []
 
     for (const item of cart) {
       const ticketType = await TicketType.find(item.ticketTypeId)
       if (!ticketType) continue
       const lineTotal = item.price * item.quantity
       totalGross += lineTotal
-      itemData.push({ ...item, price: lineTotal })
     }
 
     const order = await Order.create({

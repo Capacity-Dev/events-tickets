@@ -5,6 +5,8 @@ import Event from './event.js'
 import FeeRule from './fee_rule.js'
 
 export default class EventFeeRule extends EventFeeRuleSchema {
+  static $selfAssignPrimaryKey = true
+
   @belongsTo(() => Event)
   declare event: BelongsTo<typeof Event>
 

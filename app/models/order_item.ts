@@ -6,6 +6,7 @@ import TicketType from './ticket_type.js'
 import Ticket from './ticket.js'
 
 export default class OrderItem extends OrderItemSchema {
+  static $selfAssignPrimaryKey = true
   @belongsTo(() => Order)
   declare order: BelongsTo<typeof Order>
 

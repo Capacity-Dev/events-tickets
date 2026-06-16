@@ -1,0 +1,42 @@
+@include('partials/header')
+
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center motion-safe:animate-[fadeInUp_0.5s_ease-out]">
+        <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-success/10 flex items-center justify-center">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+        </div>
+
+        <h1 class="font-heading text-[clamp(24px,3vw,32px)] mb-2">Achat confirmé !</h1>
+        <p class="text-muted-foreground mb-2">Votre commande a été enregistrée avec succès.</p>
+        <p class="text-sm font-semibold text-primary mb-8">N° de commande : {{ order.orderNumber }}</p>
+
+        <div class="bg-card border border-border rounded-[16px] p-6 sm:p-8 text-left mb-8">
+          <h2 class="font-heading text-lg mb-4">Détails de la commande</h2>
+          <div class="space-y-4">
+            @each(item in order.items)
+              <div class="flex justify-between items-center py-3 border-b border-border last:border-0">
+                <div>
+                  <div class="font-semibold text-sm">{{ item.ticketType.name }}</div>
+                  <div class="text-xs text-muted-foreground">Qty: {{ item.quantity }}</div>
+                </div>
+                <div class="font-bold">${{ item.lineTotal }}</div>
+              </div>
+            @endeach
+          </div>
+          <div class="flex justify-between items-center pt-4 mt-2 border-t border-border font-bold text-lg">
+            <span>Total</span>
+            <span>${{ order.totalGrossAmount }}</span>
+          </div>
+        </div>
+
+        <p class="text-sm text-muted-foreground">
+          Un récapitulatif vous sera envoyé par email/WhatsApp avec vos billets.
+        </p>
+
+        <a href="/" class="btn-primary mt-6 inline-flex no-underline">
+          Retour à l'accueil
+        </a>
+      </div>
+
+@include('partials/footer')

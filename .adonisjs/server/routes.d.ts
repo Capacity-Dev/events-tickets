@@ -10,10 +10,8 @@ export type ScannedRoutes = {
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
     'webhooks.mbiyopay': { paramsTuple?: []; params?: {} }
-    'cart.show': { paramsTuple?: []; params?: {} }
-    'cart.add': { paramsTuple?: []; params?: {} }
-    'checkout': { paramsTuple?: []; params?: {} }
-    'checkout.store': { paramsTuple?: []; params?: {} }
+    'buy': { paramsTuple?: []; params?: {} }
+    'order.confirmation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'auth.google.redirect': { paramsTuple?: []; params?: {} }
     'auth.google.callback': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
@@ -61,8 +59,7 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
-    'cart.show': { paramsTuple?: []; params?: {} }
-    'checkout': { paramsTuple?: []; params?: {} }
+    'order.confirmation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'auth.google.redirect': { paramsTuple?: []; params?: {} }
     'auth.google.callback': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
@@ -91,8 +88,7 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
-    'cart.show': { paramsTuple?: []; params?: {} }
-    'checkout': { paramsTuple?: []; params?: {} }
+    'order.confirmation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'auth.google.redirect': { paramsTuple?: []; params?: {} }
     'auth.google.callback': { paramsTuple?: []; params?: {} }
     'new_account.create': { paramsTuple?: []; params?: {} }
@@ -117,8 +113,7 @@ export type ScannedRoutes = {
   }
   POST: {
     'webhooks.mbiyopay': { paramsTuple?: []; params?: {} }
-    'cart.add': { paramsTuple?: []; params?: {} }
-    'checkout.store': { paramsTuple?: []; params?: {} }
+    'buy': { paramsTuple?: []; params?: {} }
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }

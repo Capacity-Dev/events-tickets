@@ -178,7 +178,7 @@ export default class PublicController {
       event,
       ticketTypes: enrichedTicketTypes,
       appUrl: appUrlVal,
-      head,
+      pageHead: head,
     })
   }
 

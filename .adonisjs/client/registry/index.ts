@@ -42,29 +42,17 @@ const routes = {
     tokens: [{"old":"/webhooks/mbiyopay","type":0,"val":"webhooks","end":""},{"old":"/webhooks/mbiyopay","type":0,"val":"mbiyopay","end":""}],
     types: placeholder as Registry['webhooks.mbiyopay']['types'],
   },
-  'cart.show': {
-    methods: ["GET","HEAD"],
-    pattern: '/cart',
-    tokens: [{"old":"/cart","type":0,"val":"cart","end":""}],
-    types: placeholder as Registry['cart.show']['types'],
-  },
-  'cart.add': {
+  'buy': {
     methods: ["POST"],
-    pattern: '/cart/add',
-    tokens: [{"old":"/cart/add","type":0,"val":"cart","end":""},{"old":"/cart/add","type":0,"val":"add","end":""}],
-    types: placeholder as Registry['cart.add']['types'],
+    pattern: '/buy',
+    tokens: [{"old":"/buy","type":0,"val":"buy","end":""}],
+    types: placeholder as Registry['buy']['types'],
   },
-  'checkout': {
+  'order.confirmation': {
     methods: ["GET","HEAD"],
-    pattern: '/checkout',
-    tokens: [{"old":"/checkout","type":0,"val":"checkout","end":""}],
-    types: placeholder as Registry['checkout']['types'],
-  },
-  'checkout.store': {
-    methods: ["POST"],
-    pattern: '/checkout',
-    tokens: [{"old":"/checkout","type":0,"val":"checkout","end":""}],
-    types: placeholder as Registry['checkout.store']['types'],
+    pattern: '/order/:id',
+    tokens: [{"old":"/order/:id","type":0,"val":"order","end":""},{"old":"/order/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['order.confirmation']['types'],
   },
   'auth.google.redirect': {
     methods: ["GET","HEAD"],

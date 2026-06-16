@@ -4,6 +4,8 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import TicketType from './ticket_type.js'
 
 export default class TicketInventoryLock extends TicketInventoryLockSchema {
+  static $selfAssignPrimaryKey = true
+
   @belongsTo(() => TicketType)
   declare ticketType: BelongsTo<typeof TicketType>
 }
