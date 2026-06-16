@@ -2,6 +2,7 @@ import '../resources/css/app.css'
 import { type ReactElement } from 'react'
 import { client } from './client'
 import Layout from '~/layouts/default'
+import DashboardLayout from '~/layouts/dashboard'
 import { type Data } from '@generated/data'
 import { createRoot } from 'react-dom/client'
 import { createInertiaApp } from '@inertiajs/react'
@@ -13,10 +14,11 @@ const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),
   resolve: (name) => {
+    const Wrapper = name.startsWith('dashboard/') ? DashboardLayout : Layout
     return resolvePageComponent(
       `./pages/${name}.tsx`,
       import.meta.glob('./pages/**/*.tsx'),
-      (page: ReactElement<Data.SharedProps>) => <Layout children={page} />
+      (page: ReactElement<Data.SharedProps>) => <Wrapper children={page} />
     )
   },
   setup({ el, App, props }) {

@@ -103,4 +103,88 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/session_controller').default['destroy']>>>
     }
   }
+  'dashboard.organizer.events': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/organizer/events'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.organizer.events.create': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/organizer/events/create'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.organizer.events.store': {
+    methods: ["POST"]
+    pattern: '/dashboard/organizer/events'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.organizer.events.edit': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/organizer/events/:id/edit'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.organizer.events.update': {
+    methods: ["PUT"]
+    pattern: '/dashboard/organizer/events/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.organizer.events.destroy': {
+    methods: ["DELETE"]
+    pattern: '/dashboard/organizer/events/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.organizer.events.publish': {
+    methods: ["POST"]
+    pattern: '/dashboard/organizer/events/:id/publish'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

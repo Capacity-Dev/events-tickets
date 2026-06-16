@@ -54,6 +54,48 @@ const routes = {
     tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
     types: placeholder as Registry['session.destroy']['types'],
   },
+  'dashboard.organizer.events': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/organizer/events',
+    tokens: [{"old":"/dashboard/organizer/events","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events","type":0,"val":"events","end":""}],
+    types: placeholder as Registry['dashboard.organizer.events']['types'],
+  },
+  'dashboard.organizer.events.create': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/organizer/events/create',
+    tokens: [{"old":"/dashboard/organizer/events/create","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/create","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/create","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/create","type":0,"val":"create","end":""}],
+    types: placeholder as Registry['dashboard.organizer.events.create']['types'],
+  },
+  'dashboard.organizer.events.store': {
+    methods: ["POST"],
+    pattern: '/dashboard/organizer/events',
+    tokens: [{"old":"/dashboard/organizer/events","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events","type":0,"val":"events","end":""}],
+    types: placeholder as Registry['dashboard.organizer.events.store']['types'],
+  },
+  'dashboard.organizer.events.edit': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/organizer/events/:id/edit',
+    tokens: [{"old":"/dashboard/organizer/events/:id/edit","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/:id/edit","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/:id/edit","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/:id/edit","type":1,"val":"id","end":""},{"old":"/dashboard/organizer/events/:id/edit","type":0,"val":"edit","end":""}],
+    types: placeholder as Registry['dashboard.organizer.events.edit']['types'],
+  },
+  'dashboard.organizer.events.update': {
+    methods: ["PUT"],
+    pattern: '/dashboard/organizer/events/:id',
+    tokens: [{"old":"/dashboard/organizer/events/:id","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/:id","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/:id","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['dashboard.organizer.events.update']['types'],
+  },
+  'dashboard.organizer.events.destroy': {
+    methods: ["DELETE"],
+    pattern: '/dashboard/organizer/events/:id',
+    tokens: [{"old":"/dashboard/organizer/events/:id","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/:id","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/:id","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['dashboard.organizer.events.destroy']['types'],
+  },
+  'dashboard.organizer.events.publish': {
+    methods: ["POST"],
+    pattern: '/dashboard/organizer/events/:id/publish',
+    tokens: [{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"dashboard","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"organizer","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"events","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":1,"val":"id","end":""},{"old":"/dashboard/organizer/events/:id/publish","type":0,"val":"publish","end":""}],
+    types: placeholder as Registry['dashboard.organizer.events.publish']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

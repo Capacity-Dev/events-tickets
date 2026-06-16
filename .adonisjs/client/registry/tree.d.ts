@@ -16,4 +16,16 @@ export interface ApiDefinition {
     store: typeof routes['session.store']
     destroy: typeof routes['session.destroy']
   }
+  dashboard: {
+    organizer: {
+      events: typeof routes['dashboard.organizer.events'] & {
+        create: typeof routes['dashboard.organizer.events.create']
+        store: typeof routes['dashboard.organizer.events.store']
+        edit: typeof routes['dashboard.organizer.events.edit']
+        update: typeof routes['dashboard.organizer.events.update']
+        destroy: typeof routes['dashboard.organizer.events.destroy']
+        publish: typeof routes['dashboard.organizer.events.publish']
+      }
+    }
+  }
 }

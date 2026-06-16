@@ -31,15 +31,17 @@
 - [ ] Inventory locking via Redis + DB transactions
 
 ### Backend — Organizer
-- [ ] `GET /dashboard/organizer/events` — list my events
-- [ ] Event creation flow (create, edit, update, delete/cancel)
-- [ ] `POST /dashboard/organizer/events/:id/publish` — submit for approval
+- [x] `GET /dashboard/organizer/events` — list my events
+- [x] Event creation flow (create, edit, update, delete/cancel)
+- [x] `POST /dashboard/organizer/events/:id/publish` — submit for approval
 - [ ] `GET /dashboard/organizer/events/:id/analytics` — sales/revenue charts
 - [ ] `GET /dashboard/organizer/check-in/:eventId` — QR scanner page
 - [ ] `POST /dashboard/organizer/payouts` — request payout
 
 ### Backend — Shared / Auth
-- [ ] Email/password signup + login + logout (done)
+- [x] Email/password signup + login + logout
+- [x] Default role assignment (buyer) on signup
+- [x] Auto-create profile on signup
 - [ ] Google OAuth 2.0 (`/auth/google`, `/auth/google/callback`)
 - [ ] Profile settings: name, avatar, notification prefs
 
@@ -49,16 +51,16 @@
 - [ ] Profile settings form
 
 ### Frontend (Inertia.js + React + shadcn/ui) — Organizer
-- [ ] Events list: table with status badges, quick actions (edit, duplicate, pause)
-- [ ] Event creation wizard (multi-step): basic info → media → date/venue → ticket types → review
-- [ ] Event edit form (same wizard, pre-filled)
+- [x] Events list: table with status badges, quick actions (edit, duplicate, pause)
+- [x] Event creation wizard (multi-step): basic info → date/venue → ticket types → review
+- [x] Event edit form (same wizard, pre-filled)
 - [ ] Analytics dashboard: revenue chart, tickets-by-type chart, date range picker
 - [ ] Check-in module: camera QR scanner, scan result feedback (green/yellow/red)
 - [ ] Payout request form + history
 
 ### Frontend — Shared UI
-- [ ] Layout: sidebar nav + top bar, user menu
-- [ ] Toast notifications (sonner) for flash messages and errors
+- [x] Dashboard layout: sidebar nav + top bar, user menu
+- [x] Toast notifications (sonner) for flash messages and errors
 - [ ] Loading states, empty states, error boundaries
 
 ---
