@@ -7,6 +7,7 @@ import BuyerController from '#controllers/buyer_controller'
 import AdminController from '#controllers/admin_controller'
 import GoogleAuthController from '#controllers/google_auth_controller'
 import CartController from '#controllers/cart_controller'
+import WebhookController from '#controllers/webhook_controller'
 
 router.get('/', [PublicController, 'home']).as('home')
 
@@ -14,6 +15,8 @@ router.get('events', [PublicController, 'index']).as('events.index')
 router.get('events/search', [PublicController, 'search']).as('events.search')
 router.get('events/:slug', [PublicController, 'show']).as('events.show')
 router.get('sitemap.xml', [PublicController, 'sitemap']).as('sitemap')
+
+router.post('webhooks/mbiyopay', [WebhookController, 'mbiyopay']).as('webhooks.mbiyopay')
 
 router.get('cart', [CartController, 'cart']).as('cart.show')
 router.post('cart/add', [CartController, 'add']).as('cart.add')
@@ -43,8 +46,9 @@ router
     router.get('dashboard/buyer/orders', [BuyerController, 'orders']).as('dashboard.buyer.orders')
     router.get('dashboard/buyer/orders/:id', [BuyerController, 'showOrder']).as('dashboard.buyer.orders.show')
     router.get('dashboard/buyer/tickets', [BuyerController, 'tickets']).as('dashboard.buyer.tickets')
+    router.get('dashboard/buyer/orders/:id/pay', [BuyerController, 'payForm']).as('dashboard.buyer.orders.pay')
+    router.post('dashboard/buyer/orders/:id/pay', [BuyerController, 'pay']).as('orders.pay')
     router.post('orders', [BuyerController, 'store']).as('orders.store')
-router.post('orders/:id/pay', [BuyerController, 'pay']).as('orders.pay')
   })
   .use(middleware.auth())
 

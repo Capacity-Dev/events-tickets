@@ -9,6 +9,7 @@ export type ScannedRoutes = {
     'events.search': { paramsTuple?: []; params?: {} }
     'events.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'sitemap': { paramsTuple?: []; params?: {} }
+    'webhooks.mbiyopay': { paramsTuple?: []; params?: {} }
     'cart.show': { paramsTuple?: []; params?: {} }
     'cart.add': { paramsTuple?: []; params?: {} }
     'checkout': { paramsTuple?: []; params?: {} }
@@ -23,8 +24,9 @@ export type ScannedRoutes = {
     'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
     'dashboard.buyer.orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.buyer.tickets': { paramsTuple?: []; params?: {} }
-    'orders.store': { paramsTuple?: []; params?: {} }
+    'dashboard.buyer.orders.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'orders.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'orders.store': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.create': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.store': { paramsTuple?: []; params?: {} }
@@ -68,6 +70,7 @@ export type ScannedRoutes = {
     'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
     'dashboard.buyer.orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.buyer.tickets': { paramsTuple?: []; params?: {} }
+    'dashboard.buyer.orders.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.events': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.create': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -97,6 +100,7 @@ export type ScannedRoutes = {
     'dashboard.buyer.orders': { paramsTuple?: []; params?: {} }
     'dashboard.buyer.orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.buyer.tickets': { paramsTuple?: []; params?: {} }
+    'dashboard.buyer.orders.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.events': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.create': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -112,13 +116,14 @@ export type ScannedRoutes = {
     'admin.whatsapp': { paramsTuple?: []; params?: {} }
   }
   POST: {
+    'webhooks.mbiyopay': { paramsTuple?: []; params?: {} }
     'cart.add': { paramsTuple?: []; params?: {} }
     'checkout.store': { paramsTuple?: []; params?: {} }
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
-    'orders.store': { paramsTuple?: []; params?: {} }
     'orders.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'orders.store': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.store': { paramsTuple?: []; params?: {} }
     'dashboard.organizer.events.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.organizer.payouts.request': { paramsTuple?: []; params?: {} }

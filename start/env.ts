@@ -31,5 +31,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   GOOGLE_CLIENT_ID: Env.schema.string.optional(),
-  GOOGLE_CLIENT_SECRET: Env.schema.string.optional()
+  GOOGLE_CLIENT_SECRET: Env.schema.string.optional(),
+
+  MBIYOPAY_API_KEY: Env.schema.string.optional(),
+  MBIYOPAY_WEBHOOK_SECRET: Env.schema.string.optional()
 })

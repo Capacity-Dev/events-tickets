@@ -25,6 +25,7 @@ declare module '@adonisjs/inertia/types' {
     'checkout/checkout': ExtractProps<(typeof import('../../inertia/pages/checkout/checkout.tsx'))['default']>
     'dashboard/buyer/orders_show': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/orders_show.tsx'))['default']>
     'dashboard/buyer/orders': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/orders.tsx'))['default']>
+    'dashboard/buyer/pay': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/pay.tsx'))['default']>
     'dashboard/buyer/tickets': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/tickets.tsx'))['default']>
     'dashboard/organizer/analytics': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/analytics.tsx'))['default']>
     'dashboard/organizer/check_in': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/check_in.tsx'))['default']>

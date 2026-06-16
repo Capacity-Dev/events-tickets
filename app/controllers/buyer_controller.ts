@@ -1,15 +1,15 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { DateTime } from 'luxon'
 import Order from '#models/order'
+import Ticket from '#models/ticket'
 import TicketType from '#models/ticket_type'
 import OrderItem from '#models/order_item'
-import Ticket from '#models/ticket'
+import { MbiyopayService } from '#services/mbiyopay_service'
 
 export default class BuyerController {
   async orders({ inertia, auth }: HttpContext) {
     const orders = await Order.query()
       .where('buyerId', auth.user!.id)
-      .preload('items', (q) => q.preload('ticketType'))
+      .preload('items', (q: any) => q.preload('ticketType'))
       .orderBy('createdAt', 'desc')
 
     return (inertia.render as any)('dashboard/buyer/orders', { orders })
@@ -17,8 +17,8 @@ export default class BuyerController {
 
   async tickets({ inertia, auth }: HttpContext) {
     const tickets = await Ticket.query()
-      .whereHas('orderItem', (q) => {
-        q.whereHas('order', (oq) => {
+      .whereHas('orderItem', (q: any) => {
+        q.whereHas('order', (oq: any) => {
           oq.where('buyerId', auth.user!.id)
         })
       })
@@ -33,7 +33,7 @@ export default class BuyerController {
     const order = await Order.query()
       .where('id', params.id)
       .where('buyerId', auth.user!.id)
-      .preload('items', (q) => q.preload('ticketType'))
+      .preload('items', (q: any) => q.preload('ticketType'))
       .first()
 
     if (!order) {
@@ -114,7 +114,20 @@ export default class BuyerController {
     response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })
   }
 
-  async pay({ params, response, auth }: HttpContext) {
+  async payForm({ inertia, params, auth }: HttpContext) {
+    const order = await Order.query()
+      .where('id', params.id)
+      .where('buyerId', auth.user!.id)
+      .first()
+
+    if (!order || order.status !== 'pending') {
+      return inertia.render('errors/not_found', {} as any)
+    }
+
+    return (inertia.render as any)('dashboard/buyer/pay', { order })
+  }
+
+  async pay({ params, request, response, auth, session, inertia }: HttpContext) {
     const order = await Order.query()
       .where('id', params.id)
       .where('buyerId', auth.user!.id)
@@ -123,42 +136,53 @@ export default class BuyerController {
     if (!order) return response.status(404).json({ error: 'Order not found' })
     if (order.status !== 'pending') return response.status(400).json({ error: 'Order cannot be paid' })
 
-    order.status = 'paid'
-    order.paidAt = DateTime.now()
-    await order.save()
+    const phone = request.input('phone')
+    const network = request.input('network')
 
-    const orderItems = await OrderItem.query().where('orderId', order.id).preload('ticketType')
-
-    for (const item of orderItems) {
-      if (item.ticketTypeId) {
-        await TicketType.query()
-          .where('id', item.ticketTypeId)
-          .decrement('quantityReserved', item.quantity)
-        await TicketType.query()
-          .where('id', item.ticketTypeId)
-          .increment('quantitySold', item.quantity)
-      }
-
-      const eventId = item.ticketTypeId
-        ? (await TicketType.find(item.ticketTypeId))?.eventId
-        : null
-
-      for (let i = 0; i < item.quantity; i++) {
-        const uuid = crypto.randomUUID()
-        const num = `${String(Date.now()).slice(-6)}${String(i).padStart(2, '0')}`
-        await Ticket.create({
-          id: crypto.randomUUID(),
-          orderItemId: item.id,
-          eventId: eventId ?? '',
-          ticketTypeId: item.ticketTypeId ?? '',
-          ticketNumber: `TKT-${num}`,
-          uuid,
-          qrToken: uuid,
-          status: 'valid',
-        })
-      }
+    if (!phone || !network) {
+      session.flash('error', 'Phone number and network are required.')
+      return response.redirect().back()
     }
 
-    response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })
+    try {
+      const mbiyopay = new MbiyopayService()
+
+      const result = await mbiyopay.initiatePayin({
+        amount: Number(order.totalGrossAmount),
+        currency: order.currency ?? 'USD',
+        phoneNumber: phone,
+        network,
+        countryCode: 'CD',
+        orderId: order.orderNumber,
+      })
+
+      order.paymentIntentId = result.transaction_id
+      order.status = 'reserved'
+      await order.save()
+
+      if (result.auth_mode === 'pin') {
+        session.put('pending_payment', {
+          transactionId: result.transaction_id,
+          orderId: order.id,
+        })
+        session.flash('info', 'Payment requires PIN verification.')
+        return (inertia.render as any)('dashboard/buyer/pay', {
+          order,
+          pinRequired: true,
+          transactionId: result.transaction_id,
+          instructions: result.instructions,
+        })
+      }
+
+      if (result.redirect_url) {
+        return response.redirect(result.redirect_url)
+      }
+
+      session.flash('success', 'Payment initiated. Waiting for confirmation.')
+      response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })
+    } catch (error: any) {
+      session.flash('error', `Payment failed: ${error.message}`)
+      response.redirect().back()
+    }
   }
 }

@@ -36,6 +36,12 @@ const routes = {
     tokens: [{"old":"/sitemap.xml","type":0,"val":"sitemap.xml","end":""}],
     types: placeholder as Registry['sitemap']['types'],
   },
+  'webhooks.mbiyopay': {
+    methods: ["POST"],
+    pattern: '/webhooks/mbiyopay',
+    tokens: [{"old":"/webhooks/mbiyopay","type":0,"val":"webhooks","end":""},{"old":"/webhooks/mbiyopay","type":0,"val":"mbiyopay","end":""}],
+    types: placeholder as Registry['webhooks.mbiyopay']['types'],
+  },
   'cart.show': {
     methods: ["GET","HEAD"],
     pattern: '/cart',
@@ -120,17 +126,23 @@ const routes = {
     tokens: [{"old":"/dashboard/buyer/tickets","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/tickets","type":0,"val":"tickets","end":""}],
     types: placeholder as Registry['dashboard.buyer.tickets']['types'],
   },
+  'dashboard.buyer.orders.pay': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/buyer/orders/:id/pay',
+    tokens: [{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"orders","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":1,"val":"id","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"pay","end":""}],
+    types: placeholder as Registry['dashboard.buyer.orders.pay']['types'],
+  },
+  'orders.pay': {
+    methods: ["POST"],
+    pattern: '/dashboard/buyer/orders/:id/pay',
+    tokens: [{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"dashboard","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"buyer","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"orders","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":1,"val":"id","end":""},{"old":"/dashboard/buyer/orders/:id/pay","type":0,"val":"pay","end":""}],
+    types: placeholder as Registry['orders.pay']['types'],
+  },
   'orders.store': {
     methods: ["POST"],
     pattern: '/orders',
     tokens: [{"old":"/orders","type":0,"val":"orders","end":""}],
     types: placeholder as Registry['orders.store']['types'],
-  },
-  'orders.pay': {
-    methods: ["POST"],
-    pattern: '/orders/:id/pay',
-    tokens: [{"old":"/orders/:id/pay","type":0,"val":"orders","end":""},{"old":"/orders/:id/pay","type":1,"val":"id","end":""},{"old":"/orders/:id/pay","type":0,"val":"pay","end":""}],
-    types: placeholder as Registry['orders.pay']['types'],
   },
   'dashboard.organizer.events': {
     methods: ["GET","HEAD"],

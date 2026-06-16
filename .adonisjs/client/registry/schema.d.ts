@@ -67,6 +67,18 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'webhooks.mbiyopay': {
+    methods: ["POST"]
+    pattern: '/webhooks/mbiyopay'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'cart.show': {
     methods: ["GET","HEAD"]
     pattern: '/cart'
@@ -235,13 +247,13 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'orders.store': {
-    methods: ["POST"]
-    pattern: '/orders'
+  'dashboard.buyer.orders.pay': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/buyer/orders/:id/pay'
     types: {
       body: {}
-      paramsTuple: []
-      params: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
       query: {}
       response: unknown
       errorResponse: unknown
@@ -249,11 +261,23 @@ export interface Registry {
   }
   'orders.pay': {
     methods: ["POST"]
-    pattern: '/orders/:id/pay'
+    pattern: '/dashboard/buyer/orders/:id/pay'
     types: {
       body: {}
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'orders.store': {
+    methods: ["POST"]
+    pattern: '/orders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
       query: {}
       response: unknown
       errorResponse: unknown

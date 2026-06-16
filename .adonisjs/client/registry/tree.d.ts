@@ -9,6 +9,9 @@ export interface ApiDefinition {
     show: typeof routes['events.show']
   }
   sitemap: typeof routes['sitemap']
+  webhooks: {
+    mbiyopay: typeof routes['webhooks.mbiyopay']
+  }
   cart: {
     show: typeof routes['cart.show']
     add: typeof routes['cart.add']
@@ -35,6 +38,7 @@ export interface ApiDefinition {
     buyer: {
       orders: typeof routes['dashboard.buyer.orders'] & {
         show: typeof routes['dashboard.buyer.orders.show']
+        pay: typeof routes['dashboard.buyer.orders.pay']
       }
       tickets: typeof routes['dashboard.buyer.tickets']
     }
@@ -55,8 +59,8 @@ export interface ApiDefinition {
     }
   }
   orders: {
-    store: typeof routes['orders.store']
     pay: typeof routes['orders.pay']
+    store: typeof routes['orders.store']
   }
   admin: {
     events: {
