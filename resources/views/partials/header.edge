@@ -32,6 +32,8 @@
               {{ locale === 'fr' ? t('locale.en') : t('locale.fr') }}
             </a>
             @if(auth.user)
+              <a href="/dashboard" class="btn-ghost btn-sm no-underline">Dashboard</a>
+              <a href="/dashboard/tickets" class="btn-ghost btn-sm no-underline hidden sm:inline-flex">{{ t('tickets.your_tickets') }}</a>
               <span class="text-sm text-muted-foreground hidden sm:inline px-2">{{ auth.user.fullName ?? auth.user.email }}</span>
               <form action="/logout" method="POST" class="inline">
                 {{ csrfField() }}

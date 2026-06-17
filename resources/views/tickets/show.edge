@@ -1,0 +1,91 @@
+@include('partials/header')
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6 relative">
+        <div class="absolute top-0 left-0 right-0 h-1 rounded-b-full" style="background: linear-gradient(90deg, var(--primary), var(--accent));"></div>
+        <a href="/events" class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground mb-5 btn-ghost btn-sm no-underline -ml-2">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l-5 5 5 5"/></svg>
+          {{ t('event.back') }}
+        </a>
+        <h1 class="font-heading text-[clamp(24px,3vw,36px)] mb-1 motion-safe:animate-[fadeInUp_0.5s_ease-out]">{{ t('ticket.title') }}</h1>
+        <p class="text-muted-foreground">{{ ticket.event.title }}</p>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
+        <div class="max-w-lg mx-auto motion-safe:animate-[fadeInUp_0.5s_ease-out_0.1s_both]">
+          <div class="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+            @if(ticket.event.coverImageUrl)
+              <img src="{{ ticket.event.coverImageUrl }}" alt="{{ ticket.event.title }}" class="w-full h-48 object-cover" />
+            @else
+              <div class="w-full h-48 flex items-center justify-center font-heading text-3xl text-primary" style="background: linear-gradient(135deg, var(--secondary) 0%, var(--primary)/10 100%);">
+                EV
+              </div>
+            @endif
+
+            <div class="p-6 sm:p-8">
+              <div class="text-center mb-6">
+                <h2 class="font-heading text-xl mb-1">{{ ticket.event.title }}</h2>
+                <div class="text-sm text-muted-foreground flex items-center justify-center gap-3 flex-wrap">
+                  <span>{{ ticket.event.startDate.toFormat('EEE, MMM d · h:mm a') }}</span>
+                  @if(ticket.event.venueName)
+                    <span class="opacity-50">·</span>
+                    <span>{{ ticket.event.venueName }}</span>
+                  @endif
+                </div>
+              </div>
+
+              <div class="flex justify-center mb-6">
+                <div class="bg-white p-3 rounded-lg border border-border">
+                  @let(ticketUrl = appUrl + '/tickets/' + ticket.uuid)
+                  <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&format=svg&data={{ ticketUrl }}"
+                    alt="QR Code"
+                    width="220"
+                    height="220"
+                    class="block"
+                    loading="eager"
+                  />
+                </div>
+              </div>
+
+              <div class="border-t border-border pt-5 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('ticket.type') }}</span>
+                  <span class="text-sm font-semibold">{{ ticket.ticketType.name }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('ticket.number') }}</span>
+                  <span class="text-sm font-mono tracking-tight font-semibold">{{ ticket.ticketNumber }}</span>
+                </div>
+                @if(ticket.orderItem && ticket.orderItem.order)
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('ticket.order') }}</span>
+                    <span class="text-sm font-mono tracking-tight">{{ ticket.orderItem.order.orderNumber }}</span>
+                  </div>
+                @endif
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('ticket.status') }}</span>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
+                    @if(ticket.status === 'valid')
+                      bg-success/10 text-success
+                    @elseif(ticket.status === 'used')
+                      bg-muted text-muted-foreground
+                    @else
+                      bg-destructive/10 text-destructive
+                    @endif
+                  ">
+                    {{ ticket.status === 'valid' ? t('ticket.valid') : ticket.status }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-6">
+            <a href="/" class="btn-primary no-underline">
+              {{ t('order.back_home') }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+@include('partials/footer')

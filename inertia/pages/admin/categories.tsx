@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react'
 import { Form } from '@adonisjs/inertia/react'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
@@ -12,6 +13,8 @@ import {
 } from '~/components/ui/table'
 
 export default function AdminCategories({ categories }: { categories: any[] }) {
+  const { adminPrefix } = usePage().props as any
+
   return (
     <div>
       <h1 className="text-2xl font-heading mb-6">Categories</h1>
@@ -52,9 +55,18 @@ export default function AdminCategories({ categories }: { categories: any[] }) {
                 <TableCell className="text-sm text-muted-foreground">{cat.slug}</TableCell>
                 <TableCell className="text-sm">{cat.displayOrder}</TableCell>
                 <TableCell className="text-right">
-                  <form action={`/admin/categories/${cat.id}`} method="POST" className="inline">
+                  <form
+                    action={`/${adminPrefix}/categories/${cat.id}`}
+                    method="POST"
+                    className="inline"
+                  >
                     <input type="hidden" name="_method" value="DELETE" />
-                    <button type="submit" className="inline-flex items-center justify-center rounded-lg border border-destructive text-destructive h-7 px-2 text-xs font-medium bg-transparent cursor-pointer hover:bg-destructive/10">Delete</button>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center rounded-lg border border-destructive text-destructive h-7 px-2 text-xs font-medium bg-transparent cursor-pointer hover:bg-destructive/10"
+                    >
+                      Delete
+                    </button>
                   </form>
                 </TableCell>
               </TableRow>

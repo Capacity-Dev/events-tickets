@@ -3,6 +3,7 @@ import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
 import Order from '#models/order'
 import OrderItem from '#models/order_item'
+import Payout from '#models/payout'
 import Ticket from '#models/ticket'
 import TicketType from '#models/ticket_type'
 
@@ -45,14 +46,30 @@ interface MbiyopayStatusResponse {
   }
 }
 
+interface MbiyopayPayoutResponse {
+  status: string
+  message: string
+  data: {
+    transaction_id: string
+    amount: number
+    fee: number
+    charged_amount: number
+    currency: string
+    order_id: string | null
+    status: string
+    payment_method: string
+    created_at: string
+  }
+}
+
 export class MbiyopayService {
   private apiKey: string
   private webhookSecret: string
   private callbackUrl: string
 
   constructor() {
-    this.apiKey = env.get('MBIYOPAY_API_KEY', '')
-    this.webhookSecret = env.get('MBIYOPAY_WEBHOOK_SECRET', '')
+    this.apiKey = env.get('MBIYOPAY_API_KEY')
+    this.webhookSecret = env.get('MBIYOPAY_WEBHOOK_SECRET')
     this.callbackUrl = `${env.get('APP_URL')}/webhooks/mbiyopay`
   }
 
@@ -71,10 +88,8 @@ export class MbiyopayService {
     countryCode: string
     orderId: string
   }): Promise<MbiyopayPayinResponse['data']> {
-    const amountInCents = Math.round(params.amount * 100)
-
     const body = {
-      amount: amountInCents,
+      amount: params.amount,
       currency: params.currency,
       payment_method: 'mobile_money',
       order_id: params.orderId,
@@ -101,6 +116,44 @@ export class MbiyopayService {
     return json.data
   }
 
+  async sendPayout(params: {
+    amount: number
+    currency: string
+    phoneNumber: string
+    network: string
+    countryCode: string
+    beneficiary: string
+    orderId: string
+  }): Promise<MbiyopayPayoutResponse['data']> {
+    const body = {
+      amount: params.amount,
+      currency: params.currency,
+      payment_method: 'mobile_money',
+      order_id: params.orderId,
+      callback_url: this.callbackUrl,
+      metadata: {
+        network: params.network,
+        phone_number: params.phoneNumber,
+        country_code: params.countryCode,
+        beneficiary: params.beneficiary,
+      },
+    }
+
+    const response = await fetch(`${BASE_URL}/merchant/payout`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify(body),
+    })
+
+    const json: MbiyopayPayoutResponse = (await response.json()) as MbiyopayPayoutResponse
+
+    if (!response.ok) {
+      throw new Error(`Mbiyopay payout failed: ${json.message ?? response.statusText}`)
+    }
+
+    return json.data
+  }
+
   async checkStatus(transactionId: string): Promise<MbiyopayStatusResponse['data']> {
     const response = await fetch(`${BASE_URL}/merchant/status/${transactionId}`, {
       headers: this.headers,
@@ -118,18 +171,35 @@ export class MbiyopayService {
   verifyWebhookSignature(payload: string, signatureHeader: string): boolean {
     if (!this.webhookSecret) return false
 
-    const expected = crypto
-      .createHmac('sha256', this.webhookSecret)
-      .update(payload)
-      .digest('hex')
+    const expected = crypto.createHmac('sha256', this.webhookSecret).update(payload).digest('hex')
 
     return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signatureHeader))
+  }
+
+  async finalizePayin(
+    transactionId: string,
+    otp: string
+  ): Promise<{ status: string; message: string }> {
+    const response = await fetch(`${BASE_URL}/merchant/payin/${transactionId}/finalize`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({ otp }),
+    })
+
+    const json = (await response.json()) as { status: string; message: string }
+
+    if (!response.ok) {
+      throw new Error(`Mbiyopay finalize failed: ${json.message ?? response.statusText}`)
+    }
+
+    return json
   }
 
   static async processSuccessfulPayment(orderId: string): Promise<void> {
     const order = await Order.query()
       .where('id', orderId)
       .orWhere('orderNumber', orderId)
+      .orWhere('paymentIntentId', orderId)
       .first()
 
     if (!order || order.status === 'paid') return
@@ -142,8 +212,12 @@ export class MbiyopayService {
 
     for (const item of orderItems) {
       if (item.ticketTypeId) {
-        await TicketType.query().where('id', item.ticketTypeId).increment('quantitySold', item.quantity)
-        await TicketType.query().where('id', item.ticketTypeId).decrement('quantityReserved', item.quantity)
+        await TicketType.query()
+          .where('id', item.ticketTypeId)
+          .increment('quantitySold', item.quantity)
+        await TicketType.query()
+          .where('id', item.ticketTypeId)
+          .decrement('quantityReserved', item.quantity)
       }
 
       const tt = item.ticketType
@@ -164,5 +238,52 @@ export class MbiyopayService {
         })
       }
     }
+  }
+
+  static async processFailedPayment(orderId: string): Promise<void> {
+    const order = await Order.query()
+      .where('id', orderId)
+      .orWhere('orderNumber', orderId)
+      .orWhere('paymentIntentId', orderId)
+      .first()
+
+    if (!order || order.status === 'paid' || order.status === 'failed') return
+
+    order.status = 'failed'
+    await order.save()
+
+    const orderItems = await OrderItem.query().where('orderId', order.id)
+
+    for (const item of orderItems) {
+      if (item.ticketTypeId) {
+        await TicketType.query()
+          .where('id', item.ticketTypeId)
+          .decrement('quantityReserved', item.quantity)
+      }
+    }
+  }
+
+  static async processSuccessfulPayout(orderId: string): Promise<void> {
+    const payout = await Payout.query()
+      .where('payoutReference', orderId)
+      .orWhere('id', orderId)
+      .first()
+
+    if (!payout || payout.status === 'completed') return
+
+    payout.status = 'completed'
+    payout.mbiyopayStatus = 'successful'
+    payout.completedAt = DateTime.now()
+    await payout.save()
+  }
+
+  static async processFailedPayout(orderId: string): Promise<void> {
+    const payout = await Payout.query().where('payoutReference', orderId).first()
+
+    if (!payout) return
+
+    payout.status = 'failed'
+    payout.mbiyopayStatus = 'failed'
+    await payout.save()
   }
 }

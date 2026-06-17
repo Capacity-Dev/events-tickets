@@ -6,9 +6,19 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string('order_item_id', 36).references('id').inTable('order_items').onDelete('CASCADE').notNullable()
-      table.string('event_id', 36).references('id').inTable('events').onDelete('CASCADE').notNullable()
-      table.string('ticket_type_id', 36).references('id').inTable('ticket_types').onDelete('CASCADE').notNullable()
+      table
+        .uuid('order_item_id')
+        .references('id')
+        .inTable('order_items')
+        .onDelete('CASCADE')
+        .notNullable()
+      table.uuid('event_id').references('id').inTable('events').onDelete('CASCADE').notNullable()
+      table
+        .uuid('ticket_type_id')
+        .references('id')
+        .inTable('ticket_types')
+        .onDelete('CASCADE')
+        .notNullable()
       table.string('ticket_number').notNullable().unique()
       table.uuid('uuid').notNullable().unique()
       table.text('qr_token').notNullable()

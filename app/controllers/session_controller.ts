@@ -1,5 +1,4 @@
 import User from '#models/user'
-import Role from '#models/role'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class SessionController {
@@ -13,15 +12,7 @@ export default class SessionController {
 
     await auth.use('web').login(user)
 
-    if (user.roleId) {
-      const role = await Role.find(user.roleId)
-      if (role?.name === 'organizer') {
-        response.redirect().toRoute('dashboard.organizer.events')
-        return
-      }
-    }
-
-    response.redirect().toRoute('home')
+    response.redirect().toRoute('dashboard')
   }
 
   async destroy({ auth, response }: HttpContext) {

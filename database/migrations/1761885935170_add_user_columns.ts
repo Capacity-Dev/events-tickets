@@ -5,7 +5,7 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.string('role_id', 36).nullable()
+      table.uuid('role_id').nullable()
       table.string('google_id').nullable()
       table.text('google_refresh_token').nullable()
       table.timestamp('email_verified_at').nullable()

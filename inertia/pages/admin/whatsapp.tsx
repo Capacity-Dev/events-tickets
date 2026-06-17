@@ -26,7 +26,12 @@ export default function AdminWhatsApp({ templates }: { templates: any[] }) {
           </div>
           <div>
             <Label htmlFor="category">Category</Label>
-            <select id="category" name="category" className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" required>
+            <select
+              id="category"
+              name="category"
+              className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+              required
+            >
               <option value="utility">Utility</option>
               <option value="authentication">Authentication</option>
               <option value="marketing">Marketing</option>
@@ -57,20 +62,36 @@ export default function AdminWhatsApp({ templates }: { templates: any[] }) {
           </TableHeader>
           <TableBody>
             {templates.length === 0 ? (
-              <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No templates</TableCell></TableRow>
-            ) : templates.map((t: any) => (
-              <TableRow key={t.id}>
-                <TableCell className="font-medium">{t.name}</TableCell>
-                <TableCell className="text-sm capitalize">{t.category}</TableCell>
-                <TableCell className="text-sm">{t.languageCode}</TableCell>
-                <TableCell>
-                  <Badge variant={t.status === 'approved' ? 'default' : t.status === 'rejected' ? 'destructive' : 'outline'}>
-                    {t.status.replace('_', ' ')}
-                  </Badge>
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  No templates
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '-'}</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              templates.map((t: any) => (
+                <TableRow key={t.id}>
+                  <TableCell className="font-medium">{t.name}</TableCell>
+                  <TableCell className="text-sm capitalize">{t.category}</TableCell>
+                  <TableCell className="text-sm">{t.languageCode}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        t.status === 'approved'
+                          ? 'default'
+                          : t.status === 'rejected'
+                            ? 'destructive'
+                            : 'outline'
+                      }
+                    >
+                      {t.status.replace('_', ' ')}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '-'}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

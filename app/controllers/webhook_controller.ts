@@ -13,9 +13,24 @@ export default class WebhookController {
     }
 
     const payload = request.all()
+    const orderId = payload.order_id as string | undefined
 
-    if (payload.status === 'successful' && payload.order_id) {
-      await MbiyopayService.processSuccessfulPayment(payload.order_id)
+    if (!orderId) {
+      return response.status(200).send('OK')
+    }
+
+    if (payload.type === 'cashin') {
+      if (payload.status === 'successful') {
+        await MbiyopayService.processSuccessfulPayment(orderId)
+      } else if (payload.status === 'failed' || payload.status === 'cancelled') {
+        await MbiyopayService.processFailedPayment(orderId)
+      }
+    } else if (payload.type === 'cashout') {
+      if (payload.status === 'successful') {
+        await MbiyopayService.processSuccessfulPayout(orderId)
+      } else if (payload.status === 'failed' || payload.status === 'cancelled') {
+        await MbiyopayService.processFailedPayout(orderId)
+      }
     }
 
     return response.status(200).send('OK')

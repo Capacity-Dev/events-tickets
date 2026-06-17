@@ -7,10 +7,13 @@ export const controllers = {
   Admin: () => import('#controllers/admin_controller'),
   Buyer: () => import('#controllers/buyer_controller'),
   Cart: () => import('#controllers/cart_controller'),
+  Dashboard: () => import('#controllers/dashboard_controller'),
   GoogleAuth: () => import('#controllers/google_auth_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   Organizer: () => import('#controllers/organizer_controller'),
+  Payment: () => import('#controllers/payment_controller'),
   Public: () => import('#controllers/public_controller'),
   Session: () => import('#controllers/session_controller'),
+  Settings: () => import('#controllers/settings_controller'),
   Webhook: () => import('#controllers/webhook_controller'),
 }

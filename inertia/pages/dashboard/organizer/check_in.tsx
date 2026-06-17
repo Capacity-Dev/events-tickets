@@ -6,7 +6,9 @@ export default function OrganizerCheckIn({ event }: { event: any }) {
 
       <div className="border-2 border-dashed rounded-xl p-12 mb-6">
         <p className="text-lg font-semibold mb-2">QR Scanner</p>
-        <p className="text-sm text-muted-foreground">Camera access will scan QR codes to validate tickets.</p>
+        <p className="text-sm text-muted-foreground">
+          Camera access will scan QR codes to validate tickets.
+        </p>
       </div>
 
       <div className="text-left border rounded-xl divide-y">

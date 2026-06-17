@@ -17,7 +17,7 @@ export default class extends BaseSchema {
       table.string('slug').notNullable().unique()
       table.text('description').nullable()
       table
-        .string('category_id', 36)
+        .uuid('category_id')
         .nullable()
         .references('id')
         .inTable('categories')

@@ -27,6 +27,6 @@ export default class NewAccountController {
     })
 
     await auth.use('web').login(user)
-    response.redirect().toRoute('home')
+    response.redirect().toRoute('dashboard')
   }
 }

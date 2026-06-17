@@ -1,0 +1,84 @@
+@include('partials/header')
+
+      <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12 motion-safe:animate-[fadeInUp_0.5s_ease-out]">
+        <h1 class="font-heading text-[clamp(24px,3vw,32px)] mb-2">{{ t('payment.title') }}</h1>
+        <p class="text-muted-foreground mb-6">{{ t('payment.subtitle') }} {{ order.orderNumber }}</p>
+
+        <div class="bg-card border border-border rounded-xl p-5 sm:p-6 mb-6">
+          <div class="flex justify-between items-center pb-4">
+            <span class="text-sm text-muted-foreground">{{ t('order.total') }}</span>
+            <span class="text-xl font-bold font-heading">{{ currencySymbol }}{{ order.totalGrossAmount }}</span>
+          </div>
+          <div class="flex justify-between items-center text-sm text-muted-foreground pt-3 border-t border-border">
+            <span>{{ t('order.number') }}</span>
+            <span class="font-mono">{{ order.orderNumber }}</span>
+          </div>
+        </div>
+
+        @if(pinRequired)
+          <div class="bg-card border border-border rounded-xl p-5 sm:p-6 mb-6">
+            <h2 class="font-heading text-lg mb-3">{{ t('payment.otp_title') }}</h2>
+            @if(instructions)
+              <div class="text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg mb-4">
+                {{{ instructions }}}
+              </div>
+            @endif
+            @if(error)
+              <div class="text-sm text-destructive bg-destructive/10 rounded-lg p-3 mb-4">
+                {{ error }}
+              </div>
+            @endif
+            <form action="/payment/{{ order.id }}" method="POST" class="space-y-4">
+              <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+              <div>
+                <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('payment.otp_label') }}</label>
+                <input type="text" name="otp" required class="input-field min-h-11 mt-1.5 w-full" placeholder="{{ t('payment.otp_placeholder') }}" inputmode="numeric" />
+              </div>
+              <button type="submit" class="btn-primary w-full">
+                {{ t('payment.verify_otp') }}
+              </button>
+            </form>
+          </div>
+        @else
+          <form action="/payment/{{ order.id }}" method="POST" class="space-y-4">
+            <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+            <div class="bg-card border border-border rounded-xl p-5 sm:p-6">
+              <h2 class="font-heading text-lg mb-4">{{ t('payment.mobile_money') }}</h2>
+
+              @if(error)
+                <div class="text-sm text-destructive bg-destructive/10 rounded-lg p-3 mb-4">
+                  {{ error }}
+                </div>
+              @endif
+
+              <div class="space-y-4">
+                <div>
+                  <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('payment.phone_label') }}</label>
+                  <input type="tel" name="phone" value="{{ order.guestPhone }}" required class="input-field min-h-11 mt-1.5 w-full" placeholder="+243XXXXXXXXX" />
+                  <p class="text-xs text-muted-foreground mt-1">{{ t('payment.phone_hint') }} ({{ countryCode }})</p>
+                </div>
+
+                <div>
+                  <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground">{{ t('payment.network_label') }}</label>
+                  <select name="network" required class="input-field min-h-11 mt-1.5 w-full">
+                    <option value="">{{ t('payment.select_network') }}</option>
+                    @each(network in networks)
+                      <option value="{{ network }}">{{ network }}</option>
+                    @endeach
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full text-base h-12">
+              {{ t('payment.pay_now') }} {{ currencySymbol }}{{ order.totalGrossAmount }}
+            </button>
+          </form>
+        @endif
+
+        <p class="text-center text-sm text-muted-foreground mt-6">
+          {{ t('payment.secure_info') }}
+        </p>
+      </div>
+
+@include('partials/footer')

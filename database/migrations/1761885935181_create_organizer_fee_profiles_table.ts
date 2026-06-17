@@ -6,8 +6,19 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.integer('organizer_id').unsigned().references('id').inTable('users').onDelete('CASCADE').notNullable()
-      table.string('fee_rule_id', 36).references('id').inTable('fee_rules').onDelete('CASCADE').notNullable()
+      table
+        .integer('organizer_id')
+        .unsigned()
+        .references('id')
+        .inTable('users')
+        .onDelete('CASCADE')
+        .notNullable()
+      table
+        .uuid('fee_rule_id')
+        .references('id')
+        .inTable('fee_rules')
+        .onDelete('CASCADE')
+        .notNullable()
       table.timestamp('contract_start_date').nullable()
       table.timestamp('contract_end_date').nullable()
       table.timestamp('created_at').notNullable()

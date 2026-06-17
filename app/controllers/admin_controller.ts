@@ -6,12 +6,43 @@ import Category from '#models/category'
 import FeeRule from '#models/fee_rule'
 import Payout from '#models/payout'
 import Order from '#models/order'
+import Currency from '#models/currency'
+import Role from '#models/role'
 import WhatsAppTemplate from '#models/whatsapp_template'
+import { MbiyopayService } from '#services/mbiyopay_service'
+import { loadActiveCurrencies } from '../helpers/currency.js'
 
 export default class AdminController {
+  async dashboard({ inertia }: HttpContext) {
+    const totalUsers = await User.query().count('* as total')
+    const totalEvents = await Event.query().count('* as total')
+    const totalOrders = await Order.query().count('* as total')
+    const totalRevenue = await Order.query()
+      .where('status', 'paid')
+      .sum('total_gross_amount as total')
+
+    const recentUsers = await User.query().preload('role').orderBy('createdAt', 'desc').limit(10)
+    const recentOrders = await Order.query().preload('buyer').orderBy('createdAt', 'desc').limit(10)
+    const eventsByStatus = await Event.query().groupBy('status').count('* as c').select('status')
+
+    return (inertia.render as any)('admin/dashboard', {
+      stats: {
+        totalUsers: Number(totalUsers[0].$extras.total),
+        totalEvents: Number(totalEvents[0].$extras.total),
+        totalOrders: Number(totalOrders[0].$extras.total),
+        totalRevenue: Number(totalRevenue[0].$extras.total ?? 0),
+      },
+      recentUsers: recentUsers.map((u) => ({ ...u.toJSON(), role: u.role?.name })),
+      recentOrders: recentOrders.map((o) => ({ ...o.toJSON(), buyer: o.buyer?.toJSON() })),
+      eventsByStatus: eventsByStatus.map((e) => ({
+        status: e.status,
+        count: Number(e.$extras.c),
+      })),
+    })
+  }
+
   async pendingEvents({ inertia }: HttpContext) {
     const events = await Event.query()
-      .where('status', 'pending_approval')
       .preload('organizer')
       .preload('category')
       .orderBy('createdAt', 'asc')
@@ -36,9 +67,84 @@ export default class AdminController {
     response.redirect().toRoute('admin.events.pending')
   }
 
+  async freezeEvent({ params, response }: HttpContext) {
+    const event = await Event.find(params.id)
+    if (!event) return response.status(404).send('Not found')
+    event.isFrozen = true
+    event.frozenAt = DateTime.now()
+    await event.save()
+    response.redirect().toRoute('admin.events.pending')
+  }
+
+  async unfreezeEvent({ params, response }: HttpContext) {
+    const event = await Event.find(params.id)
+    if (!event) return response.status(404).send('Not found')
+    event.isFrozen = false
+    event.frozenAt = null
+    await event.save()
+    response.redirect().toRoute('admin.events.pending')
+  }
+
   async users({ inertia }: HttpContext) {
     const users = await User.query().preload('role').orderBy('createdAt', 'desc')
     return (inertia.render as any)('admin/users', { users })
+  }
+
+  async userShow({ params, inertia, response }: HttpContext) {
+    const user = await User.query().where('id', params.id).preload('role').preload('events').first()
+
+    if (!user) return response.status(404).send('Not found')
+
+    const orders = await Order.query()
+      .where('buyerId', user.id)
+      .orderBy('createdAt', 'desc')
+      .limit(20)
+    const payouts = await Payout.query()
+      .where('organizerId', user.id)
+      .orderBy('createdAt', 'desc')
+      .limit(10)
+
+    return (inertia.render as any)('admin/user_show', {
+      user: { ...user.toJSON(), role: user.role?.toJSON() },
+      events: user.events.map((e) => e.toJSON()),
+      orders,
+      payouts,
+    })
+  }
+
+  async userEdit({ params, inertia, response }: HttpContext) {
+    const user = await User.query().where('id', params.id).preload('role').first()
+    if (!user) return response.status(404).send('Not found')
+
+    const roles = await Role.all()
+
+    return (inertia.render as any)('admin/user_edit', {
+      user: { ...user.toJSON(), role: user.role?.toJSON() },
+      roles: roles.map((r) => r.toJSON()),
+    })
+  }
+
+  async userUpdate({ params, request, response, session }: HttpContext) {
+    const user = await User.find(params.id)
+    if (!user) return response.status(404).send('Not found')
+
+    const { fullName, email, roleId, password, passwordConfirmation } = request.all()
+
+    if (fullName !== undefined) user.fullName = fullName
+    if (email !== undefined) user.email = email
+    if (roleId !== undefined) user.roleId = roleId
+
+    if (password) {
+      if (password !== passwordConfirmation) {
+        session.flash('error', 'Passwords do not match')
+        return response.redirect().toRoute('admin.users.edit', { id: user.id })
+      }
+      user.password = password
+    }
+
+    await user.save()
+    session.flash('success', 'User updated')
+    response.redirect().toRoute('admin.users.show', { id: user.id })
   }
 
   async updateUserRole({ request, params, response }: HttpContext) {
@@ -72,22 +178,136 @@ export default class AdminController {
   }
 
   async finances({ inertia }: HttpContext) {
-    const orders = await Order.query()
-      .preload('buyer')
-      .orderBy('createdAt', 'desc')
-      .limit(100)
+    const currencies = await loadActiveCurrencies()
+    const orders = await Order.query().preload('buyer').orderBy('createdAt', 'desc').limit(100)
 
-    return (inertia.render as any)('admin/finances', { orders })
+    return (inertia.render as any)('admin/finances', { orders, currencies })
   }
 
-  async processPayout({ params, response }: HttpContext) {
-    const payout = await Payout.find(params.id)
+  async processPayout({ params, response, session }: HttpContext) {
+    const payout = await Payout.query().where('id', params.id).preload('organizer').first()
     if (!payout) return response.status(404).send('Not found')
-    payout.status = 'completed'
-    payout.processedAt = DateTime.now()
-    payout.completedAt = DateTime.now()
-    await payout.save()
+
+    if (payout.phoneNumber && payout.network && payout.currency && payout.beneficiary) {
+      try {
+        const currency = await Currency.query().where('code', payout.currency).first()
+        const countryCode = currency?.countryCode ?? 'CD'
+
+        const mbiyopay = new MbiyopayService()
+        const ref = `PAYOUT-${payout.id.slice(0, 8)}`
+        const result = await mbiyopay.sendPayout({
+          amount: Number(payout.amount),
+          currency: payout.currency,
+          phoneNumber: payout.phoneNumber,
+          network: payout.network,
+          countryCode,
+          beneficiary: payout.beneficiary,
+          orderId: ref,
+        })
+
+        payout.status = 'processing'
+        payout.mbiyopayStatus = 'pending'
+        payout.transactionId = result.transaction_id
+        payout.payoutReference = ref
+        payout.processedAt = DateTime.now()
+        await payout.save()
+
+        session.flash('success', `Payout sent via Mbiyopay. Transaction: ${result.transaction_id}`)
+      } catch (err: any) {
+        session.flash('error', `Mbiyopay payout failed: ${err.message}`)
+      }
+    } else {
+      payout.status = 'completed'
+      payout.processedAt = DateTime.now()
+      payout.completedAt = DateTime.now()
+      await payout.save()
+      session.flash('success', 'Payout marked as completed.')
+    }
+
     response.redirect().toRoute('admin.finances')
+  }
+
+  async transactions({ inertia, request }: HttpContext) {
+    const page = Number(request.input('page', 1))
+    const statusFilter = request.input('status', '')
+    const search = request.input('q', '').trim()
+    const dateFrom = request.input('dateFrom', '')
+    const dateTo = request.input('dateTo', '')
+
+    const query = Order.query().preload('buyer').orderBy('createdAt', 'desc')
+    if (statusFilter) query.where('status', statusFilter)
+
+    if (search) {
+      query.where((q) => {
+        q.whereILike('orderNumber', `%${search}%`)
+          .orWhereILike('guestEmail', `%${search}%`)
+          .orWhereILike('guestPhone', `%${search}%`)
+      })
+    }
+
+    if (dateFrom) query.where('createdAt', '>=', new Date(dateFrom))
+    if (dateTo) query.where('createdAt', '<=', new Date(dateTo))
+
+    const orders = await query.paginate(page, 50)
+
+    return (inertia.render as any)('admin/transactions', {
+      orders: orders.all(),
+      pagination: orders.getMeta(),
+      currentStatus: statusFilter,
+      search,
+      dateFrom,
+      dateTo,
+    })
+  }
+
+  async transactionShow({ params, inertia, response }: HttpContext) {
+    const order = await Order.query()
+      .where('id', params.id)
+      .preload('buyer')
+      .preload('items', (q) => q.preload('ticketType').preload('tickets'))
+      .first()
+
+    if (!order) return response.status(404).send('Not found')
+
+    return (inertia.render as any)('admin/transaction_show', { order: order.toJSON() })
+  }
+
+  async recheckTransaction({ params, response, session }: HttpContext) {
+    const order = await Order.query()
+      .where('id', params.id)
+      .select('id', 'status', 'paymentIntentId', 'orderNumber')
+      .first()
+
+    if (!order) return response.status(404).send('Not found')
+
+    if (!order.paymentIntentId) {
+      session.flash('error', 'No payment transaction ID to check')
+      return response.redirect().toRoute('admin.transactions.show', { id: order.id })
+    }
+
+    try {
+      const mbiyopay = new MbiyopayService()
+      const mbiyopayStatus = await mbiyopay.checkStatus(order.paymentIntentId)
+
+      if (mbiyopayStatus.status === 'successful') {
+        await MbiyopayService.processSuccessfulPayment(order.orderNumber)
+        session.flash('success', 'Payment confirmed as successful. Order marked as paid.')
+      } else if (mbiyopayStatus.status === 'failed') {
+        await MbiyopayService.processFailedPayment(order.orderNumber)
+        session.flash('success', 'Payment confirmed as failed.')
+      } else {
+        const o = await Order.find(order.id)
+        if (o) {
+          o.status = 'reserved'
+          await o.save()
+        }
+        session.flash('success', `Payment status: ${mbiyopayStatus.status}. Order updated.`)
+      }
+    } catch (err: any) {
+      session.flash('error', `Failed to check status: ${err.message}`)
+    }
+
+    response.redirect().toRoute('admin.transactions.show', { id: order.id })
   }
 
   async categories({ inertia }: HttpContext) {
@@ -145,5 +365,55 @@ export default class AdminController {
       variables: data.variables ? JSON.parse(data.variables) : null,
     })
     response.redirect().toRoute('admin.whatsapp')
+  }
+
+  async currencies({ inertia }: HttpContext) {
+    const currencies = await Currency.query().orderBy('sortOrder', 'asc')
+    return (inertia.render as any)('admin/currencies', { currencies })
+  }
+
+  async storeCurrency({ request, response }: HttpContext) {
+    const data = request.all()
+    await Currency.create({
+      id: crypto.randomUUID(),
+      code: data.code,
+      name: data.name,
+      symbol: data.symbol,
+      countryCode: data.countryCode,
+      networks: Array.isArray(data.networks)
+        ? data.networks
+        : data.networks
+          ? JSON.parse(data.networks)
+          : [],
+      exchangeRate: String(data.exchangeRate ?? 1),
+      isActive: data.isActive === '1' || data.isActive === true,
+      sortOrder: Number(data.sortOrder ?? 0),
+    })
+    response.redirect().toRoute('admin.currencies')
+  }
+
+  async updateCurrency({ params, request, response }: HttpContext) {
+    const currency = await Currency.find(params.id)
+    if (!currency) return response.status(404).send('Not found')
+
+    const data = request.all()
+    currency.code = data.code ?? currency.code
+    currency.name = data.name ?? currency.name
+    currency.symbol = data.symbol ?? currency.symbol
+    currency.countryCode = data.countryCode ?? currency.countryCode
+    if (data.networks !== undefined) {
+      currency.networks = Array.isArray(data.networks)
+        ? data.networks
+        : typeof data.networks === 'string'
+          ? JSON.parse(data.networks)
+          : data.networks
+    }
+    if (data.exchangeRate !== undefined) currency.exchangeRate = String(data.exchangeRate)
+    if (data.isActive !== undefined)
+      currency.isActive = data.isActive === '1' || data.isActive === true
+    if (data.sortOrder !== undefined) currency.sortOrder = Number(data.sortOrder)
+    await currency.save()
+
+    response.redirect().toRoute('admin.currencies')
   }
 }

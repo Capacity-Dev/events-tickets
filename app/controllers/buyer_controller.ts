@@ -3,16 +3,19 @@ import Order from '#models/order'
 import Ticket from '#models/ticket'
 import TicketType from '#models/ticket_type'
 import OrderItem from '#models/order_item'
+import Currency from '#models/currency'
 import { MbiyopayService } from '#services/mbiyopay_service'
+import { loadActiveCurrencies } from '../helpers/currency.js'
 
 export default class BuyerController {
   async orders({ inertia, auth }: HttpContext) {
+    const currencies = await loadActiveCurrencies()
     const orders = await Order.query()
       .where('buyerId', auth.user!.id)
       .preload('items', (q: any) => q.preload('ticketType'))
       .orderBy('createdAt', 'desc')
 
-    return (inertia.render as any)('dashboard/buyer/orders', { orders })
+    return (inertia.render as any)('dashboard/buyer/orders', { orders, currencies })
   }
 
   async tickets({ inertia, auth }: HttpContext) {
@@ -30,6 +33,7 @@ export default class BuyerController {
   }
 
   async showOrder({ inertia, params, auth }: HttpContext) {
+    const currencies = await loadActiveCurrencies()
     const order = await Order.query()
       .where('id', params.id)
       .where('buyerId', auth.user!.id)
@@ -40,7 +44,10 @@ export default class BuyerController {
       return inertia.render('errors/not_found', {} as any)
     }
 
-    return (inertia.render as any)('dashboard/buyer/orders_show', { order })
+    return (inertia.render as any)('dashboard/buyer/orders_show', {
+      order: order.toJSON(),
+      currencies,
+    })
   }
 
   async store({ request, response, auth }: HttpContext) {
@@ -96,13 +103,13 @@ export default class BuyerController {
       organizerNetAmount: totalGross,
       paymentProcessorFee: 0,
       currency: 'USD',
-    })
+    } as any)
 
     await OrderItem.createMany(
       orderItems.map((oi) => ({
         ...oi,
         orderId: order.id,
-      }))
+      })) as any
     )
 
     for (const item of items) {
@@ -111,30 +118,36 @@ export default class BuyerController {
         .increment('quantityReserved', item.quantity)
     }
 
-    response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })
+    response.redirect().toRoute('dashboard.orders.show', { id: order.id })
   }
 
   async payForm({ inertia, params, auth }: HttpContext) {
-    const order = await Order.query()
-      .where('id', params.id)
-      .where('buyerId', auth.user!.id)
-      .first()
+    const order = await Order.query().where('id', params.id).where('buyerId', auth.user!.id).first()
 
     if (!order || order.status !== 'pending') {
       return inertia.render('errors/not_found', {} as any)
     }
 
-    return (inertia.render as any)('dashboard/buyer/pay', { order })
+    const currency = await Currency.query()
+      .where('code', order.currency ?? 'USD')
+      .first()
+    const networks: string[] = currency?.networks ?? []
+    const countryCode = currency?.countryCode ?? 'CD'
+
+    return (inertia.render as any)('dashboard/buyer/pay', {
+      order: order.toJSON(),
+      currency: currency?.toJSON(),
+      networks,
+      countryCode,
+    })
   }
 
   async pay({ params, request, response, auth, session, inertia }: HttpContext) {
-    const order = await Order.query()
-      .where('id', params.id)
-      .where('buyerId', auth.user!.id)
-      .first()
+    const order = await Order.query().where('id', params.id).where('buyerId', auth.user!.id).first()
 
     if (!order) return response.status(404).json({ error: 'Order not found' })
-    if (order.status !== 'pending') return response.status(400).json({ error: 'Order cannot be paid' })
+    if (order.status !== 'pending')
+      return response.status(400).json({ error: 'Order cannot be paid' })
 
     const phone = request.input('phone')
     const network = request.input('network')
@@ -146,13 +159,16 @@ export default class BuyerController {
 
     try {
       const mbiyopay = new MbiyopayService()
+      const currency = await Currency.query()
+        .where('code', order.currency ?? 'USD')
+        .first()
 
       const result = await mbiyopay.initiatePayin({
         amount: Number(order.totalGrossAmount),
         currency: order.currency ?? 'USD',
         phoneNumber: phone,
         network,
-        countryCode: 'CD',
+        countryCode: currency?.countryCode ?? 'CD',
         orderId: order.orderNumber,
       })
 
@@ -167,7 +183,7 @@ export default class BuyerController {
         })
         session.flash('info', 'Payment requires PIN verification.')
         return (inertia.render as any)('dashboard/buyer/pay', {
-          order,
+          order: order.toJSON(),
           pinRequired: true,
           transactionId: result.transaction_id,
           instructions: result.instructions,
@@ -179,7 +195,7 @@ export default class BuyerController {
       }
 
       session.flash('success', 'Payment initiated. Waiting for confirmation.')
-      response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })
+      response.redirect().toRoute('dashboard.orders.show', { id: order.id })
     } catch (error: any) {
       session.flash('error', `Payment failed: ${error.message}`)
       response.redirect().back()

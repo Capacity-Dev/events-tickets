@@ -3,6 +3,9 @@ import type { routes } from './index.ts'
 
 export interface ApiDefinition {
   home: typeof routes['home']
+  tickets: {
+    show: typeof routes['tickets.show']
+  }
   events: {
     index: typeof routes['events.index']
     search: typeof routes['events.search']
@@ -19,6 +22,13 @@ export interface ApiDefinition {
   order: {
     confirmation: typeof routes['order.confirmation']
   }
+  payment: {
+    pay: typeof routes['payment.pay']
+    initiate: typeof routes['payment.initiate']
+    pending: typeof routes['payment.pending']
+    success: typeof routes['payment.success']
+    status: typeof routes['payment.status']
+  }
   auth: {
     google: {
       redirect: typeof routes['auth.google.redirect']
@@ -34,41 +44,48 @@ export interface ApiDefinition {
     store: typeof routes['session.store']
     destroy: typeof routes['session.destroy']
   }
-  dashboard: {
-    buyer: {
-      orders: typeof routes['dashboard.buyer.orders'] & {
-        show: typeof routes['dashboard.buyer.orders.show']
-        pay: typeof routes['dashboard.buyer.orders.pay']
-      }
-      tickets: typeof routes['dashboard.buyer.tickets']
-    }
-    organizer: {
-      events: typeof routes['dashboard.organizer.events'] & {
-        create: typeof routes['dashboard.organizer.events.create']
-        store: typeof routes['dashboard.organizer.events.store']
-        edit: typeof routes['dashboard.organizer.events.edit']
-        update: typeof routes['dashboard.organizer.events.update']
-        destroy: typeof routes['dashboard.organizer.events.destroy']
-        publish: typeof routes['dashboard.organizer.events.publish']
-      }
-      analytics: typeof routes['dashboard.organizer.analytics']
-      checkin: typeof routes['dashboard.organizer.checkin']
-      payouts: typeof routes['dashboard.organizer.payouts'] & {
-        request: typeof routes['dashboard.organizer.payouts.request']
+  dashboard: typeof routes['dashboard'] & {
+    settings: typeof routes['dashboard.settings']
+    events: typeof routes['dashboard.events'] & {
+      create: typeof routes['dashboard.events.create']
+      store: typeof routes['dashboard.events.store']
+      edit: typeof routes['dashboard.events.edit']
+      update: typeof routes['dashboard.events.update']
+      destroy: typeof routes['dashboard.events.destroy']
+      publish: typeof routes['dashboard.events.publish']
+      analytics: typeof routes['dashboard.events.analytics']
+      ticketTypes: {
+        update: typeof routes['dashboard.events.ticketTypes.update']
       }
     }
+    checkin: typeof routes['dashboard.checkin']
+    payouts: typeof routes['dashboard.payouts'] & {
+      request: typeof routes['dashboard.payouts.request']
+    }
+    clients: typeof routes['dashboard.clients']
+    orders: typeof routes['dashboard.orders'] & {
+      show: typeof routes['dashboard.orders.show']
+      pay: typeof routes['dashboard.orders.pay']
+    }
+    pay: typeof routes['dashboard.pay']
+    tickets: typeof routes['dashboard.tickets']
   }
   orders: {
-    pay: typeof routes['orders.pay']
     store: typeof routes['orders.store']
   }
   admin: {
+    dashboard: typeof routes['admin.dashboard']
     events: {
       pending: typeof routes['admin.events.pending']
       approve: typeof routes['admin.events.approve']
       reject: typeof routes['admin.events.reject']
+      freeze: typeof routes['admin.events.freeze']
+      unfreeze: typeof routes['admin.events.unfreeze']
     }
     users: typeof routes['admin.users'] & {
+      show: typeof routes['admin.users.show']
+      edit: typeof routes['admin.users.edit']
+      update: typeof routes['admin.users.update']
       role: typeof routes['admin.users.role']
     }
     fee: {
@@ -80,6 +97,10 @@ export interface ApiDefinition {
     payouts: {
       process: typeof routes['admin.payouts.process']
     }
+    transactions: typeof routes['admin.transactions'] & {
+      show: typeof routes['admin.transactions.show']
+      recheck: typeof routes['admin.transactions.recheck']
+    }
     categories: typeof routes['admin.categories'] & {
       store: typeof routes['admin.categories.store']
       delete: typeof routes['admin.categories.delete']
@@ -89,6 +110,11 @@ export interface ApiDefinition {
     }
     whatsapp: typeof routes['admin.whatsapp'] & {
       store: typeof routes['admin.whatsapp.store']
+    }
+    settings: typeof routes['admin.settings']
+    currencies: typeof routes['admin.currencies'] & {
+      store: typeof routes['admin.currencies.store']
+      update: typeof routes['admin.currencies.update']
     }
   }
 }

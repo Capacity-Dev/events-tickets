@@ -19,6 +19,18 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'tickets.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/tickets/:uuid'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { uuid: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'events.index': {
     methods: ["GET","HEAD"]
     pattern: '/events'
@@ -115,6 +127,66 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'payment.pay': {
+    methods: ["GET","HEAD"]
+    pattern: '/payment/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'payment.initiate': {
+    methods: ["POST"]
+    pattern: '/payment/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'payment.pending': {
+    methods: ["GET","HEAD"]
+    pattern: '/payment/:id/pending'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'payment.success': {
+    methods: ["GET","HEAD"]
+    pattern: '/payment/:id/success'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'payment.status': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payment/:id/status'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'auth.google.redirect': {
     methods: ["GET","HEAD"]
     pattern: '/auth/google'
@@ -199,9 +271,9 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/session_controller').default['destroy']>>>
     }
   }
-  'dashboard.buyer.orders': {
+  'dashboard': {
     methods: ["GET","HEAD"]
-    pattern: '/dashboard/buyer/orders'
+    pattern: '/dashboard'
     types: {
       body: {}
       paramsTuple: []
@@ -211,21 +283,9 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'dashboard.buyer.orders.show': {
+  'dashboard.settings': {
     methods: ["GET","HEAD"]
-    pattern: '/dashboard/buyer/orders/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.buyer.tickets': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard/buyer/tickets'
+    pattern: '/dashboard/settings'
     types: {
       body: {}
       paramsTuple: []
@@ -235,25 +295,217 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'dashboard.buyer.orders.pay': {
+  'dashboard.events': {
     methods: ["GET","HEAD"]
-    pattern: '/dashboard/buyer/orders/:id/pay'
+    pattern: '/dashboard/events'
     types: {
       body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
+      paramsTuple: []
+      params: {}
       query: {}
       response: unknown
       errorResponse: unknown
     }
   }
-  'orders.pay': {
+  'dashboard.events.create': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/events/create'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.events.store': {
     methods: ["POST"]
-    pattern: '/dashboard/buyer/orders/:id/pay'
+    pattern: '/dashboard/events'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.events.edit': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/events/:id/edit'
     types: {
       body: {}
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.events.update': {
+    methods: ["PUT"]
+    pattern: '/dashboard/events/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.events.destroy': {
+    methods: ["DELETE"]
+    pattern: '/dashboard/events/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.events.publish': {
+    methods: ["POST"]
+    pattern: '/dashboard/events/:id/publish'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.events.analytics': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/events/:id/analytics'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.events.ticketTypes.update': {
+    methods: ["PATCH"]
+    pattern: '/dashboard/events/:id/ticket-types/:ticketTypeId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; ticketTypeId: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.checkin': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/check-in/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.payouts': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/payouts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.payouts.request': {
+    methods: ["POST"]
+    pattern: '/dashboard/payouts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.clients': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/clients'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.orders': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/orders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.orders.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/orders/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.orders.pay': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/orders/:id/pay'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.pay': {
+    methods: ["POST"]
+    pattern: '/dashboard/orders/:id/pay'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.tickets': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/tickets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
       query: {}
       response: unknown
       errorResponse: unknown
@@ -271,129 +523,9 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'dashboard.organizer.events': {
+  'admin.dashboard': {
     methods: ["GET","HEAD"]
-    pattern: '/dashboard/organizer/events'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.events.create': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard/organizer/events/create'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.events.store': {
-    methods: ["POST"]
-    pattern: '/dashboard/organizer/events'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.events.edit': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard/organizer/events/:id/edit'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.events.update': {
-    methods: ["PUT"]
-    pattern: '/dashboard/organizer/events/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.events.destroy': {
-    methods: ["DELETE"]
-    pattern: '/dashboard/organizer/events/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.events.publish': {
-    methods: ["POST"]
-    pattern: '/dashboard/organizer/events/:id/publish'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.analytics': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard/organizer/events/:id/analytics'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.checkin': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard/organizer/check-in/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.payouts': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard/organizer/payouts'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'dashboard.organizer.payouts.request': {
-    methods: ["POST"]
-    pattern: '/dashboard/organizer/payouts'
+    pattern: '/admin'
     types: {
       body: {}
       paramsTuple: []
@@ -439,6 +571,30 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'admin.events.freeze': {
+    methods: ["POST"]
+    pattern: '/admin/events/:id/freeze'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.events.unfreeze': {
+    methods: ["POST"]
+    pattern: '/admin/events/:id/unfreeze'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'admin.users': {
     methods: ["GET","HEAD"]
     pattern: '/admin/users'
@@ -446,6 +602,42 @@ export interface Registry {
       body: {}
       paramsTuple: []
       params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.users.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/users/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.users.edit': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/users/:id/edit'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.users.update': {
+    methods: ["PUT"]
+    pattern: '/admin/users/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
       query: {}
       response: unknown
       errorResponse: unknown
@@ -502,6 +694,42 @@ export interface Registry {
   'admin.payouts.process': {
     methods: ["POST"]
     pattern: '/admin/payouts/:id/process'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.transactions': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/transactions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.transactions.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/transactions/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.transactions.recheck': {
+    methods: ["POST"]
+    pattern: '/admin/transactions/:id/recheck'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -590,6 +818,54 @@ export interface Registry {
       body: {}
       paramsTuple: []
       params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.settings': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.currencies': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/currencies'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.currencies.store': {
+    methods: ["POST"]
+    pattern: '/admin/currencies'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.currencies.update': {
+    methods: ["PATCH"]
+    pattern: '/admin/currencies/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
       query: {}
       response: unknown
       errorResponse: unknown

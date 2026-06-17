@@ -84,8 +84,10 @@
     "lucide-react": "^1.18.0",
     "luxon": "^3.7.2",
     "motion": "^12.40.0",
+    "pg": "^8.21.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-easy-crop": "^6.0.2",
     "reflect-metadata": "^0.2.2",
     "sonner": "^2.0.7",
     "tailwindcss": "^4.3.1"

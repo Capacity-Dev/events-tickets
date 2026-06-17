@@ -3,7 +3,9 @@ export default function BuyerTickets({ tickets }: { tickets: any[] }) {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-heading">My Tickets</h1>
-        <p className="text-sm text-muted-foreground mt-1">{tickets.length} ticket{tickets.length !== 1 ? 's' : ''}</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          {tickets.length} ticket{tickets.length !== 1 ? 's' : ''}
+        </p>
       </div>
 
       {tickets.length === 0 ? (
@@ -18,13 +20,19 @@ export default function BuyerTickets({ tickets }: { tickets: any[] }) {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-medium">{ticket.event?.title ?? 'Unknown event'}</p>
-                  <p className="text-sm text-muted-foreground">{ticket.ticketType?.name ?? 'Unknown type'}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {ticket.ticketType?.name ?? 'Unknown type'}
+                  </p>
                 </div>
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                  ticket.status === 'valid' ? 'bg-success/10 text-success' :
-                  ticket.status === 'used' ? 'bg-muted text-muted-foreground' :
-                  'bg-destructive/10 text-destructive'
-                }`}>
+                <span
+                  className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    ticket.status === 'valid'
+                      ? 'bg-success/10 text-success'
+                      : ticket.status === 'used'
+                        ? 'bg-muted text-muted-foreground'
+                        : 'bg-destructive/10 text-destructive'
+                  }`}
+                >
                   {ticket.status}
                 </span>
               </div>

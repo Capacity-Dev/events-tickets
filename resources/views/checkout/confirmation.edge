@@ -11,7 +11,7 @@
         <p class="text-muted-foreground mb-2">{{ t('order.success') }}</p>
         <p class="text-sm font-semibold text-primary mb-8">{{ t('order.number') }} {{ order.orderNumber }}</p>
 
-        <div class="bg-card border border-border rounded-[16px] p-6 sm:p-8 text-left mb-8">
+        <div class="bg-card border border-border rounded-xl p-6 sm:p-8 text-left mb-8">
           <h2 class="font-heading text-lg mb-4">{{ t('order.details') }}</h2>
           <div class="space-y-4">
             @each(item in order.items)
@@ -20,15 +20,42 @@
                   <div class="font-semibold text-sm">{{ item.ticketType.name }}</div>
                   <div class="text-xs text-muted-foreground">{{ t('order.qty') }} {{ item.quantity }}</div>
                 </div>
-                <div class="font-bold">${{ item.lineTotal }}</div>
+                <div class="font-bold">{{ currencySymbol }}{{ item.lineTotal }}</div>
               </div>
             @endeach
           </div>
           <div class="flex justify-between items-center pt-4 mt-2 border-t border-border font-bold text-lg">
             <span>{{ t('order.total') }}</span>
-            <span>${{ order.totalGrossAmount }}</span>
+            <span>{{ currencySymbol }}{{ order.totalGrossAmount }}</span>
           </div>
         </div>
+
+        @let(hasTickets = order.items.some(item => item.tickets && item.tickets.length))
+        @if(hasTickets)
+          <div class="bg-card border border-border rounded-xl p-6 sm:p-8 text-left mb-8">
+            <h2 class="font-heading text-lg mb-4">{{ t('tickets.your_tickets') }}</h2>
+            <div class="space-y-4">
+              @each(item in order.items)
+                @if(item.tickets && item.tickets.length)
+                  <div>
+                    <div class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-2">{{ item.ticketType.name }} (x{{ item.tickets.length }})</div>
+                    @each(ticket in item.tickets)
+                      <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
+                        <div class="flex items-center gap-3">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h3l2 8H3.5a1.5 1.5 0 010-3h-1"/><path d="M14 4h-3l-2 8h3.5a1.5 1.5 0 010-3h1"/></svg>
+                          <span class="text-sm font-mono tracking-tight">{{ ticket.ticketNumber }}</span>
+                        </div>
+                        <a href="/tickets/{{ ticket.uuid }}" class="btn-primary btn-sm no-underline">
+                          {{ t('ticket.view') }}
+                        </a>
+                      </div>
+                    @endeach
+                  </div>
+                @endif
+              @endeach
+            </div>
+          </div>
+        @endif
 
         <p class="text-sm text-muted-foreground">
           {{ t('order.summary_sent') }}

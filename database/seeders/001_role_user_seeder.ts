@@ -12,6 +12,23 @@ export default class extends BaseSeeder {
     ])
 
     const organizerRole = roles.find((r) => r.name === 'organizer')!
+    const adminRole = roles.find((r) => r.name === 'admin')!
+
+    const admin = await User.create({
+      email: 'admin@demo.com',
+      password: 'password123',
+      fullName: 'Admin User',
+      roleId: adminRole.id,
+    })
+
+    await Profile.create({
+      id: crypto.randomUUID(),
+      userId: admin.id,
+      firstName: 'Admin',
+      lastName: 'User',
+      phoneNumber: '+243800000000',
+      locale: 'fr_FR',
+    })
 
     const organizer = await User.create({
       email: 'organizer@demo.com',

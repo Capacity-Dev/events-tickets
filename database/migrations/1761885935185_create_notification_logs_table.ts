@@ -9,7 +9,12 @@ export default class extends BaseSchema {
       table.string('recipient_type').notNullable()
       table.string('recipient_identifier').nullable()
       table.string('channel').notNullable()
-      table.string('template_id', 36).references('id').inTable('whatsapp_templates').onDelete('SET NULL').nullable()
+      table
+        .uuid('template_id')
+        .references('id')
+        .inTable('whatsapp_templates')
+        .onDelete('SET NULL')
+        .nullable()
       table.string('status').notNullable().defaultTo('queued')
       table.json('payload').nullable()
       table.string('external_message_id').nullable()

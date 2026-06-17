@@ -7,7 +7,13 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
       table.string('order_number').notNullable().unique()
-      table.integer('buyer_id').unsigned().references('id').inTable('users').onDelete('SET NULL').nullable()
+      table
+        .integer('buyer_id')
+        .unsigned()
+        .references('id')
+        .inTable('users')
+        .onDelete('SET NULL')
+        .nullable()
       table.string('guest_email').nullable()
       table.string('guest_phone').nullable()
       table.string('status').notNullable().defaultTo('pending')

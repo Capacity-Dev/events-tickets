@@ -6,8 +6,13 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string('event_id', 36).references('id').inTable('events').onDelete('CASCADE').notNullable()
-      table.string('fee_rule_id', 36).references('id').inTable('fee_rules').onDelete('CASCADE').notNullable()
+      table.uuid('event_id').references('id').inTable('events').onDelete('CASCADE').notNullable()
+      table
+        .uuid('fee_rule_id')
+        .references('id')
+        .inTable('fee_rules')
+        .onDelete('CASCADE')
+        .notNullable()
       table.decimal('override_value', 10, 2).nullable()
       table.timestamp('effective_from').nullable()
       table.timestamp('effective_until').nullable()

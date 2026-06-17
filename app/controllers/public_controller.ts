@@ -2,19 +2,25 @@ import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
 import Event from '#models/event'
 import Category from '#models/category'
+import Ticket from '#models/ticket'
+import { loadActiveCurrencies, getCurrencySymbol } from '../helpers/currency.js'
 
 export default class PublicController {
   async home({ view }: HttpContext) {
+    const currencies = await loadActiveCurrencies()
+
     const enrich = (events: Event[]) =>
       events.map((e) => {
         const serialized = e.toJSON() as Record<string, unknown>
         serialized.minPrice = (e as unknown as { minPrice: number | null }).minPrice ?? null
         serialized.formattedDate = e.startDate.toFormat('MMMM d, yyyy · h:mm a')
+        serialized.currencySymbol = getCurrencySymbol(currencies, (e as any).currency)
         return serialized
       })
 
     const featuredEvents = await Event.query()
       .where('status', 'published')
+      .andWhere('isFrozen', false)
       .andWhere('isFeatured', true)
       .preload('category')
       .select('*')
@@ -31,6 +37,7 @@ export default class PublicController {
 
     const recentEvents = await Event.query()
       .where('status', 'published')
+      .andWhere('isFrozen', false)
       .andWhere('isFeatured', false)
       .preload('category')
       .select('*')
@@ -52,6 +59,7 @@ export default class PublicController {
   }
 
   async index({ view, request }: HttpContext) {
+    const currencies = await loadActiveCurrencies()
     const page = Number(request.input('page', 1))
     const categorySlug = request.input('category', '')
     const q = request.input('q', '')
@@ -61,6 +69,7 @@ export default class PublicController {
 
     const query = Event.query()
       .where('events.status', 'published')
+      .andWhere('events.isFrozen', false)
       .preload('category')
       .orderBy('startDate', 'asc')
 
@@ -103,14 +112,16 @@ export default class PublicController {
       from,
       to,
       queryString: queryString.toString(),
-      head: '<meta name="description" content="Browse and discover events in your city. Find concerts, conferences, workshops, and more." />',
+      currencySymbol: currencies.length > 0 ? currencies[0].symbol : '$',
     })
   }
 
   async show({ view, response, params }: HttpContext) {
+    const currencies = await loadActiveCurrencies()
     const event = await Event.query()
       .where('slug', params.slug)
       .where('status', 'published')
+      .andWhere('isFrozen', false)
       .preload('category')
       .preload('organizer')
       .first()
@@ -119,10 +130,8 @@ export default class PublicController {
       return response.status(404).send('Event not found')
     }
 
-    const ticketTypes = await event
-      .related('ticketTypes')
-      .query()
-      .orderBy('sortOrder', 'asc')
+    const ticketTypes = await event.related('ticketTypes').query().orderBy('sortOrder', 'asc')
+    const eventCurrency = (event as any).currency ?? 'USD'
 
     const enrichedTicketTypes = ticketTypes.map((t) => {
       const sold = t.quantitySold ?? 0
@@ -138,13 +147,12 @@ export default class PublicController {
         ...t.toJSON(),
         remaining: Math.max(remaining, 0),
         availabilityClass,
+        currencySymbol: getCurrencySymbol(currencies, (t as any).currency ?? eventCurrency),
       }
     })
 
     const appUrlVal = env.get('APP_URL')
-    const safeDesc = event.description
-      ? event.description.replace(/"/g, '\\"').slice(0, 500)
-      : ''
+    const safeDesc = event.description ? event.description.replace(/"/g, '\\"').slice(0, 500) : ''
     const head = `
     <meta name="description" content="${event.description ? event.description.slice(0, 160) : 'Event details'}" />
     <meta property="og:title" content="${event.title}" />
@@ -190,6 +198,7 @@ export default class PublicController {
 
     const query = Event.query()
       .where('status', 'published')
+      .andWhere('isFrozen', false)
       .preload('category')
       .orderBy('startDate', 'asc')
 
@@ -225,9 +234,25 @@ export default class PublicController {
     }
   }
 
+  async showTicket({ params, view }: HttpContext) {
+    const ticket = await Ticket.query()
+      .where('uuid', params.uuid)
+      .preload('event', (q) => q.preload('category'))
+      .preload('ticketType')
+      .preload('orderItem', (q) => q.preload('order'))
+      .first()
+
+    if (!ticket) {
+      return view.render('errors/not_found')
+    }
+
+    return view.render('tickets/show', { ticket, appUrl: env.get('APP_URL') })
+  }
+
   async sitemap({ response }: HttpContext) {
     const events = await Event.query()
       .where('status', 'published')
+      .andWhere('isFrozen', false)
       .select('slug', 'updatedAt')
       .orderBy('updatedAt', 'desc')
 

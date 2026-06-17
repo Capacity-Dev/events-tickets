@@ -24,7 +24,9 @@ export default function CheckoutPage() {
             <div>
               <Label htmlFor="email">Email</Label>
               <Input id="email" name="email" type="email" required />
-              <p className="text-xs text-muted-foreground mt-1">Tickets will be sent to this email</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Tickets will be sent to this email
+              </p>
             </div>
           </>
         )}

@@ -28,11 +28,21 @@ export default function AdminUsers({ users }: { users: any[] }) {
                 <TableCell className="font-medium">{user.fullName ?? '-'}</TableCell>
                 <TableCell className="text-sm">{user.email}</TableCell>
                 <TableCell>
-                  <Badge variant={user.role?.name === 'admin' ? 'default' : user.role?.name === 'organizer' ? 'secondary' : 'outline'}>
+                  <Badge
+                    variant={
+                      user.role?.name === 'admin'
+                        ? 'default'
+                        : user.role?.name === 'organizer'
+                          ? 'secondary'
+                          : 'outline'
+                    }
+                  >
                     {user.role?.name ?? 'none'}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

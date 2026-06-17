@@ -66,8 +66,8 @@
                   </div>
                   <div class="flex items-center justify-between pt-4 border-t border-border">
                     <div class="text-xl font-bold font-heading">
-                      @if(event.minPrice ?? event.min_price)
-                        <span class="text-xs font-normal text-muted-foreground">{{ t('events.from_price') }}</span> ${{ event.minPrice ?? event.min_price }}
+                      @if(event.minPrice || event.min_price)
+                        <span class="text-xs font-normal text-muted-foreground">{{ t('events.from_price') }}</span> {{ currencySymbol }}{{ event.minPrice || event.min_price }}
                       @endif
                     </div>
                   </div>

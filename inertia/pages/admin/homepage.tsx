@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react'
 import { Badge } from '~/components/ui/badge'
 import {
   Table,
@@ -9,10 +10,14 @@ import {
 } from '~/components/ui/table'
 
 export default function AdminHomepage({ events }: { events: any[] }) {
+  const { adminPrefix } = usePage().props as any
+
   return (
     <div>
       <h1 className="text-2xl font-heading mb-6">Homepage Curation</h1>
-      <p className="text-sm text-muted-foreground mb-4">Toggle featured status to control which events appear on the homepage.</p>
+      <p className="text-sm text-muted-foreground mb-4">
+        Toggle featured status to control which events appear on the homepage.
+      </p>
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
@@ -36,8 +41,15 @@ export default function AdminHomepage({ events }: { events: any[] }) {
                   {event.startDate ? new Date(event.startDate).toLocaleDateString() : '-'}
                 </TableCell>
                 <TableCell className="text-right">
-                  <form action={`/admin/homepage/${event.id}/toggle-featured`} method="POST" className="inline">
-                    <button type="submit" className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-3 text-xs font-medium cursor-pointer">
+                  <form
+                    action={`/${adminPrefix}/homepage/${event.id}/toggle-featured`}
+                    method="POST"
+                    className="inline"
+                  >
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-3 text-xs font-medium cursor-pointer"
+                    >
                       {event.isFeatured ? 'Unfeature' : 'Feature'}
                     </button>
                   </form>

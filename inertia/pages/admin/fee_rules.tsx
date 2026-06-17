@@ -26,7 +26,12 @@ export default function AdminFeeRules({ rules }: { rules: any[] }) {
           </div>
           <div>
             <Label htmlFor="type">Type</Label>
-            <select id="type" name="type" className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" required>
+            <select
+              id="type"
+              name="type"
+              className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+              required
+            >
               <option value="percentage">Percentage</option>
               <option value="fixed_amount">Fixed Amount</option>
               <option value="hybrid">Hybrid</option>
@@ -40,7 +45,11 @@ export default function AdminFeeRules({ rules }: { rules: any[] }) {
             </div>
             <div>
               <Label htmlFor="appliesTo">Applies To</Label>
-              <select id="appliesTo" name="appliesTo" className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
+              <select
+                id="appliesTo"
+                name="appliesTo"
+                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+              >
                 <option value="buyer">Buyer</option>
                 <option value="organizer">Organizer</option>
                 <option value="split">Split</option>
@@ -64,16 +73,29 @@ export default function AdminFeeRules({ rules }: { rules: any[] }) {
           </TableHeader>
           <TableBody>
             {rules.length === 0 ? (
-              <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No fee rules</TableCell></TableRow>
-            ) : rules.map((r: any) => (
-              <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.name}</TableCell>
-                <TableCell className="text-sm">{r.type}</TableCell>
-                <TableCell className="text-sm">{r.value}{r.type === 'percentage' ? '%' : ''}</TableCell>
-                <TableCell className="text-sm">{r.appliesTo}</TableCell>
-                <TableCell><Badge variant={r.status === 'active' ? 'default' : 'outline'}>{r.status}</Badge></TableCell>
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  No fee rules
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              rules.map((r: any) => (
+                <TableRow key={r.id}>
+                  <TableCell className="font-medium">{r.name}</TableCell>
+                  <TableCell className="text-sm">{r.type}</TableCell>
+                  <TableCell className="text-sm">
+                    {r.value}
+                    {r.type === 'percentage' ? '%' : ''}
+                  </TableCell>
+                  <TableCell className="text-sm">{r.appliesTo}</TableCell>
+                  <TableCell>
+                    <Badge variant={r.status === 'active' ? 'default' : 'outline'}>
+                      {r.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

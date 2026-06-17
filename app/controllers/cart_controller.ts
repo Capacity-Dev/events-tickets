@@ -8,6 +8,7 @@ import Role from '#models/role'
 import Profile from '#models/profile'
 import Event from '#models/event'
 import { DateTime } from 'luxon'
+import { loadActiveCurrencies, getCurrencySymbol } from '../helpers/currency.js'
 
 export default class CartController {
   async add({ request, session, response }: HttpContext) {
@@ -20,7 +21,12 @@ export default class CartController {
       return response.redirect().back()
     }
 
-    const cart = (session.get('cart') ?? []) as Array<{ ticketTypeId: string; name: string; price: number; quantity: number }>
+    const cart = (session.get('cart') ?? []) as Array<{
+      ticketTypeId: string
+      name: string
+      price: number
+      quantity: number
+    }>
     const existing = cart.find((c) => c.ticketTypeId === ticketTypeId)
 
     if (existing) {
@@ -42,9 +48,9 @@ export default class CartController {
   async buy({ request, response, auth, session }: HttpContext) {
     const ticketTypeId = request.input('ticketTypeId')
     const quantity = Number(request.input('quantity', 1))
-    const name = request.input('name', '').trim()
-    const phone = request.input('phone', '').trim()
-    const email = request.input('email', '').trim().toLowerCase()
+    const name = (request.input('name') ?? '').trim()
+    const phone = (request.input('phone') ?? '').trim()
+    const email = (request.input('email') ?? '').trim().toLowerCase()
 
     if (!name) {
       session.flash('error', 'Veuillez entrer votre nom')
@@ -60,11 +66,13 @@ export default class CartController {
 
     const ticketType = await TicketType.find(ticketTypeId)
     if (!ticketType || ticketType.status !== 'active') {
+      session.flash('error', "Ce type de billet n'est plus disponible")
       response.redirect().back()
       return
     }
 
-    const remaining = ticketType.quantityTotal - (ticketType.quantitySold ?? 0) - (ticketType.quantityReserved ?? 0)
+    const remaining =
+      ticketType.quantityTotal - (ticketType.quantitySold ?? 0) - (ticketType.quantityReserved ?? 0)
     if (remaining < quantity) {
       session.flash('error', 'Plus assez de places disponibles')
       response.redirect().back()
@@ -72,7 +80,8 @@ export default class CartController {
     }
 
     const event = await Event.find(ticketType.eventId)
-    if (!event || event.status !== 'published') {
+    if (!event || event.status !== 'published' || event.isFrozen) {
+      session.flash('error', "Cet événement n'est plus disponible")
       response.redirect().back()
       return
     }
@@ -88,69 +97,59 @@ export default class CartController {
       buyerId: auth.user?.id ?? null,
       guestEmail: email || null,
       guestPhone: phone || null,
-      status: 'paid',
+      status: 'pending',
       totalGrossAmount: lineTotal,
       platformFeeAmount: 0,
       organizerNetAmount: lineTotal,
       paymentProcessorFee: 0,
-      currency: 'USD',
-      paidAt: DateTime.now(),
-    })
+      currency: ticketType.currency ?? 'USD',
+    } as any)
 
-    await this.createOrderItemsAndTickets(orderId, ticketType, quantity, lineTotal)
-
-    session.flash('success', 'Achat réussi ! Votre commande est confirmée.')
-    response.redirect().toRoute('order.confirmation', { id: orderId })
-  }
-
-  private async createOrderItemsAndTickets(orderId: string, ticketType: TicketType, quantity: number, lineTotal: number) {
-    const orderItemId = crypto.randomUUID()
-    await OrderItem.create({
-      id: orderItemId,
-      orderId: orderId,
-      ticketTypeId: ticketType.id,
-      unitPrice: Number(ticketType.basePrice),
-      quantity,
-      lineTotal,
-    })
-
-    await TicketType.query().where('id', ticketType.id).increment('quantitySold', quantity)
-    await TicketType.query().where('id', ticketType.id).decrement('quantityReserved', quantity)
-
-    for (let i = 0; i < quantity; i++) {
-      const uuid = crypto.randomUUID()
-      const num = `${String(Date.now()).slice(-6)}${String(i).padStart(2, '0')}`
-      await Ticket.create({
+    await OrderItem.createMany([
+      {
         id: crypto.randomUUID(),
-        orderItemId: orderItemId,
-        eventId: ticketType.eventId,
+        orderId: orderId,
         ticketTypeId: ticketType.id,
-        ticketNumber: `TKT-${num}`,
-        uuid,
-        qrToken: uuid,
-        status: 'valid',
-      })
-    }
+        unitPrice: Number(ticketType.basePrice),
+        quantity,
+        lineTotal,
+      },
+    ] as any)
+
+    await TicketType.query().where('id', ticketType.id).increment('quantityReserved', quantity)
+
+    session.flash('success', 'Commande créée. Veuillez procéder au paiement.')
+    response.redirect().toRoute('payment.pay', { id: orderId })
   }
 
   async confirmation({ params, view }: HttpContext) {
+    const currencies = await loadActiveCurrencies()
     const order = await Order.query()
       .where('id', params.id)
-      .preload('items', (q) => q.preload('ticketType'))
+      .preload('items', (q) => q.preload('ticketType').preload('tickets'))
       .first()
 
     if (!order) {
       return view.render('errors/not_found')
     }
 
-    return view.render('checkout/confirmation', { order })
+    return view.render('checkout/confirmation', {
+      order,
+      currencySymbol: getCurrencySymbol(currencies, order.currency),
+    })
   }
 
   async cart({ inertia, session }: HttpContext) {
-    const cart = (session.get('cart') ?? []) as Array<{ ticketTypeId: string; name: string; price: number; quantity: number }>
+    const currencies = await loadActiveCurrencies()
+    const cart = (session.get('cart') ?? []) as Array<{
+      ticketTypeId: string
+      name: string
+      price: number
+      quantity: number
+    }>
     const total = cart.reduce((sum, c) => sum + c.price * c.quantity, 0)
 
-    return (inertia.render as any)('checkout/cart', { cart, total })
+    return (inertia.render as any)('checkout/cart', { cart, total, currencies })
   }
 
   async checkout({ inertia }: HttpContext) {
@@ -158,7 +157,12 @@ export default class CartController {
   }
 
   async storeGuestOrder({ request, response, session, auth }: HttpContext) {
-    let cart = (session.get('cart') ?? []) as Array<{ ticketTypeId: string; name: string; price: number; quantity: number }>
+    let cart = (session.get('cart') ?? []) as Array<{
+      ticketTypeId: string
+      name: string
+      price: number
+      quantity: number
+    }>
 
     const directTicketTypeId = request.input('ticketTypeId')
     const directQuantity = Number(request.input('quantity', 1))
@@ -166,12 +170,14 @@ export default class CartController {
     if (cart.length === 0 && directTicketTypeId) {
       const ticketType = await TicketType.find(directTicketTypeId)
       if (ticketType) {
-        cart = [{
-          ticketTypeId: directTicketTypeId,
-          name: ticketType.name,
-          price: Number(ticketType.basePrice),
-          quantity: directQuantity,
-        }]
+        cart = [
+          {
+            ticketTypeId: directTicketTypeId,
+            name: ticketType.name,
+            price: Number(ticketType.basePrice),
+            quantity: directQuantity,
+          },
+        ]
       }
     }
 
@@ -237,7 +243,7 @@ export default class CartController {
       paymentProcessorFee: 0,
       currency: 'USD',
       paidAt: DateTime.now(),
-    })
+    } as any)
 
     for (const item of cart) {
       const ticketType = await TicketType.find(item.ticketTypeId)
@@ -252,10 +258,14 @@ export default class CartController {
         unitPrice: item.price,
         quantity: item.quantity,
         lineTotal,
-      })
+      } as any)
 
-      await TicketType.query().where('id', item.ticketTypeId).increment('quantitySold', item.quantity)
-      await TicketType.query().where('id', item.ticketTypeId).decrement('quantityReserved', item.quantity)
+      await TicketType.query()
+        .where('id', item.ticketTypeId)
+        .increment('quantitySold', item.quantity)
+      await TicketType.query()
+        .where('id', item.ticketTypeId)
+        .decrement('quantityReserved', item.quantity)
 
       for (let i = 0; i < item.quantity; i++) {
         const uuid = crypto.randomUUID()
@@ -277,7 +287,7 @@ export default class CartController {
     session.flash('success', 'Purchase complete! Tickets are ready.')
 
     if (auth.user) {
-      response.redirect().toRoute('dashboard.buyer.orders.show', { id: order.id })
+      response.redirect().toRoute('dashboard.orders.show', { id: order.id })
     } else {
       response.redirect().toRoute('events.index')
     }

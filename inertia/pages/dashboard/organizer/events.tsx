@@ -1,24 +1,12 @@
+import { router } from '@inertiajs/react'
 import { Badge } from '~/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '~/components/ui/table'
 
 const statusVariant: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
   draft: 'outline',
-  pending_approval: 'secondary',
   published: 'default',
   rejected: 'destructive',
   cancelled: 'outline',
   completed: 'secondary',
-}
-
-interface TicketTypeSummary {
-  quantitySold: number
 }
 
 interface EventSummary {
@@ -27,7 +15,7 @@ interface EventSummary {
   slug: string
   status: string
   startDate: string | null
-  ticketTypes?: TicketTypeSummary[]
+  ticketTypes?: { quantitySold: number; quantityTotal: number }[]
 }
 
 export default function OrganizerEvents({ events }: { events: EventSummary[] }) {
@@ -41,76 +29,90 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
           </p>
         </div>
         <a
-          href="/dashboard/organizer/events/create"
-          className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-8 px-2.5 text-sm font-medium"
+          href="/dashboard/events/create"
+          className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-9 px-3 text-sm font-medium no-underline"
         >
           Create Event
         </a>
       </div>
 
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Tickets sold</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {events.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-12">
-                  No events yet. Create your first event to get started.
-                </TableCell>
-              </TableRow>
-            ) : (
-              events.map((event) => (
-                <TableRow key={event.id}>
-                  <TableCell className="font-medium">{event.title}</TableCell>
-                  <TableCell>
-                    <Badge variant={statusVariant[event.status] ?? 'outline'}>
-                      {event.status.replace('_', ' ')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {event.startDate ? new Date(event.startDate).toLocaleDateString() : '-'}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {event.ticketTypes?.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0) ?? 0}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <a
-                        href={`/dashboard/organizer/events/${event.id}/edit`}
-                        className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-2 text-xs font-medium"
-                      >
-                        Edit
-                      </a>
-                      {event.status === 'draft' && (
-                        <form
-                          action={`/dashboard/organizer/events/${event.id}/publish`}
-                          method="POST"
-                          className="inline"
-                        >
-                          <button
-                            type="submit"
-                            className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-7 px-2 text-xs font-medium border-none cursor-pointer"
-                          >
-                            Publish
-                          </button>
-                        </form>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      {events.length === 0 ? (
+        <div className="text-center py-16 text-muted-foreground border rounded-xl bg-card">
+          <p className="text-lg font-medium mb-1">No events yet</p>
+          <p className="text-sm">Create your first event to start selling tickets.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {events.map((event) => {
+            const totalSold = event.ticketTypes?.reduce((s, t) => s + (t.quantitySold ?? 0), 0) ?? 0
+            const totalCapacity = event.ticketTypes?.reduce((s, t) => s + t.quantityTotal, 0) ?? 0
+            const fillRate = totalCapacity > 0 ? Math.round((totalSold / totalCapacity) * 100) : 0
+
+            return (
+              <div key={event.id} className="border rounded-xl p-5 bg-card space-y-3">
+                <div>
+                  <h3 className="font-semibold text-foreground">{event.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {event.startDate ? new Date(event.startDate).toLocaleDateString() : 'No date'}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <Badge variant={statusVariant[event.status] ?? 'outline'}>
+                    {event.status.replace('_', ' ')}
+                  </Badge>
+                  {event.ticketTypes && event.ticketTypes.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {totalSold} / {totalCapacity} sold
+                    </span>
+                  )}
+                </div>
+
+                {totalCapacity > 0 && (
+                  <div className="h-1.5 w-full rounded-full bg-muted">
+                    <div
+                      className="h-1.5 rounded-full bg-primary transition-all"
+                      style={{ width: `${Math.min(fillRate, 100)}%` }}
+                    />
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 pt-1">
+                  <a
+                    href={event.id ? `/dashboard/events/${event.id}/analytics` : '#'}
+                    onClick={!event.id ? (e) => e.preventDefault() : undefined}
+                    className="text-xs text-primary font-medium hover:underline"
+                  >
+                    View details &rarr;
+                  </a>
+
+                  <div className="flex-1" />
+
+                  <a
+                    href={event.id ? `/dashboard/events/${event.id}/edit` : '#'}
+                    onClick={!event.id ? (e) => e.preventDefault() : undefined}
+                    className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-2 text-xs font-medium no-underline text-foreground"
+                  >
+                    Edit
+                  </a>
+
+                  {event.status === 'draft' && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        event.id && router.post(`/dashboard/events/${event.id}/publish`)
+                      }
+                      className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-7 px-2 text-xs font-medium border-none cursor-pointer"
+                    >
+                      Publish
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

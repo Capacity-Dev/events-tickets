@@ -6,8 +6,14 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.integer('organizer_id').unsigned().references('id').inTable('users').onDelete('CASCADE').notNullable()
-      table.string('event_id', 36).references('id').inTable('events').onDelete('SET NULL').nullable()
+      table
+        .integer('organizer_id')
+        .unsigned()
+        .references('id')
+        .inTable('users')
+        .onDelete('CASCADE')
+        .notNullable()
+      table.uuid('event_id').references('id').inTable('events').onDelete('SET NULL').nullable()
       table.string('status').notNullable().defaultTo('pending')
       table.decimal('amount', 10, 2).notNullable()
       table.string('currency').defaultTo('USD')

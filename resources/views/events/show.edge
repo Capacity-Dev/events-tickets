@@ -99,9 +99,9 @@
                         </div>
                       </div>
                       <div class="text-right flex-shrink-0 min-w-[100px]">
-                        <div class="text-xl font-bold font-heading">${{ ticket.basePrice }}</div>
+                        <div class="text-xl font-bold font-heading">{{ ticket.currencySymbol }}{{ ticket.basePrice }}</div>
                         @if(ticket.status === 'active')
-                          <button type="button" onclick="openBuyModal('{{ ticket.id }}', '{{ ticket.name }}', '{{ ticket.basePrice }}')" class="btn-primary btn-sm w-full mt-2 whitespace-nowrap">
+                          <button type="button" onclick="openBuyModal('{{ ticket.id }}', '{{ ticket.name }}', '{{ ticket.basePrice }}', '{{ ticket.currencySymbol }}')" class="btn-primary btn-sm w-full mt-2 whitespace-nowrap">
                             {{ t('event.buy') }}
                           </button>
                         @else
@@ -159,10 +159,10 @@
 </div>
 
 <script>
-function openBuyModal(id, name, price) {
+function openBuyModal(id, name, price, currencySymbol) {
   document.getElementById('modal-ticket-id').value = id
   document.getElementById('modal-ticket-name').textContent = name
-  document.getElementById('modal-ticket-price').textContent = '$' + price
+  document.getElementById('modal-ticket-price').textContent = (currencySymbol || '$') + price
   document.getElementById('buy-modal').classList.remove('hidden')
   document.body.style.overflow = 'hidden'
 }
