@@ -14,12 +14,17 @@ declare module '@adonisjs/inertia/types' {
   export interface InertiaPages {
     'admin/categories': ExtractProps<(typeof import('../../inertia/pages/admin/categories.tsx'))['default']>
     'admin/currencies': ExtractProps<(typeof import('../../inertia/pages/admin/currencies.tsx'))['default']>
+    'admin/dashboard': ExtractProps<(typeof import('../../inertia/pages/admin/dashboard.tsx'))['default']>
     'admin/events_pending': ExtractProps<(typeof import('../../inertia/pages/admin/events_pending.tsx'))['default']>
     'admin/fee_rules': ExtractProps<(typeof import('../../inertia/pages/admin/fee_rules.tsx'))['default']>
     'admin/finances': ExtractProps<(typeof import('../../inertia/pages/admin/finances.tsx'))['default']>
     'admin/homepage': ExtractProps<(typeof import('../../inertia/pages/admin/homepage.tsx'))['default']>
     'admin/index': ExtractProps<(typeof import('../../inertia/pages/admin/index.tsx'))['default']>
     'admin/settings': ExtractProps<(typeof import('../../inertia/pages/admin/settings.tsx'))['default']>
+    'admin/transaction_show': ExtractProps<(typeof import('../../inertia/pages/admin/transaction_show.tsx'))['default']>
+    'admin/transactions': ExtractProps<(typeof import('../../inertia/pages/admin/transactions.tsx'))['default']>
+    'admin/user_edit': ExtractProps<(typeof import('../../inertia/pages/admin/user_edit.tsx'))['default']>
+    'admin/user_show': ExtractProps<(typeof import('../../inertia/pages/admin/user_show.tsx'))['default']>
     'admin/users': ExtractProps<(typeof import('../../inertia/pages/admin/users.tsx'))['default']>
     'admin/whatsapp': ExtractProps<(typeof import('../../inertia/pages/admin/whatsapp.tsx'))['default']>
     'auth/login': ExtractProps<(typeof import('../../inertia/pages/auth/login.tsx'))['default']>
