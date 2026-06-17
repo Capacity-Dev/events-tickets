@@ -131,6 +131,15 @@ export default function OrganizerAnalytics({
           >
             Edit Event
           </a>
+          {event.status === 'published' && (
+            <a
+              href={event.id ? `/dashboard/check-in/${event.id}` : '#'}
+              onClick={!event.id ? (e) => e.preventDefault() : undefined}
+              className="inline-flex items-center justify-center rounded-lg border border-success text-success bg-transparent hover:bg-success/10 h-9 px-3 text-sm font-medium no-underline"
+            >
+              Check-in
+            </a>
+          )}
           {event.slug && (
             <a
               href={`/events/${event.slug}`}

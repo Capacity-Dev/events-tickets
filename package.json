@@ -81,6 +81,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "edge.js": "^6.5.1",
+    "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.18.0",
     "luxon": "^3.7.2",
     "motion": "^12.40.0",

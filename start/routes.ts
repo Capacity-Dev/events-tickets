@@ -87,6 +87,12 @@ router
       ])
       .as('dashboard.events.ticketTypes.update')
     router.get('dashboard/check-in/:id', [OrganizerController, 'checkIn']).as('dashboard.checkin')
+    router
+      .post('dashboard/check-in/:id/scan', [OrganizerController, 'scanTicket'])
+      .as('dashboard.checkin.scan')
+    router
+      .get('dashboard/check-in/:id/tickets', [OrganizerController, 'eventTickets'])
+      .as('dashboard.checkin.tickets')
     router.get('dashboard/payouts', [OrganizerController, 'payouts']).as('dashboard.payouts')
     router
       .post('dashboard/payouts', [OrganizerController, 'requestPayout'])

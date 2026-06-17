@@ -400,6 +400,105 @@ export default class OrganizerController {
     return (inertia.render as any)('dashboard/organizer/check_in', { event: event.toJSON() })
   }
 
+  async scanTicket({ params, request, response, auth }: HttpContext) {
+    if (!params.id || params.id === 'undefined')
+      return response.status(404).json({ error: 'Event not found' })
+
+    const event = await Event.query()
+      .where('id', params.id)
+      .where('organizerId', auth.user!.id)
+      .first()
+
+    if (!event) return response.status(404).json({ error: 'Event not found' })
+
+    let ticketUuid = request.input('ticketUuid', '').trim()
+
+    if (!ticketUuid) return response.status(422).json({ error: 'Ticket UUID is required' })
+
+    if (ticketUuid.includes('/tickets/')) {
+      ticketUuid = ticketUuid.split('/tickets/').pop()!.split('?')[0]
+    }
+
+    const ticket = await Ticket.query()
+      .where('uuid', ticketUuid)
+      .preload('ticketType')
+      .preload('orderItem', (q) => q.preload('order', (q2) => q2.preload('buyer')))
+      .first()
+
+    if (!ticket) return response.status(404).json({ error: 'Ticket not found' })
+
+    if (ticket.eventId !== event.id)
+      return response.status(400).json({ error: 'This ticket belongs to a different event' })
+
+    if (ticket.status !== 'valid')
+      return response.status(400).json({ error: 'Ticket already used', checkedInAt: ticket.checkedInAt })
+
+    ticket.status = 'used'
+    ticket.checkedInAt = DateTime.now()
+    ticket.usedAt = DateTime.now()
+    ticket.usedByScannerId = auth.user!.id
+    await ticket.save()
+
+    return response.json({
+      success: true,
+      ticket: {
+        ticketNumber: ticket.ticketNumber,
+        uuid: ticket.uuid,
+        ticketType: ticket.ticketType?.name ?? '—',
+        checkedInAt: ticket.checkedInAt,
+        buyerName:
+          ticket.orderItem?.order?.buyer?.fullName ??
+          ticket.orderItem?.order?.guestEmail ??
+          'Guest',
+        buyerEmail: ticket.orderItem?.order?.buyer?.email ?? ticket.orderItem?.order?.guestEmail ?? '',
+      },
+    })
+  }
+
+  async eventTickets({ params, request, response, auth }: HttpContext) {
+    if (!params.id || params.id === 'undefined')
+      return response.status(404).json({ error: 'Event not found' })
+
+    const event = await Event.query()
+      .where('id', params.id)
+      .where('organizerId', auth.user!.id)
+      .first()
+
+    if (!event) return response.status(404).json({ error: 'Event not found' })
+
+    const page = Number(request.input('page', 1))
+    const q = request.input('q', '').trim()
+
+    const query = Ticket.query()
+      .where('eventId', event.id)
+      .preload('ticketType')
+      .preload('orderItem', (q2) => q2.preload('order', (q3) => q3.preload('buyer')))
+      .orderBy('checkedInAt', 'asc')
+      .orderBy('ticketNumber', 'asc')
+
+    if (q) {
+      query.where('ticketNumber', q).orWhere('uuid', q)
+    }
+
+    const tickets = await query.paginate(page, 50)
+
+    return response.json({
+      data: tickets.all().map((t) => ({
+        id: t.id,
+        ticketNumber: t.ticketNumber,
+        uuid: t.uuid,
+        status: t.status,
+        checkedInAt: t.checkedInAt,
+        ticketType: t.ticketType?.name ?? '—',
+        buyerName:
+          t.orderItem?.order?.buyer?.fullName ??
+          t.orderItem?.order?.guestEmail ??
+          'Guest',
+      })),
+      pagination: tickets.getMeta(),
+    })
+  }
+
   async payouts({ inertia, auth }: HttpContext) {
     const payouts = await Payout.query()
       .where('organizerId', auth.user!.id)
