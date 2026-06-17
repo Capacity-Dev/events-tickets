@@ -4,6 +4,7 @@ module.exports = {
       name: 'events-tickets',
       script: 'bin/server.js',
       cwd: './build',
+      env_file: './build/.env',
       instances: 1,
       exec_mode: 'fork',
       env: {
