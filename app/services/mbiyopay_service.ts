@@ -197,7 +197,7 @@ export class MbiyopayService {
 
   static async processSuccessfulPayment(orderId: string): Promise<void> {
     const order = await Order.query()
-      .where('id', orderId)
+      .whereRaw('CAST(id AS text) = ?', [orderId])
       .orWhere('orderNumber', orderId)
       .orWhere('paymentIntentId', orderId)
       .first()
@@ -242,7 +242,7 @@ export class MbiyopayService {
 
   static async processFailedPayment(orderId: string): Promise<void> {
     const order = await Order.query()
-      .where('id', orderId)
+      .whereRaw('CAST(id AS text) = ?', [orderId])
       .orWhere('orderNumber', orderId)
       .orWhere('paymentIntentId', orderId)
       .first()
