@@ -42,7 +42,7 @@ export default class OrganizerController {
           const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1]
           const base64Data = matches[2]
           const fileName = `${crypto.randomUUID()}.${ext}`
-          const uploadsDir = app.makePath('storage/uploads')
+          const uploadsDir = app.makePath('..', 'storage/uploads')
           const filePath = `${uploadsDir}/${fileName}`
           await mkdir(uploadsDir, { recursive: true })
           await writeFile(filePath, Buffer.from(base64Data, 'base64'))
@@ -143,7 +143,7 @@ export default class OrganizerController {
           const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1]
           const base64Data = matches[2]
           const fileName = `${crypto.randomUUID()}.${ext}`
-          const uploadsDir = app.makePath('storage/uploads')
+          const uploadsDir = app.makePath('..', 'storage/uploads')
           const filePath = `${uploadsDir}/${fileName}`
           await mkdir(uploadsDir, { recursive: true })
           await writeFile(filePath, Buffer.from(base64Data, 'base64'))

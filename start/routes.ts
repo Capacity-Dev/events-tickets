@@ -16,7 +16,7 @@ import PaymentController from '#controllers/payment_controller'
 import WebhookController from '#controllers/webhook_controller'
 
 router.get('uploads/:fileName', async ({ params, response }) => {
-  const base = join(app.makePath('storage/uploads'))
+  const base = join(app.makePath('..', 'storage/uploads'))
   const filePath = join(base, params.fileName)
   if (!filePath.startsWith(base)) return response.notFound()
   return response.download(filePath)
