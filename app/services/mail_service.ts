@@ -74,14 +74,13 @@ ${rows}
 </body>
 </html>`
 
-      const response = await fetch(
-        `https://${mailConfig.smtp.host}/v1/email`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${Buffer.from(`${mailConfig.smtp.user}:${mailConfig.smtp.pass}`).toString('base64')}`,
-            'Content-Type': 'application/json',
-          },
+      const response = await fetch('https://api.zeptomail.com/v1.1/email', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Zoho-enczapikey ${mailConfig.zeptomail.token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
           body: JSON.stringify({
             from: {
               address: mailConfig.from.address,
