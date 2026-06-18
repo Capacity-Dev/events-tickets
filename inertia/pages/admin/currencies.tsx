@@ -104,7 +104,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
               <div className="flex flex-wrap gap-2 mt-1">
                 {ALL_NETWORKS.map((n) => (
                   <label key={n} className="flex items-center gap-1 text-sm cursor-pointer">
-                    <input type="checkbox" name="networks" value={n} className="rounded" />
+                    <input type="checkbox" name="networks[]" value={n} className="rounded" />
                     {n.charAt(0).toUpperCase() + n.slice(1)}
                   </label>
                 ))}
