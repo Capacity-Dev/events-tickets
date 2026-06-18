@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
+import { Scanner } from '@yudiel/react-qr-scanner'
 
 interface Props {
   event: any
@@ -15,10 +16,7 @@ interface ScanLog {
 }
 
 export default function OrganizerCheckIn({ event }: Props) {
-  const [scanning, setScanning] = useState(false)
-  const [cameraStarted, setCameraStarted] = useState(false)
-  const [cameraUnavailable, setCameraUnavailable] = useState(false)
-  const [cameraError, setCameraError] = useState('')
+  const [paused, setPaused] = useState(false)
   const [manualUuid, setManualUuid] = useState('')
   const [lastResult, setLastResult] = useState<null | {
     success: boolean
@@ -26,21 +24,12 @@ export default function OrganizerCheckIn({ event }: Props) {
     ticket?: any
   }>(null)
   const [scans, setScans] = useState<ScanLog[]>([])
-  const scannerRef = useRef<any>(null)
+  const [scanning, setScanning] = useState(false)
+  const [scannerError, setScannerError] = useState('')
 
   const getCsrfToken = useCallback(() => {
     const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/)
     return match ? decodeURIComponent(match[1]) : ''
-  }, [])
-
-  const stopScanner = useCallback(async () => {
-    if (scannerRef.current) {
-      try {
-        await scannerRef.current.stop()
-      } catch {}
-      scannerRef.current = null
-    }
-    setCameraStarted(false)
   }, [])
 
   const doScan = useCallback(
@@ -92,75 +81,34 @@ export default function OrganizerCheckIn({ event }: Props) {
     [event.id, getCsrfToken]
   )
 
-  const startScanner = useCallback(async () => {
-    setCameraUnavailable(false)
-    setCameraError('')
-    try {
-      const { Html5Qrcode } = await import('html5-qrcode')
-      const scanner = new Html5Qrcode('qr-reader')
-      scannerRef.current = scanner
-
-      const cameraConfigs = [
-        { facingMode: 'environment' },
-        { facingMode: 'user' },
-        { facingMode: { ideal: 'environment' } },
-      ]
-
-      let started = false
-      let lastErr = ''
-
-      for (const config of cameraConfigs) {
-        try {
-          await scanner.start(
-            config,
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            async (decodedText: string) => {
-              let uuid = decodedText.trim()
-              if (uuid.includes('/tickets/')) {
-                uuid = uuid.split('/tickets/').pop()!.split('?')[0]
-              }
-              await stopScanner()
-              await doScan(uuid)
-            },
-            () => {}
-          )
-          started = true
-          break
-        } catch (err: any) {
-          lastErr = err?.message ?? err?.toString() ?? ''
-          if (scannerRef.current) {
-            try { await scannerRef.current.stop() } catch {}
-          }
-        }
+  const handleScan = useCallback(
+    (codes: any[]) => {
+      if (paused || scanning) return
+      const code = codes[0]?.rawValue?.trim()
+      if (!code) return
+      let uuid = code
+      if (uuid.includes('/tickets/')) {
+        uuid = uuid.split('/tickets/').pop()!.split('?')[0]
       }
+      setPaused(true)
+      doScan(uuid)
+    },
+    [paused, scanning, doScan]
+  )
 
-      if (started) {
-        setCameraStarted(true)
-      } else {
-        setCameraUnavailable(true)
-        setCameraError(lastErr || 'No camera available')
-      }
-    } catch {
-      setCameraUnavailable(true)
-      setCameraError('Failed to load camera module')
-    }
-  }, [doScan, stopScanner])
+  const handleDismiss = () => {
+    setLastResult(null)
+    setPaused(false)
+  }
 
   const handleManualSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault()
-      if (!manualUuid.trim()) return
+      if (!manualUuid.trim() || scanning) return
       doScan(manualUuid.trim())
     },
-    [manualUuid, doScan]
+    [manualUuid, scanning, doScan]
   )
-
-  useEffect(() => {
-    startScanner()
-    return () => {
-      stopScanner()
-    }
-  }, [])
 
   const checkedIn = scans.filter((s) => s.success).length
 
@@ -212,7 +160,7 @@ export default function OrganizerCheckIn({ event }: Props) {
               )}
             </div>
             <button
-              onClick={() => setLastResult(null)}
+              onClick={handleDismiss}
               className="text-muted-foreground hover:text-foreground bg-transparent border-none cursor-pointer p-1"
               aria-label="Dismiss"
             >
@@ -222,46 +170,24 @@ export default function OrganizerCheckIn({ event }: Props) {
         </div>
       )}
 
-      <div className="mb-6">
-        {cameraStarted ? (
-          <div className="border-2 border-dashed border-primary/40 rounded-xl overflow-hidden">
-            <div id="qr-reader" className="[&_video]:w-full [&_video]:rounded-t-xl [&_img]:hidden" />
-          </div>
-        ) : cameraUnavailable ? (
-          <div className="border rounded-xl p-6 text-center bg-muted/30">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-3 text-muted-foreground">
-              <path d="M23 7l-3-3-3 3" /><rect x="1" y="1" width="15" height="15" rx="2" /><path d="M1 1l22 22" />
-            </svg>
-            <p className="text-sm text-muted-foreground mb-1">Camera not available</p>
-            {cameraError && <p className="text-xs text-muted-foreground mb-2 font-mono">{cameraError}</p>}
-            <p className="text-xs text-muted-foreground">Use manual entry below to validate tickets</p>
-          </div>
-        ) : (
-          <div className="border-2 border-dashed rounded-xl p-10 text-center">
-            <p className="text-sm text-muted-foreground">
-              {scanning ? 'Processing scan...' : 'Initializing camera...'}
-            </p>
-          </div>
-        )}
-      </div>
-
-      <div className="flex gap-3 mb-6">
-        {cameraStarted ? (
-          <button onClick={stopScanner} className="btn-outline btn-sm flex-1">
-            Stop Scanner
-          </button>
-        ) : (
-          <button onClick={startScanner} className="btn-outline btn-sm flex-1">
-            Try Camera Again
-          </button>
+      <div className="mb-4">
+        <Scanner
+          constraints={{ facingMode: 'environment' }}
+          paused={paused}
+          onScan={handleScan}
+          onError={(err: any) => setScannerError(err?.message ?? '')}
+          formats={['qr_code']}
+          components={{ finder: true, onOff: true }}
+          styles={{ container: { borderRadius: '12px', overflow: 'hidden' } }}
+        />
+        {scannerError && (
+          <p className="text-xs text-muted-foreground mt-1 text-center">{scannerError}</p>
         )}
       </div>
 
       <div className="border rounded-xl bg-card overflow-hidden mb-6">
         <div className="p-4 border-b bg-muted/50">
-          <h2 className="font-semibold text-sm">
-            {cameraUnavailable ? 'Manual Validation' : 'Manual Entry'}
-          </h2>
+          <h2 className="font-semibold text-sm">Manual Entry</h2>
         </div>
         <form onSubmit={handleManualSubmit} className="p-4 flex gap-2">
           <input
@@ -270,7 +196,6 @@ export default function OrganizerCheckIn({ event }: Props) {
             onChange={(e) => setManualUuid(e.target.value)}
             placeholder="Ticket UUID or /tickets/xxx"
             className="input-field min-h-10 flex-1 text-sm"
-            autoFocus={cameraUnavailable}
           />
           <button type="submit" disabled={scanning || !manualUuid.trim()} className="btn-primary btn-sm">
             Validate

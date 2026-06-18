@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **Backend:** AdonisJS v7 (ESM, TypeScript 6.0) — all source is `.ts`
+- **Backend:** Node.js v24+ (ESM, TypeScript 6.0) — all source is `.ts`
 - **Frontend:** Inertia.js 3 + React 19 + shadcn/ui (SSR disabled)
 - **Public pages:** Edge.js templates in `resources/views/`
 - **Validation:** VineJS
@@ -89,7 +89,7 @@ Run a single suite: `node ace test --suite=functional`
 - `prettier` config: `@adonisjs/prettier-config`
 - `eslint` config: `@adonisjs/eslint-config` with React plugin
 - 2-space indent, LF line endings
-- No semicolons in Prettier output (AdonisJS default)
+- No semicolons in Prettier output
 
 ## Available agent skills
 

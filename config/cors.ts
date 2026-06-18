@@ -3,9 +3,8 @@ import { defineConfig } from '@adonisjs/cors'
 
 /**
  * Configuration options to tweak the CORS policy. The following
- * options are documented on the official documentation website.
+ * options are documented on the framework documentation.
  *
- * https://docs.adonisjs.com/guides/security/cors
  */
 const corsConfig = defineConfig({
   /**

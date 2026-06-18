@@ -2,27 +2,26 @@ export default function Home() {
   return (
     <>
       <div className="hero">
-        <h1>It works — welcome to the power of a full-stack React app</h1>
+        <h1>Bienvenue sur Events Tickets</h1>
         <p>
-          Powered by Inertia and React, this setup blends server-driven routing with rich
-          client-side interactivity — seamless, fast, and cohesive.
+          Votre plateforme de billetterie événementielle — rapide, sécurisée et sans friction.
         </p>
       </div>
 
       <div className="cards">
-        <a href="https://docs.adonisjs.com/introduction" target="_blank" rel="noreferrer">
-          <h3>Official Docs &nbsp;›</h3>
-          <p>Comprehensive reference for building with AdonisJS</p>
+        <a href="/events" target="_blank" rel="noreferrer">
+          <h3>Événements &nbsp;›</h3>
+          <p>Parcourez les événements disponibles</p>
         </a>
 
-        <a href="https://adocasts.com/" target="_blank" rel="noreferrer">
-          <h3>Adocasts &nbsp;›</h3>
-          <p>Guided video tutorials for everyday development</p>
+        <a href="/signup" target="_blank" rel="noreferrer">
+          <h3>Créer un compte &nbsp;›</h3>
+          <p>Organisez vos propres événements</p>
         </a>
 
-        <a href="https://discord.gg/vDcEjq6" target="_blank" rel="noreferrer">
-          <h3>Discord &nbsp;›</h3>
-          <p>Connect with developers building with AdonisJS every day</p>
+        <a href="/dashboard" target="_blank" rel="noreferrer">
+          <h3>Tableau de bord &nbsp;›</h3>
+          <p>Gérez vos événements et vos billets</p>
         </a>
       </div>
     </>

@@ -2,10 +2,9 @@ import { defineConfig } from '@adonisjs/static'
 
 /**
  * Configuration options to tweak the static files middleware.
- * The complete set of options are documented on the
- * official documentation website.
+ * The complete set of options are documented in the
+ * framework documentation.
  *
- * https://docs.adonisjs.com/guides/basics/static-file-server
  */
 const staticServerConfig = defineConfig({
   /**

@@ -6,7 +6,7 @@
 | DO NOT MODIFY THIS FILE AS IT WILL BE OVERRIDDEN DURING THE BUILD
 | PROCESS.
 |
-| See docs.adonisjs.com/guides/typescript-build-process#creating-production-build
+| See docs for details on the TypeScript build process
 |
 | Since, we cannot run TypeScript source code using "node" binary, we need
 | a JavaScript entrypoint to run ace commands.
