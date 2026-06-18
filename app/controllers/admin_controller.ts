@@ -380,7 +380,9 @@ export default class AdminController {
       name: data.name,
       symbol: data.symbol,
       countryCode: data.countryCode,
-      networks: Array.isArray(data.networks) ? data.networks : [data.networks],
+      networks: JSON.stringify(
+        Array.isArray(data.networks) ? data.networks : [data.networks].filter(Boolean)
+      ),
       exchangeRate: String(data.exchangeRate ?? 1),
       isActive: data.isActive === '1' || data.isActive === true,
       sortOrder: Number(data.sortOrder ?? 0),
@@ -398,7 +400,8 @@ export default class AdminController {
     currency.symbol = data.symbol ?? currency.symbol
     currency.countryCode = data.countryCode ?? currency.countryCode
     if (data.networks !== undefined) {
-      currency.networks = Array.isArray(data.networks) ? data.networks : [data.networks]
+      const networks = Array.isArray(data.networks) ? data.networks : [data.networks]
+      currency.networks = JSON.stringify(networks)
     }
     if (data.exchangeRate !== undefined) currency.exchangeRate = String(data.exchangeRate)
     if (data.isActive !== undefined)

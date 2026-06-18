@@ -1,15 +1,8 @@
 import { CurrencySchema } from '#database/schema'
-import { beforeSave, afterFind, afterFetch } from '@adonisjs/lucid/orm'
+import { afterFind, afterFetch } from '@adonisjs/lucid/orm'
 
 export default class Currency extends CurrencySchema {
   static $selfAssignPrimaryKey = true
-
-  @beforeSave()
-  static serializeNetworks(currency: Currency) {
-    if (Array.isArray(currency.networks)) {
-      currency.networks = JSON.stringify(currency.networks) as any
-    }
-  }
 
   @afterFind()
   static deserializeNetworks(currency: Currency) {
