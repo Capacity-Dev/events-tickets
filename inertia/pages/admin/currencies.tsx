@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { usePage } from '@inertiajs/react'
+import { Form } from '@adonisjs/inertia/react'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'
@@ -200,9 +201,10 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
             <DialogTitle>Edit Currency — {editCurrency?.code}</DialogTitle>
           </DialogHeader>
           {editCurrency && (
-            <form
-              action={`/${adminPrefix}/currencies/${editCurrency.id}`}
-              method="POST"
+            <Form
+              route="admin.currencies.update"
+              routeParams={{ id: editCurrency.id }}
+              onSuccess={() => setEditCurrency(null)}
               className="flex flex-col gap-4"
             >
               <div className="grid grid-cols-2 gap-4">
@@ -313,7 +315,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                 </Button>
                 <Button type="submit">Save Changes</Button>
               </div>
-            </form>
+            </Form>
           )}
         </DialogContent>
       </Dialog>
