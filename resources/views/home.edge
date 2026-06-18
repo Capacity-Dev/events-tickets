@@ -31,9 +31,13 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in featuredEvents)
               <div class="bg-card border border-border rounded-xl overflow-hidden card-hover flex flex-col fade-in-up">
-                <div class="aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary overflow-hidden">
-                  <span class="transition-transform duration-300 group-hover:scale-110">EV</span>
-                </div>
+                <a href="/events/{{ event.slug }}" class="block aspect-[16/9] overflow-hidden">
+                  @if(event.coverImageUrl)
+                    <img src="{{ event.coverImageUrl }}" alt="{{ event.title }}" class="w-full h-full object-cover" loading="lazy" />
+                  @else
+                    <div class="w-full h-full bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary transition-transform duration-300 group-hover:scale-110">EV</div>
+                  @endif
+                </a>
                 <div class="p-5 sm:p-6 flex flex-col flex-1">
                   @if(event.category)
                     <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-primary mb-2.5">{{ event.category.name }}</span>
@@ -76,9 +80,13 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @each(event in recentEvents)
               <div class="bg-card border border-border rounded-xl overflow-hidden card-hover flex flex-col fade-in-up">
-                <div class="aspect-[16/9] bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary">
-                  EV
-                </div>
+                <a href="/events/{{ event.slug }}" class="block aspect-[16/9] overflow-hidden">
+                  @if(event.coverImageUrl)
+                    <img src="{{ event.coverImageUrl }}" alt="{{ event.title }}" class="w-full h-full object-cover" loading="lazy" />
+                  @else
+                    <div class="w-full h-full bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary">EV</div>
+                  @endif
+                </a>
                 <div class="p-5 sm:p-6 flex flex-col flex-1">
                   @if(event.category)
                     <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-primary mb-2.5">{{ event.category.name }}</span>

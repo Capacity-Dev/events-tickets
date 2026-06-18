@@ -20,7 +20,7 @@ export default class PublicController {
 
     const featuredEvents = await Event.query()
       .where('status', 'published')
-      .andWhere('isFrozen', false)
+      .andWhere('is_frozen', false)
       .andWhere('isFeatured', true)
       .preload('category')
       .select('*')
@@ -37,7 +37,7 @@ export default class PublicController {
 
     const recentEvents = await Event.query()
       .where('status', 'published')
-      .andWhere('isFrozen', false)
+      .andWhere('is_frozen', false)
       .andWhere('isFeatured', false)
       .preload('category')
       .select('*')
@@ -69,7 +69,7 @@ export default class PublicController {
 
     const query = Event.query()
       .where('events.status', 'published')
-      .andWhere('events.isFrozen', false)
+      .andWhere('events.is_frozen', false)
       .preload('category')
       .orderBy('startDate', 'asc')
 
@@ -121,7 +121,7 @@ export default class PublicController {
     const event = await Event.query()
       .where('slug', params.slug)
       .where('status', 'published')
-      .andWhere('isFrozen', false)
+      .andWhere('is_frozen', false)
       .preload('category')
       .preload('organizer')
       .first()
@@ -198,7 +198,7 @@ export default class PublicController {
 
     const query = Event.query()
       .where('status', 'published')
-      .andWhere('isFrozen', false)
+      .andWhere('is_frozen', false)
       .preload('category')
       .orderBy('startDate', 'asc')
 
@@ -252,7 +252,7 @@ export default class PublicController {
   async sitemap({ response }: HttpContext) {
     const events = await Event.query()
       .where('status', 'published')
-      .andWhere('isFrozen', false)
+      .andWhere('is_frozen', false)
       .select('slug', 'updatedAt')
       .orderBy('updatedAt', 'desc')
 
