@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { usePage } from '@inertiajs/react'
-import { Form } from '@adonisjs/inertia/react'
+import { useState, useRef } from 'react'
+import { router, usePage } from '@inertiajs/react'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'
@@ -30,28 +29,65 @@ interface CurrencyData {
 }
 
 const ALL_NETWORKS = [
-  'vodacom',
-  'airtel',
-  'orange',
-  'africell',
-  'mtn',
-  'moov',
-  'free',
-  'togocom',
-  'wave',
-  'mpesa',
-  'afrimoney',
-  'qmoney',
-  'aps',
-  'coris',
-  'celtiis',
+  'vodacom', 'airtel', 'orange', 'africell', 'mtn', 'moov', 'free',
+  'togocom', 'wave', 'mpesa', 'afrimoney', 'qmoney', 'aps', 'coris', 'celtiis',
 ]
+
+function getCheckedNetworks(parent: HTMLElement | null) {
+  if (!parent) return [] as string[]
+  const boxes = parent.querySelectorAll<HTMLInputElement>('input.network-cb:checked')
+  return Array.from(boxes).map((cb) => cb.value)
+}
 
 export default function AdminCurrencies({ currencies }: { currencies: CurrencyData[] }) {
   const { adminPrefix } = usePage().props as any
   const [editCurrency, setEditCurrency] = useState<CurrencyData | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
-  const openEdit = (c: CurrencyData) => setEditCurrency(c)
+  const addFormRef = useRef<HTMLFormElement>(null)
+  const editContainerRef = useRef<HTMLDivElement>(null)
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault()
+    const form = addFormRef.current
+    if (!form) return
+    setSubmitting(true)
+
+    const fd = new FormData(form)
+    const networks = getCheckedNetworks(form)
+
+    router.post(`/${adminPrefix}/currencies`, {
+      code: fd.get('code'),
+      name: fd.get('name'),
+      symbol: fd.get('symbol'),
+      countryCode: fd.get('countryCode'),
+      exchangeRate: fd.get('exchangeRate'),
+      sortOrder: fd.get('sortOrder') ?? '0',
+      isActive: fd.get('isActive') ? '1' : '0',
+      networks,
+    })
+  }
+
+  const handleEdit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const container = editContainerRef.current
+    if (!container || !editCurrency) return
+    setSubmitting(true)
+
+    const fd = new FormData(e.currentTarget as HTMLFormElement)
+    const networks = getCheckedNetworks(container)
+
+    router.post(`/${adminPrefix}/currencies/${editCurrency.id}`, {
+      code: fd.get('code'),
+      name: fd.get('name'),
+      symbol: fd.get('symbol'),
+      countryCode: fd.get('countryCode'),
+      exchangeRate: fd.get('exchangeRate'),
+      sortOrder: fd.get('sortOrder') ?? '0',
+      isActive: fd.get('isActive') ? '1' : '0',
+      networks,
+    })
+  }
 
   return (
     <div>
@@ -63,8 +99,8 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
         </CardHeader>
         <CardContent>
           <form
-            action={`/${adminPrefix}/currencies`}
-            method="POST"
+            ref={addFormRef}
+            onSubmit={handleAdd}
             className="grid grid-cols-1 sm:grid-cols-3 gap-4"
           >
             <div>
@@ -104,7 +140,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
               <div className="flex flex-wrap gap-2 mt-1">
                 {ALL_NETWORKS.map((n) => (
                   <label key={n} className="flex items-center gap-1 text-sm cursor-pointer">
-                    <input type="checkbox" name="networks[]" value={n} className="rounded" />
+                    <input type="checkbox" className="network-cb rounded" value={n} />
                     {n.charAt(0).toUpperCase() + n.slice(1)}
                   </label>
                 ))}
@@ -115,18 +151,12 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
             </div>
             <div className="sm:col-span-3">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="isActive"
-                  value="1"
-                  defaultChecked
-                  className="rounded"
-                />
+                <input type="checkbox" name="isActive" value="1" defaultChecked className="rounded" />
                 Active
               </label>
             </div>
             <div className="sm:col-span-3">
-              <Button type="submit">Add Currency</Button>
+              <Button type="submit" disabled={submitting}>Add Currency</Button>
             </div>
           </form>
         </CardContent>
@@ -182,7 +212,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                   <TableCell className="text-right">
                     <button
                       type="button"
-                      onClick={() => openEdit(c)}
+                      onClick={() => setEditCurrency(c)}
                       className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-2 text-xs font-medium cursor-pointer"
                     >
                       Edit
@@ -201,121 +231,74 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
             <DialogTitle>Edit Currency — {editCurrency?.code}</DialogTitle>
           </DialogHeader>
           {editCurrency && (
-            <Form
-              route="admin.currencies.update"
-              routeParams={{ id: editCurrency.id }}
-              onSuccess={() => setEditCurrency(null)}
-              className="flex flex-col gap-4"
-            >
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-code">ISO Code</Label>
-                  <Input
-                    id="edit-code"
-                    name="code"
-                    maxLength={3}
-                    required
-                    defaultValue={editCurrency.code}
-                  />
+            <div ref={editContainerRef}>
+              <form onSubmit={handleEdit} className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-code">ISO Code</Label>
+                    <Input id="edit-code" name="code" maxLength={3} required defaultValue={editCurrency.code} />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-name">Name</Label>
+                    <Input id="edit-name" name="name" required defaultValue={editCurrency.name} />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="edit-name">Name</Label>
-                  <Input
-                    id="edit-name"
-                    name="name"
-                    required
-                    defaultValue={editCurrency.name}
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-symbol">Symbol</Label>
-                  <Input
-                    id="edit-symbol"
-                    name="symbol"
-                    maxLength={10}
-                    required
-                    defaultValue={editCurrency.symbol}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-symbol">Symbol</Label>
+                    <Input id="edit-symbol" name="symbol" maxLength={10} required defaultValue={editCurrency.symbol} />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-countryCode">Country Code</Label>
+                    <Input id="edit-countryCode" name="countryCode" maxLength={2} required defaultValue={editCurrency.countryCode} />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="edit-countryCode">Country Code</Label>
-                  <Input
-                    id="edit-countryCode"
-                    name="countryCode"
-                    maxLength={2}
-                    required
-                    defaultValue={editCurrency.countryCode}
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-exchangeRate">Exchange Rate (to USD)</Label>
+                    <Input id="edit-exchangeRate" name="exchangeRate" type="number" step="0.000001" min="0" required defaultValue={editCurrency.exchangeRate} />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-sortOrder">Sort Order</Label>
+                    <Input id="edit-sortOrder" name="sortOrder" type="number" min="0" defaultValue={String(editCurrency.sortOrder)} />
+                  </div>
+                </div>
+
                 <div>
-                  <Label htmlFor="edit-exchangeRate">Exchange Rate (to USD)</Label>
-                  <Input
-                    id="edit-exchangeRate"
-                    name="exchangeRate"
-                    type="number"
-                    step="0.000001"
-                    min="0"
-                    required
-                    defaultValue={editCurrency.exchangeRate}
-                  />
+                  <Label>Supported Networks</Label>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {ALL_NETWORKS.map((n) => (
+                      <label key={n} className="flex items-center gap-1 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="network-cb rounded"
+                          value={n}
+                          defaultChecked={editCurrency.networks.includes(n)}
+                        />
+                        {n.charAt(0).toUpperCase() + n.slice(1)}
+                      </label>
+                    ))}
+                  </div>
                 </div>
+
                 <div>
-                  <Label htmlFor="edit-sortOrder">Sort Order</Label>
-                  <Input
-                    id="edit-sortOrder"
-                    name="sortOrder"
-                    type="number"
-                    min="0"
-                    defaultValue={String(editCurrency.sortOrder)}
-                  />
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" name="isActive" value="1" defaultChecked={editCurrency.isActive} className="rounded" />
+                    Active
+                  </label>
                 </div>
-              </div>
 
-              <div>
-                <Label>Supported Networks</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {ALL_NETWORKS.map((n) => (
-                    <label key={n} className="flex items-center gap-1 text-sm cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="networks"
-                        value={n}
-                        defaultChecked={editCurrency.networks.includes(n)}
-                        className="rounded"
-                      />
-                      {n.charAt(0).toUpperCase() + n.slice(1)}
-                    </label>
-                  ))}
+                <Separator />
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setEditCurrency(null)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={submitting}>Save Changes</Button>
                 </div>
-              </div>
-
-              <div>
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="isActive"
-                    value="1"
-                    defaultChecked={editCurrency.isActive}
-                    className="rounded"
-                  />
-                  Active
-                </label>
-              </div>
-
-              <Separator />
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setEditCurrency(null)}>
-                  Cancel
-                </Button>
-                <Button type="submit">Save Changes</Button>
-              </div>
-            </Form>
+              </form>
+            </div>
           )}
         </DialogContent>
       </Dialog>
