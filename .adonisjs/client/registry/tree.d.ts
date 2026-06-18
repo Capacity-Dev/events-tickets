@@ -58,7 +58,10 @@ export interface ApiDefinition {
         update: typeof routes['dashboard.events.ticketTypes.update']
       }
     }
-    checkin: typeof routes['dashboard.checkin']
+    checkin: typeof routes['dashboard.checkin'] & {
+      scan: typeof routes['dashboard.checkin.scan']
+      tickets: typeof routes['dashboard.checkin.tickets']
+    }
     payouts: typeof routes['dashboard.payouts'] & {
       request: typeof routes['dashboard.payouts.request']
     }
@@ -114,7 +117,9 @@ export interface ApiDefinition {
     settings: typeof routes['admin.settings']
     currencies: typeof routes['admin.currencies'] & {
       store: typeof routes['admin.currencies.store']
-      update: typeof routes['admin.currencies.update']
+      update: typeof routes['admin.currencies.update'] & {
+        post: typeof routes['admin.currencies.update.post']
+      }
     }
   }
 }

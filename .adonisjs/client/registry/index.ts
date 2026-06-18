@@ -210,6 +210,18 @@ const routes = {
     tokens: [{"old":"/dashboard/check-in/:id","type":0,"val":"dashboard","end":""},{"old":"/dashboard/check-in/:id","type":0,"val":"check-in","end":""},{"old":"/dashboard/check-in/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['dashboard.checkin']['types'],
   },
+  'dashboard.checkin.scan': {
+    methods: ["POST"],
+    pattern: '/dashboard/check-in/:id/scan',
+    tokens: [{"old":"/dashboard/check-in/:id/scan","type":0,"val":"dashboard","end":""},{"old":"/dashboard/check-in/:id/scan","type":0,"val":"check-in","end":""},{"old":"/dashboard/check-in/:id/scan","type":1,"val":"id","end":""},{"old":"/dashboard/check-in/:id/scan","type":0,"val":"scan","end":""}],
+    types: placeholder as Registry['dashboard.checkin.scan']['types'],
+  },
+  'dashboard.checkin.tickets': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/check-in/:id/tickets',
+    tokens: [{"old":"/dashboard/check-in/:id/tickets","type":0,"val":"dashboard","end":""},{"old":"/dashboard/check-in/:id/tickets","type":0,"val":"check-in","end":""},{"old":"/dashboard/check-in/:id/tickets","type":1,"val":"id","end":""},{"old":"/dashboard/check-in/:id/tickets","type":0,"val":"tickets","end":""}],
+    types: placeholder as Registry['dashboard.checkin.tickets']['types'],
+  },
   'dashboard.payouts': {
     methods: ["GET","HEAD"],
     pattern: '/dashboard/payouts',
@@ -437,6 +449,12 @@ const routes = {
     pattern: '/admin/currencies/:id',
     tokens: [{"old":"/admin/currencies/:id","type":0,"val":"admin","end":""},{"old":"/admin/currencies/:id","type":0,"val":"currencies","end":""},{"old":"/admin/currencies/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['admin.currencies.update']['types'],
+  },
+  'admin.currencies.update.post': {
+    methods: ["POST"],
+    pattern: '/admin/currencies/:id',
+    tokens: [{"old":"/admin/currencies/:id","type":0,"val":"admin","end":""},{"old":"/admin/currencies/:id","type":0,"val":"currencies","end":""},{"old":"/admin/currencies/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['admin.currencies.update.post']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

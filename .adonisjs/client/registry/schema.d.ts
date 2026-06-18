@@ -415,6 +415,30 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'dashboard.checkin.scan': {
+    methods: ["POST"]
+    pattern: '/dashboard/check-in/:id/scan'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'dashboard.checkin.tickets': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/check-in/:id/tickets'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'dashboard.payouts': {
     methods: ["GET","HEAD"]
     pattern: '/dashboard/payouts'
@@ -861,6 +885,18 @@ export interface Registry {
   }
   'admin.currencies.update': {
     methods: ["PATCH"]
+    pattern: '/admin/currencies/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'admin.currencies.update.post': {
+    methods: ["POST"]
     pattern: '/admin/currencies/:id'
     types: {
       body: {}

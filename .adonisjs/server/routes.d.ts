@@ -38,6 +38,8 @@ export type ScannedRoutes = {
     'dashboard.events.analytics': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.events.ticketTypes.update': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'ticketTypeId': ParamValue} }
     'dashboard.checkin': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.checkin.scan': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.checkin.tickets': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.payouts': { paramsTuple?: []; params?: {} }
     'dashboard.payouts.request': { paramsTuple?: []; params?: {} }
     'dashboard.clients': { paramsTuple?: []; params?: {} }
@@ -76,6 +78,7 @@ export type ScannedRoutes = {
     'admin.currencies': { paramsTuple?: []; params?: {} }
     'admin.currencies.store': { paramsTuple?: []; params?: {} }
     'admin.currencies.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.currencies.update.post': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
@@ -101,6 +104,7 @@ export type ScannedRoutes = {
     'dashboard.events.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.events.analytics': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.checkin': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.checkin.tickets': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.payouts': { paramsTuple?: []; params?: {} }
     'dashboard.clients': { paramsTuple?: []; params?: {} }
     'dashboard.orders': { paramsTuple?: []; params?: {} }
@@ -146,6 +150,7 @@ export type ScannedRoutes = {
     'dashboard.events.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.events.analytics': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.checkin': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.checkin.tickets': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.payouts': { paramsTuple?: []; params?: {} }
     'dashboard.clients': { paramsTuple?: []; params?: {} }
     'dashboard.orders': { paramsTuple?: []; params?: {} }
@@ -176,6 +181,7 @@ export type ScannedRoutes = {
     'session.destroy': { paramsTuple?: []; params?: {} }
     'dashboard.events.store': { paramsTuple?: []; params?: {} }
     'dashboard.events.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.checkin.scan': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.payouts.request': { paramsTuple?: []; params?: {} }
     'dashboard.pay': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'orders.store': { paramsTuple?: []; params?: {} }
@@ -190,6 +196,7 @@ export type ScannedRoutes = {
     'admin.homepage.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.whatsapp.store': { paramsTuple?: []; params?: {} }
     'admin.currencies.store': { paramsTuple?: []; params?: {} }
+    'admin.currencies.update.post': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'dashboard.events.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
