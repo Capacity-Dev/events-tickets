@@ -7,6 +7,18 @@ import type { InferInput, SimpleError } from '@vinejs/vine/types'
 export type ParamValue = string | number | bigint | boolean
 
 export interface Registry {
+  'uploads.serve': {
+    methods: ["GET","HEAD"]
+    pattern: '/uploads/:fileName'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { fileName: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'home': {
     methods: ["GET","HEAD"]
     pattern: '/'

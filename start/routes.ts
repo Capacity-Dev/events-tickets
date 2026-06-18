@@ -2,6 +2,8 @@ import { middleware } from '#start/kernel'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
 import adminConfig from '#config/admin'
+import app from '@adonisjs/core/services/app'
+import { join } from 'node:path'
 import PublicController from '#controllers/public_controller'
 import OrganizerController from '#controllers/organizer_controller'
 import BuyerController from '#controllers/buyer_controller'
@@ -12,6 +14,13 @@ import SettingsController from '#controllers/settings_controller'
 import CartController from '#controllers/cart_controller'
 import PaymentController from '#controllers/payment_controller'
 import WebhookController from '#controllers/webhook_controller'
+
+router.get('uploads/:fileName', async ({ params, response }) => {
+  const base = join(app.makePath('storage/uploads'))
+  const filePath = join(base, params.fileName)
+  if (!filePath.startsWith(base)) return response.notFound()
+  return response.download(filePath)
+}).as('uploads.serve')
 
 router.get('/', [PublicController, 'home']).as('home')
 

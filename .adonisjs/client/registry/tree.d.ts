@@ -2,6 +2,9 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  uploads: {
+    serve: typeof routes['uploads.serve']
+  }
   home: typeof routes['home']
   tickets: {
     show: typeof routes['tickets.show']

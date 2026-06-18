@@ -6,6 +6,12 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
+  'uploads.serve': {
+    methods: ["GET","HEAD"],
+    pattern: '/uploads/:fileName',
+    tokens: [{"old":"/uploads/:fileName","type":0,"val":"uploads","end":""},{"old":"/uploads/:fileName","type":1,"val":"fileName","end":""}],
+    types: placeholder as Registry['uploads.serve']['types'],
+  },
   'home': {
     methods: ["GET","HEAD"],
     pattern: '/',

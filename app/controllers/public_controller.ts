@@ -159,7 +159,7 @@ export default class PublicController {
     <meta property="og:description" content="${event.description ? event.description.slice(0, 200) : ''}" />
     <meta property="og:url" content="${appUrlVal}/events/${event.slug}" />
     <meta property="og:type" content="event" />
-    ${event.coverImageUrl ? `<meta property="og:image" content="${event.coverImageUrl}" />` : ''}
+    ${event.coverImageUrl ? `<meta property="og:image" content="${appUrlVal}${event.coverImageUrl}" />` : ''}
     <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json">
       {

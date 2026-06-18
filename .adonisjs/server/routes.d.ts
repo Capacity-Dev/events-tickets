@@ -4,6 +4,7 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
+    'uploads.serve': { paramsTuple: [ParamValue]; params: {'fileName': ParamValue} }
     'home': { paramsTuple?: []; params?: {} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'uuid': ParamValue} }
     'events.index': { paramsTuple?: []; params?: {} }
@@ -81,6 +82,7 @@ export type ScannedRoutes = {
     'admin.currencies.update.post': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
+    'uploads.serve': { paramsTuple: [ParamValue]; params: {'fileName': ParamValue} }
     'home': { paramsTuple?: []; params?: {} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'uuid': ParamValue} }
     'events.index': { paramsTuple?: []; params?: {} }
@@ -127,6 +129,7 @@ export type ScannedRoutes = {
     'admin.currencies': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
+    'uploads.serve': { paramsTuple: [ParamValue]; params: {'fileName': ParamValue} }
     'home': { paramsTuple?: []; params?: {} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'uuid': ParamValue} }
     'events.index': { paramsTuple?: []; params?: {} }

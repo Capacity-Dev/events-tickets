@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import { writeFile, mkdir } from 'node:fs/promises'
+import app from '@adonisjs/core/services/app'
 import Event from '#models/event'
 import Category from '#models/category'
 import Currency from '#models/currency'
@@ -41,8 +42,9 @@ export default class OrganizerController {
           const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1]
           const base64Data = matches[2]
           const fileName = `${crypto.randomUUID()}.${ext}`
-          const filePath = `public/uploads/${fileName}`
-          await mkdir('public/uploads', { recursive: true })
+          const uploadsDir = app.makePath('storage/uploads')
+          const filePath = `${uploadsDir}/${fileName}`
+          await mkdir(uploadsDir, { recursive: true })
           await writeFile(filePath, Buffer.from(base64Data, 'base64'))
           coverImageUrl = `/uploads/${fileName}`
         }
@@ -141,8 +143,9 @@ export default class OrganizerController {
           const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1]
           const base64Data = matches[2]
           const fileName = `${crypto.randomUUID()}.${ext}`
-          const filePath = `public/uploads/${fileName}`
-          await mkdir('public/uploads', { recursive: true })
+          const uploadsDir = app.makePath('storage/uploads')
+          const filePath = `${uploadsDir}/${fileName}`
+          await mkdir(uploadsDir, { recursive: true })
           await writeFile(filePath, Buffer.from(base64Data, 'base64'))
           coverImageUrl = `/uploads/${fileName}`
         }
