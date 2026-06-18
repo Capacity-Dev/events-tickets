@@ -478,7 +478,7 @@ export class TicketSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'deletedAt', 'email', 'emailVerifiedAt', 'fullName', 'googleId', 'googleRefreshToken', 'id', 'password', 'roleId', 'updatedAt'] as const
+  static $columns = ['createdAt', 'deletedAt', 'email', 'emailVerifiedAt', 'fullName', 'googleId', 'googleRefreshToken', 'id', 'isShadow', 'password', 'roleId', 'updatedAt'] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -496,6 +496,8 @@ export class UserSchema extends BaseModel {
   declare googleRefreshToken: string | null
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare isShadow: boolean
   @column({ serializeAs: null })
   declare password: string
   @column()

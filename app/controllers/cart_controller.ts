@@ -91,10 +91,34 @@ export default class CartController {
     const orderNumber = `ORD-${now.getFullYear()}-${String(now.getTime()).slice(-6)}`
     const lineTotal = Number(ticketType.basePrice) * quantity
 
+    let buyerId: number | null = auth.user?.id ?? null
+
+    if (!buyerId && email) {
+      let user = await User.findBy('email', email)
+      if (!user) {
+        const buyerRole = await Role.findBy('name', 'buyer')
+        user = await User.create({
+          email,
+          fullName: name || email.split('@')[0],
+          password: crypto.randomUUID(),
+          roleId: buyerRole?.id ?? null,
+          isShadow: true,
+        })
+        await Profile.create({
+          id: crypto.randomUUID(),
+          userId: user.id,
+          firstName: name.split(' ')[0] || email.split('@')[0],
+          lastName: name.split(' ').slice(1).join(' ') || '',
+          phoneNumber: phone || null,
+        })
+      }
+      buyerId = user.id
+    }
+
     await Order.create({
       id: orderId,
       orderNumber,
-      buyerId: auth.user?.id ?? null,
+      buyerId,
       guestEmail: email || null,
       guestPhone: phone || null,
       guestName: name || null,
