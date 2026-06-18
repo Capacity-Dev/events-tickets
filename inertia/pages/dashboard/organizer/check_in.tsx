@@ -17,6 +17,8 @@ interface ScanLog {
 export default function OrganizerCheckIn({ event }: Props) {
   const [scanning, setScanning] = useState(false)
   const [cameraStarted, setCameraStarted] = useState(false)
+  const [cameraUnavailable, setCameraUnavailable] = useState(false)
+  const [cameraError, setCameraError] = useState('')
   const [manualUuid, setManualUuid] = useState('')
   const [lastResult, setLastResult] = useState<null | {
     success: boolean
@@ -39,12 +41,12 @@ export default function OrganizerCheckIn({ event }: Props) {
       scannerRef.current = null
     }
     setCameraStarted(false)
-    setScanning(false)
   }, [])
 
   const doScan = useCallback(
     async (uuid: string) => {
       setScanning(true)
+      setLastResult(null)
       try {
         const res = await fetch(`/dashboard/check-in/${event.id}/scan`, {
           method: 'POST',
@@ -91,31 +93,56 @@ export default function OrganizerCheckIn({ event }: Props) {
   )
 
   const startScanner = useCallback(async () => {
-    setLastResult(null)
+    setCameraUnavailable(false)
+    setCameraError('')
     try {
       const { Html5Qrcode } = await import('html5-qrcode')
       const scanner = new Html5Qrcode('qr-reader')
       scannerRef.current = scanner
 
-      await scanner.start(
+      const cameraConfigs = [
         { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        async (decodedText: string) => {
-          let uuid = decodedText.trim()
-          if (uuid.includes('/tickets/')) {
-            uuid = uuid.split('/tickets/').pop()!.split('?')[0]
+        { facingMode: 'user' },
+        { facingMode: { ideal: 'environment' } },
+      ]
+
+      let started = false
+      let lastErr = ''
+
+      for (const config of cameraConfigs) {
+        try {
+          await scanner.start(
+            config,
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            async (decodedText: string) => {
+              let uuid = decodedText.trim()
+              if (uuid.includes('/tickets/')) {
+                uuid = uuid.split('/tickets/').pop()!.split('?')[0]
+              }
+              await stopScanner()
+              await doScan(uuid)
+            },
+            () => {}
+          )
+          started = true
+          break
+        } catch (err: any) {
+          lastErr = err?.message ?? err?.toString() ?? ''
+          if (scannerRef.current) {
+            try { await scannerRef.current.stop() } catch {}
           }
-          await stopScanner()
-          await doScan(uuid)
-        },
-        () => {}
-      )
-      setCameraStarted(true)
-    } catch (err: any) {
-      setLastResult({
-        success: false,
-        message: 'Camera access denied. Use manual input or check device permissions.',
-      })
+        }
+      }
+
+      if (started) {
+        setCameraStarted(true)
+      } else {
+        setCameraUnavailable(true)
+        setCameraError(lastErr || 'No camera available')
+      }
+    } catch {
+      setCameraUnavailable(true)
+      setCameraError('Failed to load camera module')
     }
   }, [doScan, stopScanner])
 
@@ -123,10 +150,9 @@ export default function OrganizerCheckIn({ event }: Props) {
     (e: React.FormEvent) => {
       e.preventDefault()
       if (!manualUuid.trim()) return
-      stopScanner()
       doScan(manualUuid.trim())
     },
-    [manualUuid, doScan, stopScanner]
+    [manualUuid, doScan]
   )
 
   useEffect(() => {
@@ -201,16 +227,20 @@ export default function OrganizerCheckIn({ event }: Props) {
           <div className="border-2 border-dashed border-primary/40 rounded-xl overflow-hidden">
             <div id="qr-reader" className="[&_video]:w-full [&_video]:rounded-t-xl [&_img]:hidden" />
           </div>
+        ) : cameraUnavailable ? (
+          <div className="border rounded-xl p-6 text-center bg-muted/30">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-3 text-muted-foreground">
+              <path d="M23 7l-3-3-3 3" /><rect x="1" y="1" width="15" height="15" rx="2" /><path d="M1 1l22 22" />
+            </svg>
+            <p className="text-sm text-muted-foreground mb-1">Camera not available</p>
+            {cameraError && <p className="text-xs text-muted-foreground mb-2 font-mono">{cameraError}</p>}
+            <p className="text-xs text-muted-foreground">Use manual entry below to validate tickets</p>
+          </div>
         ) : (
           <div className="border-2 border-dashed rounded-xl p-10 text-center">
-            <p className="text-sm text-muted-foreground mb-3">
-              {scanning ? 'Processing scan...' : lastResult?.message?.includes('Camera') ? lastResult.message : 'Initializing camera...'}
+            <p className="text-sm text-muted-foreground">
+              {scanning ? 'Processing scan...' : 'Initializing camera...'}
             </p>
-            {lastResult?.message?.includes('Camera') && (
-              <button onClick={startScanner} className="btn-outline btn-sm">
-                Try Again
-              </button>
-            )}
           </div>
         )}
       </div>
@@ -221,15 +251,17 @@ export default function OrganizerCheckIn({ event }: Props) {
             Stop Scanner
           </button>
         ) : (
-          <button onClick={startScanner} className="btn-primary btn-sm flex-1">
-            {lastResult?.message?.includes('Camera') ? 'Try Again' : 'Start Scanner'}
+          <button onClick={startScanner} className="btn-outline btn-sm flex-1">
+            Try Camera Again
           </button>
         )}
       </div>
 
       <div className="border rounded-xl bg-card overflow-hidden mb-6">
         <div className="p-4 border-b bg-muted/50">
-          <h2 className="font-semibold text-sm">Manual Entry</h2>
+          <h2 className="font-semibold text-sm">
+            {cameraUnavailable ? 'Manual Validation' : 'Manual Entry'}
+          </h2>
         </div>
         <form onSubmit={handleManualSubmit} className="p-4 flex gap-2">
           <input
@@ -238,6 +270,7 @@ export default function OrganizerCheckIn({ event }: Props) {
             onChange={(e) => setManualUuid(e.target.value)}
             placeholder="Ticket UUID or /tickets/xxx"
             className="input-field min-h-10 flex-1 text-sm"
+            autoFocus={cameraUnavailable}
           />
           <button type="submit" disabled={scanning || !manualUuid.trim()} className="btn-primary btn-sm">
             Validate
