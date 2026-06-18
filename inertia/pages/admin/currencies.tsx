@@ -205,8 +205,6 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
               method="POST"
               className="flex flex-col gap-4"
             >
-              <input type="hidden" name="_method" value="PATCH" />
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-code">ISO Code</Label>

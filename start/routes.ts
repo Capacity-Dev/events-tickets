@@ -153,6 +153,9 @@ router
     router
       .patch('currencies/:id', [AdminController, 'updateCurrency'])
       .as('admin.currencies.update')
+    router
+      .post('currencies/:id', [AdminController, 'updateCurrency'])
+      .as('admin.currencies.update.post')
   })
   .prefix(adminConfig.prefix)
   .use(middleware.auth())
