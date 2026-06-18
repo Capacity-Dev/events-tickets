@@ -26,6 +26,7 @@ declare module '@adonisjs/inertia/types' {
     'admin/user_edit': ExtractProps<(typeof import('../../inertia/pages/admin/user_edit.tsx'))['default']>
     'admin/user_show': ExtractProps<(typeof import('../../inertia/pages/admin/user_show.tsx'))['default']>
     'admin/users': ExtractProps<(typeof import('../../inertia/pages/admin/users.tsx'))['default']>
+    'admin/whatsapp_settings': ExtractProps<(typeof import('../../inertia/pages/admin/whatsapp_settings.tsx'))['default']>
     'admin/whatsapp': ExtractProps<(typeof import('../../inertia/pages/admin/whatsapp.tsx'))['default']>
     'auth/login': ExtractProps<(typeof import('../../inertia/pages/auth/login.tsx'))['default']>
     'auth/signup': ExtractProps<(typeof import('../../inertia/pages/auth/signup.tsx'))['default']>

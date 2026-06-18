@@ -367,6 +367,53 @@ export default class AdminController {
     response.redirect().toRoute('admin.whatsapp')
   }
 
+  async whatsappSettings({ inertia }: HttpContext) {
+    const { WhatsAppService } = await import('#services/whatsapp_service')
+    const status = WhatsAppService.getStatus()
+    return (inertia.render as any)('admin/whatsapp_settings', { status })
+  }
+
+  async whatsappStatus({ response }: HttpContext) {
+    const { WhatsAppService } = await import('#services/whatsapp_service')
+    return response.json(WhatsAppService.getStatus())
+  }
+
+  async connectWhatsapp({ response, session }: HttpContext) {
+    try {
+      const { WhatsAppService } = await import('#services/whatsapp_service')
+      await WhatsAppService.initialize()
+      session.flash('success', 'WhatsApp connection initiated. Scan the QR code.')
+      return (response.redirect() as any).toRoute('admin.whatsapp.settings')
+    } catch (error) {
+      session.flash('error', 'Failed to initialize WhatsApp connection')
+      return (response.redirect() as any).toRoute('admin.whatsapp.settings')
+    }
+  }
+
+  async disconnectWhatsapp({ response, session }: HttpContext) {
+    try {
+      const { WhatsAppService } = await import('#services/whatsapp_service')
+      await WhatsAppService.disconnect()
+      session.flash('success', 'WhatsApp disconnected')
+      return (response.redirect() as any).toRoute('admin.whatsapp.settings')
+    } catch (error) {
+      session.flash('error', 'Failed to disconnect WhatsApp')
+      return (response.redirect() as any).toRoute('admin.whatsapp.settings')
+    }
+  }
+
+  async resetWhatsapp({ response, session }: HttpContext) {
+    try {
+      const { WhatsAppService } = await import('#services/whatsapp_service')
+      await WhatsAppService.reset()
+      session.flash('success', 'WhatsApp session reset')
+      return (response.redirect() as any).toRoute('admin.whatsapp.settings')
+    } catch (error) {
+      session.flash('error', 'Failed to reset WhatsApp session')
+      return (response.redirect() as any).toRoute('admin.whatsapp.settings')
+    }
+  }
+
   async currencies({ inertia }: HttpContext) {
     const currencies = await Currency.query().orderBy('sortOrder', 'asc')
     return (inertia.render as any)('admin/currencies', { currencies })

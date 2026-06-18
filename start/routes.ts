@@ -156,6 +156,19 @@ router
       .as('admin.homepage.toggle')
     router.get('whatsapp', [AdminController, 'whatsappTemplates']).as('admin.whatsapp')
     router.post('whatsapp', [AdminController, 'storeWhatsappTemplate']).as('admin.whatsapp.store')
+    router.get('whatsapp-settings', [AdminController, 'whatsappSettings']).as('admin.whatsapp.settings')
+    router
+      .get('whatsapp-settings/status', [AdminController, 'whatsappStatus'])
+      .as('admin.whatsapp.status')
+    router
+      .post('whatsapp-settings/connect', [AdminController, 'connectWhatsapp'])
+      .as('admin.whatsapp.connect')
+    router
+      .post('whatsapp-settings/disconnect', [AdminController, 'disconnectWhatsapp'])
+      .as('admin.whatsapp.disconnect')
+    router
+      .post('whatsapp-settings/reset', [AdminController, 'resetWhatsapp'])
+      .as('admin.whatsapp.reset')
     router.get('settings', [SettingsController, 'index']).as('admin.settings')
     router.get('currencies', [AdminController, 'currencies']).as('admin.currencies')
     router.post('currencies', [AdminController, 'storeCurrency']).as('admin.currencies.store')

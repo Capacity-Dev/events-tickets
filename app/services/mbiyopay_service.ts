@@ -6,6 +6,7 @@ import OrderItem from '#models/order_item'
 import Payout from '#models/payout'
 import Ticket from '#models/ticket'
 import TicketType from '#models/ticket_type'
+import { NotificationService } from '#services/notification_service'
 
 const BASE_URL = 'https://dashboard.mbiyo.africa/api/v1'
 
@@ -238,6 +239,8 @@ export class MbiyopayService {
         })
       }
     }
+
+    await NotificationService.dispatch(order)
   }
 
   static async processFailedPayment(orderId: string): Promise<void> {

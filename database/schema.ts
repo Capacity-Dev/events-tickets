@@ -8,15 +8,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class CategorySchema extends BaseModel {
-  static $columns = [
-    'createdAt',
-    'displayOrder',
-    'iconUrl',
-    'id',
-    'name',
-    'slug',
-    'updatedAt',
-  ] as const
+  static $columns = ['createdAt', 'displayOrder', 'iconUrl', 'id', 'name', 'slug', 'updatedAt'] as const
   $columns = CategorySchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -35,19 +27,7 @@ export class CategorySchema extends BaseModel {
 }
 
 export class CurrencySchema extends BaseModel {
-  static $columns = [
-    'code',
-    'countryCode',
-    'createdAt',
-    'exchangeRate',
-    'id',
-    'isActive',
-    'name',
-    'networks',
-    'sortOrder',
-    'symbol',
-    'updatedAt',
-  ] as const
+  static $columns = ['code', 'countryCode', 'createdAt', 'exchangeRate', 'id', 'isActive', 'name', 'networks', 'sortOrder', 'symbol', 'updatedAt'] as const
   $columns = CurrencySchema.$columns
   @column()
   declare code: string
@@ -74,16 +54,7 @@ export class CurrencySchema extends BaseModel {
 }
 
 export class EventFeeRuleSchema extends BaseModel {
-  static $columns = [
-    'createdAt',
-    'effectiveFrom',
-    'effectiveUntil',
-    'eventId',
-    'feeRuleId',
-    'id',
-    'overrideValue',
-    'updatedAt',
-  ] as const
+  static $columns = ['createdAt', 'effectiveFrom', 'effectiveUntil', 'eventId', 'feeRuleId', 'id', 'overrideValue', 'updatedAt'] as const
   $columns = EventFeeRuleSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -104,30 +75,7 @@ export class EventFeeRuleSchema extends BaseModel {
 }
 
 export class EventSchema extends BaseModel {
-  static $columns = [
-    'categoryId',
-    'coverImageUrl',
-    'createdAt',
-    'currency',
-    'description',
-    'endDate',
-    'frozenAt',
-    'galleryImages',
-    'id',
-    'isFeatured',
-    'isFrozen',
-    'organizerId',
-    'publishedAt',
-    'seoMeta',
-    'slug',
-    'startDate',
-    'status',
-    'title',
-    'updatedAt',
-    'venueAddress',
-    'venueCoordinates',
-    'venueName',
-  ] as const
+  static $columns = ['categoryId', 'coverImageUrl', 'createdAt', 'currency', 'description', 'endDate', 'frozenAt', 'galleryImages', 'id', 'isFeatured', 'isFrozen', 'organizerId', 'publishedAt', 'seoMeta', 'slug', 'startDate', 'status', 'title', 'updatedAt', 'venueAddress', 'venueCoordinates', 'venueName'] as const
   $columns = EventSchema.$columns
   @column()
   declare categoryId: string | null
@@ -176,23 +124,7 @@ export class EventSchema extends BaseModel {
 }
 
 export class FeeRuleSchema extends BaseModel {
-  static $columns = [
-    'appliesTo',
-    'buyerPercentage',
-    'createdAt',
-    'id',
-    'isDefault',
-    'maxFee',
-    'minFee',
-    'name',
-    'organizerPercentage',
-    'priority',
-    'secondaryValue',
-    'status',
-    'type',
-    'updatedAt',
-    'value',
-  ] as const
+  static $columns = ['appliesTo', 'buyerPercentage', 'createdAt', 'id', 'isDefault', 'maxFee', 'minFee', 'name', 'organizerPercentage', 'priority', 'secondaryValue', 'status', 'type', 'updatedAt', 'value'] as const
   $columns = FeeRuleSchema.$columns
   @column()
   declare appliesTo: string
@@ -227,22 +159,7 @@ export class FeeRuleSchema extends BaseModel {
 }
 
 export class NotificationLogSchema extends BaseModel {
-  static $columns = [
-    'channel',
-    'createdAt',
-    'deliveredAt',
-    'errorDetails',
-    'externalMessageId',
-    'id',
-    'payload',
-    'readAt',
-    'recipientIdentifier',
-    'recipientType',
-    'sentAt',
-    'status',
-    'templateId',
-    'updatedAt',
-  ] as const
+  static $columns = ['channel', 'createdAt', 'deliveredAt', 'errorDetails', 'externalMessageId', 'id', 'payload', 'readAt', 'recipientIdentifier', 'recipientType', 'sentAt', 'status', 'templateId', 'updatedAt'] as const
   $columns = NotificationLogSchema.$columns
   @column()
   declare channel: string
@@ -275,17 +192,7 @@ export class NotificationLogSchema extends BaseModel {
 }
 
 export class OrderItemSchema extends BaseModel {
-  static $columns = [
-    'attendeeDetails',
-    'createdAt',
-    'id',
-    'lineTotal',
-    'orderId',
-    'quantity',
-    'ticketTypeId',
-    'unitPrice',
-    'updatedAt',
-  ] as const
+  static $columns = ['attendeeDetails', 'createdAt', 'id', 'lineTotal', 'orderId', 'quantity', 'ticketTypeId', 'unitPrice', 'updatedAt'] as const
   $columns = OrderItemSchema.$columns
   @column()
   declare attendeeDetails: any | null
@@ -308,29 +215,7 @@ export class OrderItemSchema extends BaseModel {
 }
 
 export class OrderSchema extends BaseModel {
-  static $columns = [
-    'buyerId',
-    'cancellationReason',
-    'createdAt',
-    'currency',
-    'guestEmail',
-    'guestPhone',
-    'id',
-    'ipAddress',
-    'mbiyopayAuthMode',
-    'orderNumber',
-    'organizerNetAmount',
-    'paidAt',
-    'paymentIntentId',
-    'paymentMethod',
-    'paymentProcessorFee',
-    'platformFeeAmount',
-    'refundedAt',
-    'status',
-    'totalGrossAmount',
-    'updatedAt',
-    'userAgent',
-  ] as const
+  static $columns = ['buyerId', 'cancellationReason', 'createdAt', 'currency', 'guestEmail', 'guestName', 'guestPhone', 'id', 'ipAddress', 'mbiyopayAuthMode', 'orderNumber', 'organizerNetAmount', 'paidAt', 'paymentIntentId', 'paymentMethod', 'paymentProcessorFee', 'platformFeeAmount', 'refundedAt', 'status', 'totalGrossAmount', 'updatedAt', 'userAgent'] as const
   $columns = OrderSchema.$columns
   @column()
   declare buyerId: number | null
@@ -342,6 +227,8 @@ export class OrderSchema extends BaseModel {
   declare currency: string | null
   @column()
   declare guestEmail: string | null
+  @column()
+  declare guestName: string | null
   @column()
   declare guestPhone: string | null
   @column({ isPrimary: true })
@@ -377,15 +264,7 @@ export class OrderSchema extends BaseModel {
 }
 
 export class OrganizerFeeProfileSchema extends BaseModel {
-  static $columns = [
-    'contractEndDate',
-    'contractStartDate',
-    'createdAt',
-    'feeRuleId',
-    'id',
-    'organizerId',
-    'updatedAt',
-  ] as const
+  static $columns = ['contractEndDate', 'contractStartDate', 'createdAt', 'feeRuleId', 'id', 'organizerId', 'updatedAt'] as const
   $columns = OrganizerFeeProfileSchema.$columns
   @column.dateTime()
   declare contractEndDate: DateTime | null
@@ -404,27 +283,7 @@ export class OrganizerFeeProfileSchema extends BaseModel {
 }
 
 export class PayoutSchema extends BaseModel {
-  static $columns = [
-    'adminNotes',
-    'amount',
-    'beneficiary',
-    'completedAt',
-    'createdAt',
-    'currency',
-    'eventId',
-    'id',
-    'mbiyopayStatus',
-    'network',
-    'organizerId',
-    'payoutMethod',
-    'payoutReference',
-    'phoneNumber',
-    'processedAt',
-    'requestedAt',
-    'status',
-    'transactionId',
-    'updatedAt',
-  ] as const
+  static $columns = ['adminNotes', 'amount', 'beneficiary', 'completedAt', 'createdAt', 'currency', 'eventId', 'id', 'mbiyopayStatus', 'network', 'organizerId', 'payoutMethod', 'payoutReference', 'phoneNumber', 'processedAt', 'requestedAt', 'status', 'transactionId', 'updatedAt'] as const
   $columns = PayoutSchema.$columns
   @column()
   declare adminNotes: string | null
@@ -467,16 +326,7 @@ export class PayoutSchema extends BaseModel {
 }
 
 export class PlatformRevenueLogSchema extends BaseModel {
-  static $columns = [
-    'calculatedFeeAmount',
-    'collectedAt',
-    'createdAt',
-    'feeBreakdown',
-    'feeRuleId',
-    'id',
-    'orderId',
-    'updatedAt',
-  ] as const
+  static $columns = ['calculatedFeeAmount', 'collectedAt', 'createdAt', 'feeBreakdown', 'feeRuleId', 'id', 'orderId', 'updatedAt'] as const
   $columns = PlatformRevenueLogSchema.$columns
   @column()
   declare calculatedFeeAmount: string
@@ -497,19 +347,7 @@ export class PlatformRevenueLogSchema extends BaseModel {
 }
 
 export class ProfileSchema extends BaseModel {
-  static $columns = [
-    'avatarUrl',
-    'createdAt',
-    'firstName',
-    'id',
-    'lastName',
-    'locale',
-    'phoneNumber',
-    'timezone',
-    'updatedAt',
-    'userId',
-    'whatsappOptIn',
-  ] as const
+  static $columns = ['avatarUrl', 'createdAt', 'firstName', 'id', 'lastName', 'locale', 'phoneNumber', 'timezone', 'updatedAt', 'userId', 'whatsappOptIn'] as const
   $columns = ProfileSchema.$columns
   @column()
   declare avatarUrl: string | null
@@ -551,15 +389,7 @@ export class RoleSchema extends BaseModel {
 }
 
 export class TicketInventoryLockSchema extends BaseModel {
-  static $columns = [
-    'createdAt',
-    'expiresAt',
-    'id',
-    'quantity',
-    'sessionId',
-    'ticketTypeId',
-    'userId',
-  ] as const
+  static $columns = ['createdAt', 'expiresAt', 'id', 'quantity', 'sessionId', 'ticketTypeId', 'userId'] as const
   $columns = TicketInventoryLockSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -578,24 +408,7 @@ export class TicketInventoryLockSchema extends BaseModel {
 }
 
 export class TicketTypeSchema extends BaseModel {
-  static $columns = [
-    'basePrice',
-    'createdAt',
-    'currency',
-    'description',
-    'eventId',
-    'id',
-    'maxPerOrder',
-    'name',
-    'quantityReserved',
-    'quantitySold',
-    'quantityTotal',
-    'salesEndAt',
-    'salesStartAt',
-    'sortOrder',
-    'status',
-    'updatedAt',
-  ] as const
+  static $columns = ['basePrice', 'createdAt', 'currency', 'description', 'eventId', 'id', 'maxPerOrder', 'name', 'quantityReserved', 'quantitySold', 'quantityTotal', 'salesEndAt', 'salesStartAt', 'sortOrder', 'status', 'updatedAt'] as const
   $columns = TicketTypeSchema.$columns
   @column()
   declare basePrice: string
@@ -632,22 +445,7 @@ export class TicketTypeSchema extends BaseModel {
 }
 
 export class TicketSchema extends BaseModel {
-  static $columns = [
-    'checkedInAt',
-    'createdAt',
-    'eventId',
-    'id',
-    'orderItemId',
-    'pdfUrl',
-    'qrToken',
-    'status',
-    'ticketNumber',
-    'ticketTypeId',
-    'updatedAt',
-    'usedAt',
-    'usedByScannerId',
-    'uuid',
-  ] as const
+  static $columns = ['checkedInAt', 'createdAt', 'eventId', 'id', 'orderItemId', 'pdfUrl', 'qrToken', 'status', 'ticketNumber', 'ticketTypeId', 'updatedAt', 'usedAt', 'usedByScannerId', 'uuid'] as const
   $columns = TicketSchema.$columns
   @column.dateTime()
   declare checkedInAt: DateTime | null
@@ -680,19 +478,7 @@ export class TicketSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = [
-    'createdAt',
-    'deletedAt',
-    'email',
-    'emailVerifiedAt',
-    'fullName',
-    'googleId',
-    'googleRefreshToken',
-    'id',
-    'password',
-    'roleId',
-    'updatedAt',
-  ] as const
+  static $columns = ['createdAt', 'deletedAt', 'email', 'emailVerifiedAt', 'fullName', 'googleId', 'googleRefreshToken', 'id', 'password', 'roleId', 'updatedAt'] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -719,17 +505,7 @@ export class UserSchema extends BaseModel {
 }
 
 export class WhatsappTemplateSchema extends BaseModel {
-  static $columns = [
-    'category',
-    'createdAt',
-    'id',
-    'languageCode',
-    'metaTemplateId',
-    'name',
-    'status',
-    'updatedAt',
-    'variables',
-  ] as const
+  static $columns = ['category', 'createdAt', 'id', 'languageCode', 'metaTemplateId', 'name', 'status', 'updatedAt', 'variables'] as const
   $columns = WhatsappTemplateSchema.$columns
   @column()
   declare category: string

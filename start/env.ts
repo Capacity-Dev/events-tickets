@@ -46,4 +46,15 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Admin
   ADMIN_PREFIX: Env.schema.string.optional(),
+
+  // WhatsApp
+  WHATSAPP_PROVIDER: Env.schema.enum.optional(['baileys', 'meta', 'disabled'] as const),
+
+  // Mail (ZeptoMail)
+  SMTP_HOST: Env.schema.string.optional(),
+  SMTP_PORT: Env.schema.string.optional(),
+  SMTP_USER: Env.schema.string.optional(),
+  SMTP_PASS: Env.schema.string.optional(),
+  MAIL_FROM: Env.schema.string.optional(),
+  MAIL_FROM_NAME: Env.schema.string.optional(),
 })
