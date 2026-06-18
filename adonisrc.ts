@@ -123,6 +123,10 @@ export default defineConfig({
       reloadServer: false,
     },
     {
+      pattern: 'resources/lang/**',
+      reloadServer: false,
+    },
+    {
       pattern: 'public/**',
       reloadServer: false,
     },
