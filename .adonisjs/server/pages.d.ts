@@ -21,6 +21,7 @@ declare module '@adonisjs/inertia/types' {
     'admin/finances': ExtractProps<(typeof import('../../inertia/pages/admin/finances.tsx'))['default']>
     'admin/homepage': ExtractProps<(typeof import('../../inertia/pages/admin/homepage.tsx'))['default']>
     'admin/index': ExtractProps<(typeof import('../../inertia/pages/admin/index.tsx'))['default']>
+    'admin/notifications': ExtractProps<(typeof import('../../inertia/pages/admin/notifications.tsx'))['default']>
     'admin/settings': ExtractProps<(typeof import('../../inertia/pages/admin/settings.tsx'))['default']>
     'admin/transaction_show': ExtractProps<(typeof import('../../inertia/pages/admin/transaction_show.tsx'))['default']>
     'admin/transactions': ExtractProps<(typeof import('../../inertia/pages/admin/transactions.tsx'))['default']>

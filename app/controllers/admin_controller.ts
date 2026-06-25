@@ -11,6 +11,7 @@ import Role from '#models/role'
 import EventBoost from '#models/event_boost'
 import { metaAds } from '#services/meta_ads_service'
 import adminConfig from '#config/admin'
+import Setting from '#models/setting'
 import WhatsAppTemplate from '#models/whatsapp_template'
 import { MbiyopayService } from '#services/mbiyopay_service'
 import { loadActiveCurrencies } from '../helpers/currency.js'
@@ -489,5 +490,42 @@ export default class AdminController {
     boost.status = 'cancelled'
     await boost.save()
     return response.redirect().toPath(`/${adminConfig.prefix}/boosts`)
+  }
+
+  async notifications({ inertia }: HttpContext) {
+    const templates = await WhatsAppTemplate.query().orderBy('createdAt', 'desc')
+    const { WhatsAppService } = await import('#services/whatsapp_service')
+    const connectionStatus = WhatsAppService.getStatus()
+
+    const allSettings = await Setting.query()
+    const settingsMap: Record<string, string> = {}
+    for (const s of allSettings) {
+      settingsMap[s.key] = (s as any).value ?? ''
+    }
+
+    return (inertia.render as any)('admin/notifications', {
+      templates,
+      connectionStatus,
+      settings: settingsMap,
+      adminPrefix: adminConfig.prefix,
+    })
+  }
+
+  async updateNotificationSettings({ request, response }: HttpContext) {
+    const data = request.all()
+    for (const [key, value] of Object.entries(data)) {
+      const existing = await Setting.findBy('key', key)
+      if (existing) {
+        ;(existing as any).value = String(value)
+        await existing.save()
+      } else {
+        await Setting.create({
+          id: crypto.randomUUID(),
+          key,
+          value: String(value),
+        })
+      }
+    }
+    return response.json({ success: true })
   }
 }

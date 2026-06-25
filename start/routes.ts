@@ -191,6 +191,10 @@ router
       .post('whatsapp-settings/reset', [AdminController, 'resetWhatsapp'])
       .as('admin.whatsapp.reset')
     router.get('settings', [SettingsController, 'index']).as('admin.settings')
+    router.get('notifications', [AdminController, 'notifications']).as('admin.notifications')
+    router
+      .post('notifications', [AdminController, 'updateNotificationSettings'])
+      .as('admin.notifications.update')
     router.get('boosts', [AdminController, 'boosts']).as('admin.boosts')
     router.post('boosts/:id/cancel', [AdminController, 'cancelBoost']).as('admin.boosts.cancel')
     router.get('currencies', [AdminController, 'currencies']).as('admin.currencies')
