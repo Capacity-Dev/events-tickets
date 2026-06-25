@@ -6,7 +6,14 @@
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l-5 5 5 5"/></svg>
           {{ t('event.back') }}
         </a>
-        <h1 class="font-heading text-[clamp(28px,4vw,44px)] mb-3 motion-safe:animate-[fadeInUp_0.5s_ease-out]">{{ event.title }}</h1>
+        <div class="flex items-center gap-3 mb-3">
+          <h1 class="font-heading text-[clamp(28px,4vw,44px)] motion-safe:animate-[fadeInUp_0.5s_ease-out]">{{ event.title }}</h1>
+          <button type="button" onclick="copyEventLink()" class="btn-ghost btn-sm inline-flex items-center gap-1.5 rounded-lg min-h-9 px-3 whitespace-nowrap text-muted-foreground hover:text-foreground" title="{{ t('event.copy_link') }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span class="hidden sm:inline" id="share-label">{{ t('event.copy_link') }}</span>
+          </button>
+          <span id="copy-toast" class="text-xs font-medium text-success opacity-0 transition-opacity duration-300 hidden">{{ t('event.link_copied') }}</span>
+        </div>
         @if(event.category)
           <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-[0.5px] bg-primary text-primary-foreground motion-safe:animate-[fadeInUp_0.5s_ease-out_0.1s_both]">
             {{ event.category.name }}
@@ -163,6 +170,21 @@
 </div>
 
 <script>
+function copyEventLink() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    var toast = document.getElementById('copy-toast')
+    var label = document.getElementById('share-label')
+    toast.classList.remove('hidden')
+    toast.style.opacity = '1'
+    if (label) label.textContent = '{{ t("event.copied") }}'
+    setTimeout(function() {
+      toast.style.opacity = '0'
+      if (label) label.textContent = '{{ t("event.copy_link") }}'
+      setTimeout(function() { toast.classList.add('hidden') }, 300)
+    }, 2000)
+  })
+}
+
 function openBuyModal(id, name, price, currencySymbol) {
   document.getElementById('modal-ticket-id').value = id
   document.getElementById('modal-ticket-name').textContent = name
