@@ -173,10 +173,12 @@ router
     router
       .post('homepage/:id/toggle-featured', [AdminController, 'toggleFeatured'])
       .as('admin.homepage.toggle')
-    router.get('whatsapp', [AdminController, 'whatsappTemplates']).as('admin.whatsapp')
+    router
+      .get('whatsapp', ({ response }) => response.redirect().toPath(`/${adminConfig.prefix}/notifications?tab=whatsapp`))
+      .as('admin.whatsapp')
     router.post('whatsapp', [AdminController, 'storeWhatsappTemplate']).as('admin.whatsapp.store')
     router
-      .get('whatsapp-settings', [AdminController, 'whatsappSettings'])
+      .get('whatsapp-settings', ({ response }) => response.redirect().toPath(`/${adminConfig.prefix}/notifications?tab=whatsapp`))
       .as('admin.whatsapp.settings')
     router
       .get('whatsapp-settings/status', [AdminController, 'whatsappStatus'])
