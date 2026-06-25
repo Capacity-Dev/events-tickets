@@ -1,117 +1,238 @@
 @include('partials/header')
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6 fade-in-up">
-        <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
-          <div>
-            <h1 class="font-heading text-[clamp(28px,3.5vw,38px)]">{{ t('events.title') }}</h1>
-            <p class="text-muted-foreground mt-1 text-sm">{{ t(total > 1 ? 'events.found_other' : 'events.found_one', { count: total }) }}</p>
-          </div>
-        </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6 fade-in-up">
+  <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+    <div>
+      <h1 class="font-heading text-[clamp(28px,3.5vw,38px)]">{{ t('events.title') }}</h1>
+      <p class="text-muted-foreground mt-1 text-sm">
+        {{
+          t(total > 1 ? 'events.found_other' : 'events.found_one', {
+            count: total,
+          })
+        }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<form method="GET" action="/events" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div
+    class="bg-card border border-border rounded-xl p-4 sm:p-5 mb-10 flex flex-col sm:flex-row gap-3 items-stretch sm:items-end fade-in-up"
+  >
+    <div class="flex-1 min-w-0">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block"
+      >
+        {{ t('events.category') }}
+      </label>
+      <div class="relative">
+        <select
+          name="category"
+          onchange="this.form.submit()"
+          class="select-field min-h-11 w-full pr-10"
+        >
+          <option value="">{{ t('events.all_categories') }}</option>
+          @each(cat in categories)
+            <option value="{{ cat.slug }}" {{ cat.slug === selectedCategory ? 'selected' : '' }}>
+              {{ cat.name }}
+            </option>
+          @end
+        </select>
       </div>
+    </div>
+    <div class="flex-1 min-w-0">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block"
+      >
+        {{ t('search.label') }}
+      </label>
+      <input
+        type="text"
+        name="q"
+        placeholder="{{ t('events.search_placeholder') }}"
+        value="{{ q }}"
+        class="input-field min-h-11 w-full"
+      />
+    </div>
+    <div class="w-full sm:w-[140px]">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block"
+      >
+        {{ t('events.from_date') }}
+      </label>
+      <input type="date" name="from" value="{{ from }}" class="input-field min-h-11 w-full" />
+    </div>
+    <div class="w-full sm:w-[140px]">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block"
+      >
+        {{ t('events.to_date') }}
+      </label>
+      <input type="date" name="to" value="{{ to }}" class="input-field min-h-11 w-full" />
+    </div>
+    <button type="submit" class="btn-primary min-h-11 px-6 gap-2 shrink-0">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="7" cy="7" r="5" />
+        <path d="M11 11l4 4" />
+      </svg>
+      <span>{{ t('events.filter') }}</span>
+    </button>
+  </div>
+</form>
 
-      <form method="GET" action="/events" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-card border border-border rounded-xl p-4 sm:p-5 mb-10 flex flex-col sm:flex-row gap-3 items-stretch sm:items-end fade-in-up">
-          <div class="flex-1 min-w-0">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('events.category') }}</label>
-            <div class="relative">
-              <select name="category" onchange="this.form.submit()" class="select-field min-h-11 w-full pr-10">
-                <option value="">{{ t('events.all_categories') }}</option>
-                @each(cat in categories)
-                  <option value="{{ cat.slug }}" {{ cat.slug === selectedCategory ? 'selected' : '' }}>
-                    {{ cat.name }}
-                  </option>
-                @endeach
-              </select>
-            </div>
-          </div>
-          <div class="flex-1 min-w-0">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('search.label') }}</label>
-            <input type="text" name="q" placeholder="{{ t('events.search_placeholder') }}" value="{{ q }}" class="input-field min-h-11 w-full" />
-          </div>
-          <div class="w-full sm:w-[140px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('events.from_date') }}</label>
-            <input type="date" name="from" value="{{ from }}" class="input-field min-h-11 w-full" />
-          </div>
-          <div class="w-full sm:w-[140px]">
-            <label class="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground mb-1.5 block">{{ t('events.to_date') }}</label>
-            <input type="date" name="to" value="{{ to }}" class="input-field min-h-11 w-full" />
-          </div>
-          <button type="submit" class="btn-primary min-h-11 px-6 gap-2 shrink-0">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
-            <span>{{ t('events.filter') }}</span>
-          </button>
-        </div>
-      </form>
-
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        @if(events.length)
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            @each(event in events)
-              <div class="bg-card border border-border rounded-xl overflow-hidden card-hover flex flex-col fade-in-up">
-                <a href="/events/{{ event.slug }}" class="block aspect-[16/9] overflow-hidden">
-                  @if(event.coverImageUrl)
-                    <img src="{{ event.coverImageUrl }}" alt="{{ event.title }}" class="w-full h-full object-cover" loading="lazy" />
-                  @else
-                    <div class="w-full h-full bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary">EV</div>
-                  @endif
-                </a>
-                <div class="p-5 sm:p-6 flex flex-col flex-1">
-                  @if(event.category)
-                    <span class="text-[11px] font-semibold uppercase tracking-[0.8px] text-primary mb-2.5">{{ event.category.name }}</span>
-                  @endif
-                  <h3 class="text-lg font-semibold font-body tracking-normal mb-1.5 leading-tight">
-                    <a href="/events/{{ event.slug }}" class="text-foreground hover:text-primary no-underline transition-colors duration-150">
-                      {{ event.title }}
-                    </a>
-                  </h3>
-                  <div class="flex flex-col gap-1 text-sm text-muted-foreground mb-5 flex-1">
-                    <span class="flex items-center gap-1.5">{{ event.formattedDate ?? event.startDate }}</span>
-                    <span class="flex items-center gap-1.5">{{ event.venueName }}</span>
-                  </div>
-                  <div class="flex items-center justify-between pt-4 border-t border-border">
-                    <div class="text-xl font-bold font-heading">
-                      @if(event.minPrice || event.min_price)
-                        <span class="text-xs font-normal text-muted-foreground">{{ t('events.from_price') }}</span> {{ currencySymbol }}{{ event.minPrice || event.min_price }}
-                      @endif
-                    </div>
-                  </div>
-                </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  @if(events.length)
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      @each(event in events)
+        <div
+          class="bg-card border border-border rounded-xl overflow-hidden card-hover flex flex-col fade-in-up"
+        >
+          <a href="/events/{{ event.slug }}" class="block aspect-[16/9] overflow-hidden">
+            @if(event.coverImageUrl)
+              <img
+                src="{{ event.coverImageUrl }}"
+                alt="{{ event.title }}"
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            @else
+              <div
+                class="w-full h-full bg-gradient-to-br from-secondary to-accent/10 flex items-center justify-center font-heading text-[28px] text-primary"
+              >
+                EV
               </div>
-            @endeach
-          </div>
+            @end
+          </a>
+          <div class="p-5 sm:p-6 flex flex-col flex-1">
+            @if(event.category)
+              <span
+                class="text-[11px] font-semibold uppercase tracking-[0.8px] text-primary mb-2.5"
+              >
+                {{ event.category.name }}
+              </span>
+            @end
 
-          @if(pages > 1)
-            <div class="flex justify-center items-center gap-2 py-12 flex-wrap">
-              @if(page > 1)
-                <a href="?page={{ page - 1 }}&{{ queryString }}" class="btn-outline btn-sm no-underline gap-1">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l-5 5 5 5"/></svg>
-                  {{ t('events.prev') }}
-                </a>
-              @endif
-              @each(p in range(1, pages))
-                @if(p === page)
-                  <span class="btn-primary btn-sm min-w-[38px] justify-center cursor-default">{{ p }}</span>
-                @else
-                  <a href="?page={{ p }}&{{ queryString }}" class="btn-outline btn-sm min-w-[38px] justify-center no-underline">{{ p }}</a>
-                @endif
-              @endeach
-              @if(page < pages)
-                <a href="?page={{ page + 1 }}&{{ queryString }}" class="btn-outline btn-sm no-underline gap-1">
-                  {{ t('events.next') }}
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
-                </a>
-              @endif
+            <h3 class="text-lg font-semibold font-body tracking-normal mb-1.5 leading-tight">
+              <a
+                href="/events/{{ event.slug }}"
+                class="text-foreground hover:text-primary no-underline transition-colors duration-150"
+              >
+                {{ event.title }}
+              </a>
+            </h3>
+            <div class="flex flex-col gap-1 text-sm text-muted-foreground mb-5 flex-1">
+              <span class="flex items-center gap-1.5">
+                {{ event.formattedDate ?? event.startDate }}
+              </span>
+              <span class="flex items-center gap-1.5">{{ event.venueName }}</span>
             </div>
-          @endif
-        @else
-          <div class="text-center py-20 px-4">
-            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <div class="flex items-center justify-between pt-4 border-t border-border">
+              <div class="text-xl font-bold font-heading">
+                @if(event.minPrice || event.min_price)
+                  <span class="text-xs font-normal text-muted-foreground">
+                    {{ t('events.from_price') }}
+                  </span>
+                  {{ currencySymbol }}
+                  {{ event.minPrice || event.min_price }}
+                @end
+              </div>
             </div>
-            <h3 class="font-body text-xl font-semibold tracking-normal mb-2">{{ t('events.no_results') }}</h3>
-            <p class="text-muted-foreground">{{ t('events.no_results_hint') }}</p>
           </div>
-        @endif
+        </div>
+      @end
+    </div>
+    @if(pages > 1)
+      <div class="flex justify-center items-center gap-2 py-12 flex-wrap">
+        @if(page > 1)
+          <a
+            href="?page={{ page - 1 }}&{{ queryString }}"
+            class="btn-outline btn-sm no-underline gap-1"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M10 3l-5 5 5 5" />
+            </svg>
+            {{ t('events.prev') }}
+          </a>
+        @end
+        @each(p in range(1, pages))
+          @if(p === page)
+            <span class="btn-primary btn-sm min-w-[38px] justify-center cursor-default">
+              {{ p }}
+            </span>
+          @else
+            <a
+              href="?page={{ p }}&{{ queryString }}"
+              class="btn-outline btn-sm min-w-[38px] justify-center no-underline"
+            >
+              {{ p }}
+            </a>
+          @end
+        @end
+        @if(page < pages)
+          <a
+            href="?page={{ page + 1 }}&{{ queryString }}"
+            class="btn-outline btn-sm no-underline gap-1"
+          >
+            {{ t('events.next') }}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 3l5 5-5 5" />
+            </svg>
+          </a>
+        @end
       </div>
-
+    @end
+  @else
+    <div class="text-center py-20 px-4">
+      <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-muted-foreground"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M16 16s-1.5-2-4-2-4 2-4 2" />
+          <line x1="9" y1="9" x2="9.01" y2="9" />
+          <line x1="15" y1="9" x2="15.01" y2="9" />
+        </svg>
+      </div>
+      <h3 class="font-body text-xl font-semibold tracking-normal mb-2">
+        {{ t('events.no_results') }}
+      </h3>
+      <p class="text-muted-foreground">{{ t('events.no_results_hint') }}</p>
+    </div>
+  @end
+</div>
 @include('partials/footer')

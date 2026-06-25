@@ -28,9 +28,10 @@ export class MailService {
     })
 
     try {
-      const venueStr = data.venueName && data.venueName !== 'N/A'
-        ? `<p style="margin:0 0 4px;font-size:14px;color:#6B4452">📍 ${data.venueName}</p>`
-        : ''
+      const venueStr =
+        data.venueName && data.venueName !== 'N/A'
+          ? `<p style="margin:0 0 4px;font-size:14px;color:#6B4452">📍 ${data.venueName}</p>`
+          : ''
 
       const rows = data.ticketNumbers
         .map(
@@ -81,17 +82,16 @@ ${rows}
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-          body: JSON.stringify({
-            from: {
-              address: mailConfig.from.address,
-              name: mailConfig.from.name,
-            },
-            to: [{ email_address: { address: to } }],
-            subject: `Vos billets pour ${data.eventTitle}`,
-            htmlbody: html,
-          }),
-        }
-      )
+        body: JSON.stringify({
+          from: {
+            address: mailConfig.from.address,
+            name: mailConfig.from.name,
+          },
+          to: [{ email_address: { address: to } }],
+          subject: `Vos billets pour ${data.eventTitle}`,
+          htmlbody: html,
+        }),
+      })
 
       if (!response.ok) {
         const errBody = await response.text()
@@ -105,10 +105,12 @@ ${rows}
 
       return logId
     } catch (error) {
-      await NotificationLog.query().where('id', logId).update({
-        status: 'failed',
-        errorDetails: JSON.stringify({ message: (error as Error).message }),
-      })
+      await NotificationLog.query()
+        .where('id', logId)
+        .update({
+          status: 'failed',
+          errorDetails: JSON.stringify({ message: (error as Error).message }),
+        })
       throw error
     }
   }

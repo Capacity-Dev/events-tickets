@@ -58,16 +58,8 @@ export class NotificationService {
       // Send via WhatsApp
       if (order.guestPhone) {
         try {
-          const logId = await WhatsAppService.logQueued(
-            'buyer',
-            order.guestPhone,
-            payloadBase
-          )
-          await WhatsAppService.sendTicketNotification(
-            logId,
-            order.guestPhone,
-            ticketData
-          )
+          const logId = await WhatsAppService.logQueued('buyer', order.guestPhone, payloadBase)
+          await WhatsAppService.sendTicketNotification(logId, order.guestPhone, ticketData)
         } catch (error) {
           logger.error('WhatsApp notification failed:', error)
         }

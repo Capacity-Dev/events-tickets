@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '~/com
 import { Separator } from '~/components/ui/separator'
 
 export default function AdminWhatsAppSettings({ status: initialStatus }: { status: any }) {
-  const { adminPrefix } = (usePage().props as any)
+  const { adminPrefix } = usePage().props as any
   const [status, setStatus] = useState(initialStatus)
   const [polling, setPolling] = useState(false)
 
@@ -48,9 +48,7 @@ export default function AdminWhatsAppSettings({ status: initialStatus }: { statu
         <Card>
           <CardHeader>
             <CardTitle>Connection Status</CardTitle>
-            <CardDescription>
-              Scan the QR code with your WhatsApp to connect
-            </CardDescription>
+            <CardDescription>Scan the QR code with your WhatsApp to connect</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
@@ -71,7 +69,19 @@ export default function AdminWhatsAppSettings({ status: initialStatus }: { statu
                     : 'Disconnected'}
               </Badge>
               {status.isConnected && (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-success"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-success"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
               )}
             </div>
 
@@ -80,11 +90,7 @@ export default function AdminWhatsAppSettings({ status: initialStatus }: { statu
                 <p className="text-sm text-muted-foreground mb-3">
                   Scan this QR code with WhatsApp on your phone
                 </p>
-                <img
-                  src={status.qrCode}
-                  alt="WhatsApp QR Code"
-                  className="w-64 h-64 mx-auto"
-                />
+                <img src={status.qrCode} alt="WhatsApp QR Code" className="w-64 h-64 mx-auto" />
               </div>
             )}
 
@@ -117,9 +123,7 @@ export default function AdminWhatsAppSettings({ status: initialStatus }: { statu
               </Button>
             </div>
 
-            {polling && (
-              <p className="text-xs text-muted-foreground">Polling for connection...</p>
-            )}
+            {polling && <p className="text-xs text-muted-foreground">Polling for connection...</p>}
           </CardContent>
         </Card>
       </div>

@@ -136,22 +136,47 @@ export default function OrganizerCheckIn({ event }: Props) {
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-0.5">
               {lastResult.success ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--success)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--destructive)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="15" y1="9" x2="9" y2="15" />
+                  <line x1="9" y1="9" x2="15" y2="15" />
                 </svg>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-semibold ${lastResult.success ? 'text-success' : 'text-destructive'}`}>
+              <p
+                className={`text-sm font-semibold ${lastResult.success ? 'text-success' : 'text-destructive'}`}
+              >
                 {lastResult.message}
               </p>
               {lastResult.ticket && (
                 <div className="mt-1 space-y-0.5 text-sm text-muted-foreground">
-                  <p>{lastResult.ticket.ticketNumber} &middot; {lastResult.ticket.ticketType}</p>
+                  <p>
+                    {lastResult.ticket.ticketNumber} &middot; {lastResult.ticket.ticketType}
+                  </p>
                   <p>{lastResult.ticket.buyerName}</p>
                   {lastResult.ticket.buyerEmail && (
                     <p className="text-xs">{lastResult.ticket.buyerEmail}</p>
@@ -164,7 +189,19 @@ export default function OrganizerCheckIn({ event }: Props) {
               className="text-muted-foreground hover:text-foreground bg-transparent border-none cursor-pointer p-1"
               aria-label="Dismiss"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
           </div>
         </div>
@@ -197,7 +234,11 @@ export default function OrganizerCheckIn({ event }: Props) {
             placeholder="Ticket UUID or /tickets/xxx"
             className="input-field min-h-10 flex-1 text-sm"
           />
-          <button type="submit" disabled={scanning || !manualUuid.trim()} className="btn-primary btn-sm">
+          <button
+            type="submit"
+            disabled={scanning || !manualUuid.trim()}
+            className="btn-primary btn-sm"
+          >
             Validate
           </button>
         </form>

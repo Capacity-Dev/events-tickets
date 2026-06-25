@@ -38,7 +38,12 @@ export default class extends BaseSchema {
       table.timestamp('last_synced_at').nullable()
       table.string('payment_status', 20).defaultTo('pending')
       table.string('payment_reference').nullable()
-      table.uuid('fee_rule_id').references('id').inTable('fee_rules').onDelete('SET NULL').nullable()
+      table
+        .uuid('fee_rule_id')
+        .references('id')
+        .inTable('fee_rules')
+        .onDelete('SET NULL')
+        .nullable()
       table.decimal('markup_amount', 12, 2).defaultTo(0)
       table.decimal('meta_budget', 12, 2).notNullable()
       table.timestamp('created_at', { useTz: true })

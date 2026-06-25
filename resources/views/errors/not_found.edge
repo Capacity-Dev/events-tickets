@@ -1,13 +1,10 @@
 @include('partials/header')
 
-      <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center motion-safe:animate-[fadeInUp_0.5s_ease-out]">
-        <div class="text-6xl mb-4 font-heading text-muted-foreground">404</div>
-        <p class="text-lg text-muted-foreground mb-6">
-          {{ t('errors.not_found') }}
-        </p>
-        <a href="/" class="btn-primary no-underline">
-          {{ t('order.back_home') }}
-        </a>
-      </div>
-
+<div
+  class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center motion-safe:animate-[fadeInUp_0.5s_ease-out]"
+>
+  <div class="text-6xl mb-4 font-heading text-muted-foreground">404</div>
+  <p class="text-lg text-muted-foreground mb-6">{{ t('errors.not_found') }}</p>
+  <a href="/" class="btn-primary no-underline">{{ t('order.back_home') }}</a>
+</div>
 @include('partials/footer')

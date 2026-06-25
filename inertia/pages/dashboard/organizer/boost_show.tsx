@@ -26,7 +26,9 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
     cpc: boost.metaCpc,
   }
 
-  const channels = Array.isArray(boost.channels) ? boost.channels : JSON.parse(boost.channels || '[]')
+  const channels = Array.isArray(boost.channels)
+    ? boost.channels
+    : JSON.parse(boost.channels || '[]')
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">

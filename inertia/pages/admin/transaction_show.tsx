@@ -66,7 +66,9 @@ export default function AdminTransactionShow({ order }: Props) {
                 <span>{order.paidAt ? new Date(order.paidAt).toLocaleString() : '—'}</span>
 
                 <span className="text-muted-foreground">Total</span>
-                <span className="font-medium">{formatCurrency(order.totalGrossAmount, order.currency)}</span>
+                <span className="font-medium">
+                  {formatCurrency(order.totalGrossAmount, order.currency)}
+                </span>
 
                 {Number(order.platformFeeAmount) > 0 && (
                   <>
@@ -119,8 +121,12 @@ export default function AdminTransactionShow({ order }: Props) {
                     <tr key={item.id} className="border-b">
                       <td className="p-3 text-sm">{item.ticketType?.name ?? 'Unknown'}</td>
                       <td className="p-3 text-sm">{item.quantity}</td>
-                      <td className="p-3 text-sm">{formatCurrency(item.unitPrice, order.currency)}</td>
-                      <td className="p-3 text-sm font-medium">{formatCurrency(item.lineTotal, order.currency)}</td>
+                      <td className="p-3 text-sm">
+                        {formatCurrency(item.unitPrice, order.currency)}
+                      </td>
+                      <td className="p-3 text-sm font-medium">
+                        {formatCurrency(item.lineTotal, order.currency)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -179,9 +185,7 @@ export default function AdminTransactionShow({ order }: Props) {
                           </span>
                         </td>
                         <td className="p-3 text-sm text-muted-foreground">
-                          {ticket.checkedInAt
-                            ? new Date(ticket.checkedInAt).toLocaleString()
-                            : '—'}
+                          {ticket.checkedInAt ? new Date(ticket.checkedInAt).toLocaleString() : '—'}
                         </td>
                       </tr>
                     ))
@@ -242,9 +246,7 @@ export default function AdminTransactionShow({ order }: Props) {
               {order.paymentIntentId && (
                 <div>
                   <p className="text-xs text-muted-foreground">Mbiyopay Transaction</p>
-                  <p className="text-sm font-mono text-xs break-all">
-                    {order.paymentIntentId}
-                  </p>
+                  <p className="text-sm font-mono text-xs break-all">{order.paymentIntentId}</p>
                 </div>
               )}
               {order.mbiyopayAuthMode && (
@@ -258,7 +260,9 @@ export default function AdminTransactionShow({ order }: Props) {
               {order.paymentProcessorFee && Number(order.paymentProcessorFee) > 0 && (
                 <div>
                   <p className="text-xs text-muted-foreground">Processor Fee</p>
-                  <p className="text-sm">{formatCurrency(order.paymentProcessorFee, order.currency)}</p>
+                  <p className="text-sm">
+                    {formatCurrency(order.paymentProcessorFee, order.currency)}
+                  </p>
                 </div>
               )}
               {order.ipAddress && (
@@ -274,7 +278,10 @@ export default function AdminTransactionShow({ order }: Props) {
             <h2 className="font-semibold text-sm">Actions</h2>
             {order.paymentIntentId && (
               <form action={`/${adminPrefix}/transactions/${order.id}/recheck`} method="POST">
-                <button type="submit" className="btn-outline btn-sm w-full inline-flex items-center gap-2 justify-center">
+                <button
+                  type="submit"
+                  className="btn-outline btn-sm w-full inline-flex items-center gap-2 justify-center"
+                >
                   <svg
                     width="14"
                     height="14"

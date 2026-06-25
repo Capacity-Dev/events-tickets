@@ -434,7 +434,9 @@ export default class OrganizerController {
       return response.status(400).json({ error: 'This ticket belongs to a different event' })
 
     if (ticket.status !== 'valid')
-      return response.status(400).json({ error: 'Ticket already used', checkedInAt: ticket.checkedInAt })
+      return response
+        .status(400)
+        .json({ error: 'Ticket already used', checkedInAt: ticket.checkedInAt })
 
     ticket.status = 'used'
     ticket.checkedInAt = DateTime.now()
@@ -453,7 +455,8 @@ export default class OrganizerController {
           ticket.orderItem?.order?.buyer?.fullName ??
           ticket.orderItem?.order?.guestEmail ??
           'Guest',
-        buyerEmail: ticket.orderItem?.order?.buyer?.email ?? ticket.orderItem?.order?.guestEmail ?? '',
+        buyerEmail:
+          ticket.orderItem?.order?.buyer?.email ?? ticket.orderItem?.order?.guestEmail ?? '',
       },
     })
   }
@@ -493,10 +496,7 @@ export default class OrganizerController {
         status: t.status,
         checkedInAt: t.checkedInAt,
         ticketType: t.ticketType?.name ?? '—',
-        buyerName:
-          t.orderItem?.order?.buyer?.fullName ??
-          t.orderItem?.order?.guestEmail ??
-          'Guest',
+        buyerName: t.orderItem?.order?.buyer?.fullName ?? t.orderItem?.order?.guestEmail ?? 'Guest',
       })),
       pagination: tickets.getMeta(),
     })

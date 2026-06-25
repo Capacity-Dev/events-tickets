@@ -29,8 +29,21 @@ interface CurrencyData {
 }
 
 const ALL_NETWORKS = [
-  'vodacom', 'airtel', 'orange', 'africell', 'mtn', 'moov', 'free',
-  'togocom', 'wave', 'mpesa', 'afrimoney', 'qmoney', 'aps', 'coris', 'celtiis',
+  'vodacom',
+  'airtel',
+  'orange',
+  'africell',
+  'mtn',
+  'moov',
+  'free',
+  'togocom',
+  'wave',
+  'mpesa',
+  'afrimoney',
+  'qmoney',
+  'aps',
+  'coris',
+  'celtiis',
 ]
 
 function getCheckedNetworks(parent: HTMLElement | null) {
@@ -151,12 +164,20 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
             </div>
             <div className="sm:col-span-3">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="checkbox" name="isActive" value="1" defaultChecked className="rounded" />
+                <input
+                  type="checkbox"
+                  name="isActive"
+                  value="1"
+                  defaultChecked
+                  className="rounded"
+                />
                 Active
               </label>
             </div>
             <div className="sm:col-span-3">
-              <Button type="submit" disabled={submitting}>Add Currency</Button>
+              <Button type="submit" disabled={submitting}>
+                Add Currency
+              </Button>
             </div>
           </form>
         </CardContent>
@@ -236,7 +257,13 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="edit-code">ISO Code</Label>
-                    <Input id="edit-code" name="code" maxLength={3} required defaultValue={editCurrency.code} />
+                    <Input
+                      id="edit-code"
+                      name="code"
+                      maxLength={3}
+                      required
+                      defaultValue={editCurrency.code}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="edit-name">Name</Label>
@@ -247,22 +274,48 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="edit-symbol">Symbol</Label>
-                    <Input id="edit-symbol" name="symbol" maxLength={10} required defaultValue={editCurrency.symbol} />
+                    <Input
+                      id="edit-symbol"
+                      name="symbol"
+                      maxLength={10}
+                      required
+                      defaultValue={editCurrency.symbol}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="edit-countryCode">Country Code</Label>
-                    <Input id="edit-countryCode" name="countryCode" maxLength={2} required defaultValue={editCurrency.countryCode} />
+                    <Input
+                      id="edit-countryCode"
+                      name="countryCode"
+                      maxLength={2}
+                      required
+                      defaultValue={editCurrency.countryCode}
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="edit-exchangeRate">Exchange Rate (to USD)</Label>
-                    <Input id="edit-exchangeRate" name="exchangeRate" type="number" step="0.000001" min="0" required defaultValue={editCurrency.exchangeRate} />
+                    <Input
+                      id="edit-exchangeRate"
+                      name="exchangeRate"
+                      type="number"
+                      step="0.000001"
+                      min="0"
+                      required
+                      defaultValue={editCurrency.exchangeRate}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="edit-sortOrder">Sort Order</Label>
-                    <Input id="edit-sortOrder" name="sortOrder" type="number" min="0" defaultValue={String(editCurrency.sortOrder)} />
+                    <Input
+                      id="edit-sortOrder"
+                      name="sortOrder"
+                      type="number"
+                      min="0"
+                      defaultValue={String(editCurrency.sortOrder)}
+                    />
                   </div>
                 </div>
 
@@ -285,7 +338,13 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
 
                 <div>
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="checkbox" name="isActive" value="1" defaultChecked={editCurrency.isActive} className="rounded" />
+                    <input
+                      type="checkbox"
+                      name="isActive"
+                      value="1"
+                      defaultChecked={editCurrency.isActive}
+                      className="rounded"
+                    />
                     Active
                   </label>
                 </div>
@@ -295,7 +354,9 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                   <Button type="button" variant="outline" onClick={() => setEditCurrency(null)}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={submitting}>Save Changes</Button>
+                  <Button type="submit" disabled={submitting}>
+                    Save Changes
+                  </Button>
                 </div>
               </form>
             </div>

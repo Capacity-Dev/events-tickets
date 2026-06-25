@@ -53,8 +53,8 @@ export default function Boosts({ boosts }: { boosts: any[] }) {
                         b.status === 'active'
                           ? 'default'
                           : b.status === 'failed'
-                          ? 'destructive'
-                          : 'outline'
+                            ? 'destructive'
+                            : 'outline'
                       }
                     >
                       {b.status}

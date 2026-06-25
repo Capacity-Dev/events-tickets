@@ -1,16 +1,16 @@
 @let(appName = t('app.name'))
-
 <!DOCTYPE html>
 <html lang="{{ locale ?? 'fr' }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>
-      @if(title)
-        {{ title }} — {{ appName }}
-      @else
-        {{ appName }}
-      @endif
+      <edge-block data-edge-id="2">
+      {{ title }}
+      —
+      {{ appName }}
+      <edge-branch data-edge-id="2" data-branch-index="1"></edge-branch>
+      {{ appName }}</edge-block>
     </title>
     <link rel="stylesheet" href="/css/public.css" />
     @!section('head')
@@ -31,7 +31,7 @@
             @else
               <a href="/login">{{ t('nav.signin') }}</a>
               <a href="/signup" class="btn btn-primary">{{ t('nav.get_started') }}</a>
-            @endif
+            @end
           </nav>
         </div>
       </header>
@@ -40,9 +40,7 @@
         @!section('content')
       </main>
 
-      <footer class="site-footer">
-        &copy; 2026 {{ appName }}. {{ t('footer.rights') }}
-      </footer>
+      <footer class="site-footer">&copy; 2026 {{ appName }}. {{ t('footer.rights') }}</footer>
     </div>
   </body>
 </html>

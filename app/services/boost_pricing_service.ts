@@ -10,11 +10,7 @@ interface BoostPricing {
 }
 
 export class BoostPricingService {
-  async calculate(
-    budget: number,
-    currency: string,
-    organizerId: number
-  ): Promise<BoostPricing> {
+  async calculate(budget: number, currency: string, organizerId: number): Promise<BoostPricing> {
     const rule = await this.#resolveFeeRule(organizerId)
 
     if (!rule) {

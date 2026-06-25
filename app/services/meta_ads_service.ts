@@ -65,10 +65,18 @@ export class MetaAdsService {
     this.#apiVersion = env.get('META_API_VERSION', 'v22.0')
   }
 
-  get adAccountId() { return this.#adAccountId }
-  get accessToken() { return this.#accessToken }
-  get pageId() { return this.#pageId }
-  get apiVersion() { return this.#apiVersion }
+  get adAccountId() {
+    return this.#adAccountId
+  }
+  get accessToken() {
+    return this.#accessToken
+  }
+  get pageId() {
+    return this.#pageId
+  }
+  get apiVersion() {
+    return this.#apiVersion
+  }
 
   isConfigured(): boolean {
     return !!(this.#adAccountId && this.#accessToken)
@@ -80,13 +88,16 @@ export class MetaAdsService {
 
     logger.info(`[MetaAds] ${method} ${url}`)
 
-    const response = await fetch(fullUrl, method !== 'GET' && body
-      ? {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        }
-      : { method, headers: { 'Content-Type': 'application/json' } })
+    const response = await fetch(
+      fullUrl,
+      method !== 'GET' && body
+        ? {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          }
+        : { method, headers: { 'Content-Type': 'application/json' } }
+    )
 
     const json: any = await response.json()
 
@@ -100,13 +111,17 @@ export class MetaAdsService {
   }
 
   async createCampaign(params: CreateCampaignParams): Promise<string> {
-    const result = await this.#api(`/act_${params.adAccountId.replace('act_', '')}/campaigns`, 'POST', {
-      name: params.campaignName,
-      objective: params.objective,
-      status: params.status,
-      special_ad_categories: [],
-      access_token: params.accessToken,
-    })
+    const result = await this.#api(
+      `/act_${params.adAccountId.replace('act_', '')}/campaigns`,
+      'POST',
+      {
+        name: params.campaignName,
+        objective: params.objective,
+        status: params.status,
+        special_ad_categories: [],
+        access_token: params.accessToken,
+      }
+    )
     return result.id
   }
 

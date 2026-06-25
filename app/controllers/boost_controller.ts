@@ -20,7 +20,19 @@ export default class BoostController {
   }
 
   async store({ request, auth, response }: HttpContext) {
-    const { eventId, budget, currency, budgetType, startDate, endDate, channels, targeting, headline, primaryText, callToAction } = request.all()
+    const {
+      eventId,
+      budget,
+      currency,
+      budgetType,
+      startDate,
+      endDate,
+      channels,
+      targeting,
+      headline,
+      primaryText,
+      callToAction,
+    } = request.all()
 
     const event = await Event.findByOrFail('id', eventId)
     if ((event as any).organizerId !== auth.user!.id) {
@@ -46,7 +58,11 @@ export default class BoostController {
       currency: pricing.currency,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : null,
-      targetAudience: targeting ? (typeof targeting === 'string' ? JSON.parse(targeting) : targeting) : null,
+      targetAudience: targeting
+        ? typeof targeting === 'string'
+          ? JSON.parse(targeting)
+          : targeting
+        : null,
       channels: typeof channels === 'string' ? JSON.parse(channels) : channels,
       headline: headline?.slice(0, 40) || event.title.slice(0, 40),
       primaryText: primaryText || (event.description ?? '').slice(0, 125),

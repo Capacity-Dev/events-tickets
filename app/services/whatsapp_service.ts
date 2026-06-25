@@ -46,10 +46,12 @@ export class WhatsAppService {
         sentAt: new Date(),
       })
     } catch (error) {
-      await NotificationLog.query().where('id', logId).update({
-        status: 'failed',
-        errorDetails: JSON.stringify({ message: (error as Error).message }),
-      })
+      await NotificationLog.query()
+        .where('id', logId)
+        .update({
+          status: 'failed',
+          errorDetails: JSON.stringify({ message: (error as Error).message }),
+        })
     }
   }
 

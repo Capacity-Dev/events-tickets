@@ -3,6 +3,7 @@
 ## Guest (Public — no auth)
 
 ### Backend
+
 - [x] `GET /` — homepage with featured events (Edge.js)
 - [x] `GET /events` — paginated listing with category filters, date range, search (Edge.js)
 - [x] `GET /events/:slug` — event detail page with ticket types, venue, description (Edge.js)
@@ -13,6 +14,7 @@
 - [ ] Sitemap.xml generation
 
 ### Frontend (Edge.js + Tailwind)
+
 - [x] Homepage: hero section, featured events grid, category pills
 - [x] Event listing page: responsive grid, filter bar, pagination/infinite scroll
 - [x] Event detail page: hero image, date/venue block, ticket type selector with live availability
@@ -22,6 +24,7 @@
 ## User (Authenticated — Buyer + Organizer)
 
 ### Backend — Buyer
+
 - [x] `GET /dashboard/buyer/orders` — order history
 - [x] `GET /dashboard/buyer/tickets` — active tickets grid
 - [x] `POST /orders` — create order (cart → checkout)
@@ -31,6 +34,7 @@
 - [ ] Inventory locking via Redis + DB transactions
 
 ### Backend — Organizer
+
 - [x] `GET /dashboard/organizer/events` — list my events
 - [x] Event creation flow (create, edit, update, delete/cancel)
 - [x] `POST /dashboard/organizer/events/:id/publish` — submit for approval
@@ -39,6 +43,7 @@
 - [x] `POST /dashboard/organizer/payouts` — request payout
 
 ### Backend — Shared / Auth
+
 - [x] Email/password signup + login + logout
 - [x] Default role assignment (buyer) on signup
 - [x] Auto-create profile on signup
@@ -47,12 +52,14 @@
 ### Admin (Platform administrators)
 
 ### Frontend (Inertia.js + React + shadcn/ui) — Buyer
+
 - [x] Orders page: table with filters (status, date), expandable rows
 - [x] Tickets page: grid of ticket cards, status badges
 - [x] Order detail page: item breakdown, total
 - [x] Profile settings form
 
 ### Frontend (Inertia.js + React + shadcn/ui) — Organizer
+
 - [x] Events list: table with status badges, quick actions (edit, duplicate, pause)
 - [x] Event creation wizard (multi-step): basic info → date/venue → ticket types → review
 - [x] Event edit form (same wizard, pre-filled)
@@ -61,18 +68,19 @@
 - [x] Payout request form + history
 
 ### Frontend — Shared UI
+
 - [x] Dashboard layout: sidebar nav + top bar, user menu
 - [x] Toast notifications (sonner) for flash messages and errors
 - [x] Loading states, empty states, error boundaries
 
 ---
 
-
 ---
 
 ## Admin (Platform administrators)
 
 ### Backend
+
 - [ ] `GET /admin/events/pending` — moderation queue
 - [ ] `POST /admin/events/:id/approve` — approve event
 - [ ] `POST /admin/events/:id/reject` — reject event (with reason)
@@ -90,6 +98,7 @@
 - [ ] `POST /admin/whatsapp/templates` — manage WhatsApp templates
 
 ### Frontend (Inertia.js + React + shadcn/ui)
+
 - [ ] Moderation queue: table of pending events, preview modal, approve/reject
 - [ ] User management: searchable table, role editor, suspend dialog
 - [ ] Fee engine: rule list, rule editor form (type selector, value inputs)

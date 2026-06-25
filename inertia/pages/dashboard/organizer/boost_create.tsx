@@ -34,9 +34,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
   const [loading, setLoading] = useState(false)
 
   const toggleChannel = (key: string) => {
-    setChannels((prev) =>
-      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
-    )
+    setChannels((prev) => (prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]))
   }
 
   const handleCreateBoost = async () => {

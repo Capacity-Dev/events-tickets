@@ -1,54 +1,80 @@
 @include('partials/header')
 
-      <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center motion-safe:animate-[fadeInUp_0.5s_ease-out]">
-        <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-amber/10 flex items-center justify-center motion-safe:animate-[pulse_2s_ease-in-out_infinite]">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-          </svg>
-        </div>
+<div
+  class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center motion-safe:animate-[fadeInUp_0.5s_ease-out]"
+>
+  <div
+    class="w-16 h-16 mx-auto mb-6 rounded-full bg-amber/10 flex items-center justify-center motion-safe:animate-[pulse_2s_ease-in-out_infinite]"
+  >
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="var(--amber)"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  </div>
 
-        <h1 class="font-heading text-[clamp(24px,3vw,32px)] mb-2">{{ t('payment.processing') }}</h1>
-        <p class="text-muted-foreground mb-1">{{ t('payment.processing_subtitle') }}</p>
-        <p class="text-sm font-mono text-muted-foreground mb-8">{{ order.orderNumber }}</p>
+  <h1 class="font-heading text-[clamp(24px,3vw,32px)] mb-2">{{ t('payment.processing') }}</h1>
+  <p class="text-muted-foreground mb-1">{{ t('payment.processing_subtitle') }}</p>
+  <p class="text-sm font-mono text-muted-foreground mb-8">{{ order.orderNumber }}</p>
 
-        <div class="flex items-center justify-center gap-2 mb-8">
-          <div class="size-2 rounded-full bg-primary motion-safe:animate-[bounce_1s_ease-in-out_infinite]" style="animation-delay: 0s"></div>
-          <div class="size-2 rounded-full bg-primary motion-safe:animate-[bounce_1s_ease-in-out_infinite]" style="animation-delay: 0.2s"></div>
-          <div class="size-2 rounded-full bg-primary motion-safe:animate-[bounce_1s_ease-in-out_infinite]" style="animation-delay: 0.4s"></div>
-        </div>
+  <div class="flex items-center justify-center gap-2 mb-8">
+    <div
+      class="size-2 rounded-full bg-primary motion-safe:animate-[bounce_1s_ease-in-out_infinite]"
+      style="animation-delay: 0s"
+    ></div>
+    <div
+      class="size-2 rounded-full bg-primary motion-safe:animate-[bounce_1s_ease-in-out_infinite]"
+      style="animation-delay: 0.2s"
+    ></div>
+    <div
+      class="size-2 rounded-full bg-primary motion-safe:animate-[bounce_1s_ease-in-out_infinite]"
+      style="animation-delay: 0.4s"
+    ></div>
+  </div>
 
-        <p id="status-text" class="text-sm text-muted-foreground">{{ t('payment.waiting_confirmation') }}</p>
-      </div>
+  <p id="status-text" class="text-sm text-muted-foreground">
+    {{ t('payment.waiting_confirmation') }}
+  </p>
+</div>
 
 <script>
-(function() {
-  var orderId = '{{ order.id }}'
-  var attempts = 0
-  var maxAttempts = 120
-  var interval = setInterval(function() {
-    attempts++
-    fetch('/api/payment/' + orderId + '/status')
-      .then(function(r) { return r.json() })
-      .then(function(data) {
-        if (data.status === 'paid') {
-          clearInterval(interval)
-          window.location.href = '/payment/' + orderId + '/success'
-        } else if (data.status === 'failed') {
-          clearInterval(interval)
-          document.getElementById('status-text').textContent = '{{ t('payment.failed_message') }}'
-          document.getElementById('status-text').className = 'text-sm text-destructive'
-        } else if (data.requiresPin && data.status === 'reserved') {
-          clearInterval(interval)
-          window.location.href = '/payment/' + orderId + '?pin_required=1'
-        }
-      })
-      .catch(function() {})
-    if (attempts >= maxAttempts) {
-      clearInterval(interval)
-      document.getElementById('status-text').textContent = '{{ t('payment.timeout_message') }}'
-    }
-  }, 3000)
-})()
-</script>
 
+  (function() {
+    var orderId = '{{ order.id }}'
+    var attempts = 0
+    var maxAttempts = 120
+    var interval = setInterval(function() {
+      attempts++
+      fetch('/api/payment/' + orderId + '/status')
+        .then(function(r) { return r.json() })
+        .then(function(data) {
+          if (data.status === 'paid') {
+            clearInterval(interval)
+            window.location.href = '/payment/' + orderId + '/success'
+          } else if (data.status === 'failed') {
+            clearInterval(interval)
+            document.getElementById('status-text').textContent = '{{ t('payment.failed_message') }}'
+            document.getElementById('status-text').className = 'text-sm text-destructive'
+          } else if (data.requiresPin && data.status === 'reserved') {
+            clearInterval(interval)
+            window.location.href = '/payment/' + orderId + '?pin_required=1'
+          }
+        })
+        .catch(function() {})
+      if (attempts >= maxAttempts) {
+        clearInterval(interval)
+        document.getElementById('status-text').textContent = '{{ t('payment.timeout_message') }}'
+      }
+    }, 3000)
+  })()
+
+</script>
 @include('partials/footer')

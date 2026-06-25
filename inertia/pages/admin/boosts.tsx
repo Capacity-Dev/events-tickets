@@ -47,8 +47,12 @@ export default function AdminBoosts({ boosts }: { boosts: any[] }) {
             ) : (
               boosts.map((b) => (
                 <TableRow key={b.id}>
-                  <TableCell className="font-medium text-sm">{b.event?.title ?? b.headline}</TableCell>
-                  <TableCell className="text-sm">{b.organizer?.fullName ?? b.organizer?.email}</TableCell>
+                  <TableCell className="font-medium text-sm">
+                    {b.event?.title ?? b.headline}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {b.organizer?.fullName ?? b.organizer?.email}
+                  </TableCell>
                   <TableCell className="text-sm">${b.budget}</TableCell>
                   <TableCell className="text-sm">${Number(b.markupAmount).toFixed(2)}</TableCell>
                   <TableCell className="text-sm">${Number(b.metaSpent).toFixed(2)}</TableCell>

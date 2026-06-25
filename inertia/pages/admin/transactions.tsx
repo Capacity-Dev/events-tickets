@@ -65,7 +65,11 @@ export default function AdminTransactions({
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <form action={`/${adminPrefix}/transactions`} method="GET" className="flex flex-wrap gap-3 flex-1">
+        <form
+          action={`/${adminPrefix}/transactions`}
+          method="GET"
+          className="flex flex-wrap gap-3 flex-1"
+        >
           <input
             type="text"
             name="q"
@@ -92,7 +96,10 @@ export default function AdminTransactions({
             Search
           </button>
           {(search || dateFrom || dateTo) && (
-            <a href={buildUrl({ q: '', dateFrom: '', dateTo: '' })} className="btn-outline btn-sm no-underline">
+            <a
+              href={buildUrl({ q: '', dateFrom: '', dateTo: '' })}
+              className="btn-outline btn-sm no-underline"
+            >
               Clear
             </a>
           )}
@@ -181,7 +188,10 @@ export default function AdminTransactions({
       {pagination.lastPage > 1 && (
         <div className="flex justify-center gap-3 mt-6">
           {pagination.currentPage > 1 && (
-            <a href={buildUrl({ page: String(pagination.currentPage - 1) })} className="btn-outline btn-sm no-underline">
+            <a
+              href={buildUrl({ page: String(pagination.currentPage - 1) })}
+              className="btn-outline btn-sm no-underline"
+            >
               Previous
             </a>
           )}
@@ -189,7 +199,10 @@ export default function AdminTransactions({
             Page {pagination.currentPage} of {pagination.lastPage}
           </span>
           {pagination.currentPage < pagination.lastPage && (
-            <a href={buildUrl({ page: String(pagination.currentPage + 1) })} className="btn-outline btn-sm no-underline">
+            <a
+              href={buildUrl({ page: String(pagination.currentPage + 1) })}
+              className="btn-outline btn-sm no-underline"
+            >
               Next
             </a>
           )}

@@ -16,12 +16,14 @@ import PaymentController from '#controllers/payment_controller'
 import WebhookController from '#controllers/webhook_controller'
 import BoostController from '#controllers/boost_controller'
 
-router.get('uploads/:fileName', async ({ params, response }) => {
-  const base = join(app.makePath('..', 'storage/uploads'))
-  const filePath = join(base, params.fileName)
-  if (!filePath.startsWith(base)) return response.notFound()
-  return response.download(filePath)
-}).as('uploads.serve')
+router
+  .get('uploads/:fileName', async ({ params, response }) => {
+    const base = join(app.makePath('..', 'storage/uploads'))
+    const filePath = join(base, params.fileName)
+    if (!filePath.startsWith(base)) return response.notFound()
+    return response.download(filePath)
+  })
+  .as('uploads.serve')
 
 router.get('/', [PublicController, 'home']).as('home')
 
@@ -115,13 +117,9 @@ router
     router
       .post('dashboard/events/:id/boost', [BoostController, 'store'])
       .as('dashboard.events.boost.store')
-    router
-      .post('dashboard/boosts/pay', [BoostController, 'pay'])
-      .as('dashboard.boosts.pay')
+    router.post('dashboard/boosts/pay', [BoostController, 'pay']).as('dashboard.boosts.pay')
     router.get('dashboard/boosts', [BoostController, 'index']).as('dashboard.boosts')
-    router
-      .get('dashboard/boosts/:id', [BoostController, 'show'])
-      .as('dashboard.boosts.show')
+    router.get('dashboard/boosts/:id', [BoostController, 'show']).as('dashboard.boosts.show')
     router
       .post('dashboard/boosts/:id/pause', [BoostController, 'pause'])
       .as('dashboard.boosts.pause')
@@ -177,7 +175,9 @@ router
       .as('admin.homepage.toggle')
     router.get('whatsapp', [AdminController, 'whatsappTemplates']).as('admin.whatsapp')
     router.post('whatsapp', [AdminController, 'storeWhatsappTemplate']).as('admin.whatsapp.store')
-    router.get('whatsapp-settings', [AdminController, 'whatsappSettings']).as('admin.whatsapp.settings')
+    router
+      .get('whatsapp-settings', [AdminController, 'whatsappSettings'])
+      .as('admin.whatsapp.settings')
     router
       .get('whatsapp-settings/status', [AdminController, 'whatsappStatus'])
       .as('admin.whatsapp.status')
@@ -192,9 +192,7 @@ router
       .as('admin.whatsapp.reset')
     router.get('settings', [SettingsController, 'index']).as('admin.settings')
     router.get('boosts', [AdminController, 'boosts']).as('admin.boosts')
-    router
-      .post('boosts/:id/cancel', [AdminController, 'cancelBoost'])
-      .as('admin.boosts.cancel')
+    router.post('boosts/:id/cancel', [AdminController, 'cancelBoost']).as('admin.boosts.cancel')
     router.get('currencies', [AdminController, 'currencies']).as('admin.currencies')
     router.post('currencies', [AdminController, 'storeCurrency']).as('admin.currencies.store')
     router

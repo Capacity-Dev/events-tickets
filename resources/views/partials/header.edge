@@ -5,90 +5,160 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>
-      @if(title)
-        {{ title }} — {{ appName }}
-      @else
-        {{ appName }}
-      @endif
+      <edge-block data-edge-id="2">
+      {{ title }}
+      —
+      {{ appName }}
+      <edge-branch data-edge-id="2" data-branch-index="1"></edge-branch>
+      {{ appName }}</edge-block>
     </title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Righteous&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Righteous&display=swap"
+      rel="stylesheet"
+    />
     @vite(['resources/js/public.js'])
     @if(pageHead)
       {{{ pageHead }}}
-    @endif
+    @end
   </head>
   <body class="bg-background text-foreground font-body antialiased">
     <div class="flex flex-col min-h-dvh">
       <header class="bg-card border-b border-border sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          <a href="/" class="font-heading text-xl sm:text-2xl text-primary tracking-tight hover:opacity-85 transition-opacity duration-150 no-underline">
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4"
+        >
+          <a
+            href="/"
+            class="font-heading text-xl sm:text-2xl text-primary tracking-tight hover:opacity-85 transition-opacity duration-150 no-underline"
+          >
             {{ appName }}
           </a>
           <nav class="hidden md:flex items-center gap-1">
             <a href="/events" class="btn-ghost btn-sm no-underline">{{ t('nav.browse') }}</a>
-            <a href="/lang/{{ locale === 'fr' ? 'en' : 'fr' }}" class="btn-ghost btn-sm no-underline text-xs font-semibold">
+            <a
+              href="/lang/{{ locale === 'fr' ? 'en' : 'fr' }}"
+              class="btn-ghost btn-sm no-underline text-xs font-semibold"
+            >
               {{ locale === 'fr' ? t('locale.en') : t('locale.fr') }}
             </a>
             @if(auth.user)
               <a href="/dashboard" class="btn-ghost btn-sm no-underline">Dashboard</a>
-              <a href="/dashboard/tickets" class="btn-ghost btn-sm no-underline">{{ t('tickets.your_tickets') }}</a>
-              <span class="text-sm text-muted-foreground px-2 truncate max-w-[140px]">{{ auth.user.fullName ?? auth.user.email }}</span>
+              <a href="/dashboard/tickets" class="btn-ghost btn-sm no-underline">
+                {{ t('tickets.your_tickets') }}
+              </a>
+              <span class="text-sm text-muted-foreground px-2 truncate max-w-[140px]">
+                {{ auth.user.fullName ?? auth.user.email }}
+              </span>
               <form action="/logout" method="POST" class="inline">
                 {{ csrfField() }}
                 <button type="submit" class="btn-ghost btn-sm">{{ t('nav.logout') }}</button>
               </form>
             @else
               <a href="/login" class="btn-ghost btn-sm no-underline">{{ t('nav.signin') }}</a>
-              <a href="/signup" class="btn-primary btn-sm no-underline">{{ t('nav.get_started') }}</a>
-            @endif
+              <a href="/signup" class="btn-primary btn-sm no-underline">
+                {{ t('nav.get_started') }}
+              </a>
+            @end
           </nav>
 
-          <button type="button" id="menu-toggle" class="md:hidden btn-ghost btn-sm !min-h-10 !px-2.5 shrink-0" aria-label="Menu">
-            <svg id="menu-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
+          <button
+            type="button"
+            id="menu-toggle"
+            class="md:hidden btn-ghost btn-sm !min-h-10 !px-2.5 shrink-0"
+            aria-label="Menu"
+          >
+            <svg
+              id="menu-icon-open"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="18" x2="20" y2="18" />
             </svg>
-            <svg id="menu-icon-close" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
+            <svg
+              id="menu-icon-close"
+              class="hidden"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 6L6 18" />
+              <path d="M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden border-t border-border bg-card px-4 pb-5 pt-3 flex flex-col gap-1">
-          <a href="/events" class="btn-ghost btn-sm no-underline w-full justify-start">{{ t('nav.browse') }}</a>
-          <a href="/lang/{{ locale === 'fr' ? 'en' : 'fr' }}" class="btn-ghost btn-sm no-underline w-full justify-start text-xs font-semibold">
+        <div
+          id="mobile-menu"
+          class="hidden md:hidden border-t border-border bg-card px-4 pb-5 pt-3 flex flex-col gap-1"
+        >
+          <a href="/events" class="btn-ghost btn-sm no-underline w-full justify-start">
+            {{ t('nav.browse') }}
+          </a>
+          <a
+            href="/lang/{{ locale === 'fr' ? 'en' : 'fr' }}"
+            class="btn-ghost btn-sm no-underline w-full justify-start text-xs font-semibold"
+          >
             {{ locale === 'fr' ? t('locale.en') : t('locale.fr') }}
           </a>
           @if(auth.user)
-            <a href="/dashboard" class="btn-ghost btn-sm no-underline w-full justify-start">Dashboard</a>
-            <a href="/dashboard/tickets" class="btn-ghost btn-sm no-underline w-full justify-start">{{ t('tickets.your_tickets') }}</a>
-            <span class="px-3 py-2 text-sm text-muted-foreground truncate">{{ auth.user.fullName ?? auth.user.email }}</span>
+            <a href="/dashboard" class="btn-ghost btn-sm no-underline w-full justify-start">
+              Dashboard
+            </a>
+            <a href="/dashboard/tickets" class="btn-ghost btn-sm no-underline w-full justify-start">
+              {{ t('tickets.your_tickets') }}
+            </a>
+            <span class="px-3 py-2 text-sm text-muted-foreground truncate">
+              {{ auth.user.fullName ?? auth.user.email }}
+            </span>
             <form action="/logout" method="POST">
               {{ csrfField() }}
-              <button type="submit" class="btn-ghost btn-sm w-full justify-start">{{ t('nav.logout') }}</button>
+              <button type="submit" class="btn-ghost btn-sm w-full justify-start">
+                {{ t('nav.logout') }}
+              </button>
             </form>
           @else
-            <a href="/login" class="btn-ghost btn-sm no-underline w-full justify-start">{{ t('nav.signin') }}</a>
-            <a href="/signup" class="btn-primary btn-sm no-underline w-full justify-start">{{ t('nav.get_started') }}</a>
-          @endif
+            <a href="/login" class="btn-ghost btn-sm no-underline w-full justify-start">
+              {{ t('nav.signin') }}
+            </a>
+            <a href="/signup" class="btn-primary btn-sm no-underline w-full justify-start">
+              {{ t('nav.get_started') }}
+            </a>
+          @end
         </div>
       </header>
 
       <script>
-        (function() {
-          var toggle = document.getElementById('menu-toggle')
-          var menu = document.getElementById('mobile-menu')
-          var iconOpen = document.getElementById('menu-icon-open')
-          var iconClose = document.getElementById('menu-icon-close')
+        (function () {
+          var toggle = document.getElementById('menu-toggle');
+          var menu = document.getElementById('mobile-menu');
+          var iconOpen = document.getElementById('menu-icon-open');
+          var iconClose = document.getElementById('menu-icon-close');
           if (toggle && menu) {
-            toggle.addEventListener('click', function() {
-              menu.classList.toggle('hidden')
-              iconOpen && iconOpen.classList.toggle('hidden')
-              iconClose && iconClose.classList.toggle('hidden')
-            })
+            toggle.addEventListener('click', function () {
+              menu.classList.toggle('hidden');
+              iconOpen && iconOpen.classList.toggle('hidden');
+              iconClose && iconClose.classList.toggle('hidden');
+            });
           }
-        })()
+        })();
       </script>
 
-      <main class="flex-1">
+      <main class="flex-1"></main>
+    </div>
+  </body>
+</html>

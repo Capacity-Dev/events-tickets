@@ -160,11 +160,12 @@ export default class PublicController {
     <meta property="og:description" content="${event.description ? event.description.slice(0, 200) : ''}" />
     <meta property="og:url" content="${appUrlVal}/events/${event.slug}" />
     <meta property="og:type" content="website" />
-    ${event.coverImageUrl
-      ? `<meta property="og:image" content="${appUrlVal}${event.coverImageUrl}" />
+    ${
+      event.coverImageUrl
+        ? `<meta property="og:image" content="${appUrlVal}${event.coverImageUrl}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />`
-      : ``
+        : ``
     }
     <meta name="twitter:card" content="${event.coverImageUrl ? 'summary_large_image' : 'summary'}" />
     <meta name="twitter:title" content="${event.title}" />

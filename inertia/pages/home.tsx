@@ -3,9 +3,7 @@ export default function Home() {
     <>
       <div className="hero">
         <h1>Bienvenue sur Mbiyo Events</h1>
-        <p>
-          Votre plateforme de billetterie événementielle — rapide, sécurisée et sans friction.
-        </p>
+        <p>Votre plateforme de billetterie événementielle — rapide, sécurisée et sans friction.</p>
       </div>
 
       <div className="cards">
