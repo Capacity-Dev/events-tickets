@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import { writeFile, mkdir } from 'node:fs/promises'
 import app from '@adonisjs/core/services/app'
+import db from '@adonisjs/lucid/services/db'
 import Event from '#models/event'
 import Category from '#models/category'
 import Currency from '#models/currency'
@@ -644,6 +645,30 @@ export default class OrganizerController {
 
     if (!data.amount || Number(data.amount) <= 0) {
       session.flash('error', 'Veuillez entrer un montant valide')
+      return response.redirect().back()
+    }
+
+    const totalAvailableRow = await Order.query()
+      .where('buyerId', auth.user!.id)
+      .where('status', 'paid')
+      .select(db.raw(`COALESCE(SUM(CAST(organizer_net_amount AS NUMERIC)), 0) as total`))
+      .first()
+    const totalAvailable = parseFloat((totalAvailableRow?.$extras as any)?.total ?? '0')
+
+    const totalPayoutRow = await Payout.query()
+      .where('organizerId', auth.user!.id)
+      .whereIn('status', ['completed', 'pending'])
+      .select(db.raw(`COALESCE(SUM(CAST(amount AS NUMERIC)), 0) as total`))
+      .first()
+    const totalAlreadyPayout = parseFloat((totalPayoutRow?.$extras as any)?.total ?? '0')
+
+    const availableBalance = totalAvailable - totalAlreadyPayout
+
+    if (Number(data.amount) > availableBalance) {
+      session.flash(
+        'error',
+        `Solde insuffisant. Votre solde disponible est de ${availableBalance.toFixed(2)} ${data.currency ?? 'USD'}`
+      )
       return response.redirect().back()
     }
 

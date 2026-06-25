@@ -7,6 +7,9 @@ import Payout from '#models/payout'
 import Ticket from '#models/ticket'
 import TicketType from '#models/ticket_type'
 import { NotificationService } from '#services/notification_service'
+import { feeCalculator } from './fee_calculator.js'
+import PlatformRevenueLog from '#models/platform_revenue_log'
+import logger from '@adonisjs/core/services/logger'
 
 const BASE_URL = 'https://dashboard.mbiyo.africa/api/v1'
 
@@ -207,7 +210,36 @@ export class MbiyopayService {
 
     order.status = 'paid'
     order.paidAt = DateTime.now()
+    order.paymentMethod = 'mobile_money'
     await order.save()
+
+    try {
+      const mbiyopay = new MbiyopayService()
+      const status = await mbiyopay.checkStatus(order.paymentIntentId || order.orderNumber)
+      if (status) {
+        const processFee = status.fee ?? 0
+        const chargedAmount = status.charged_amount ?? Number(order.totalGrossAmount)
+        order.paymentProcessorFee = String(processFee)
+        order.totalGrossAmount = String(chargedAmount)
+        await order.save()
+      }
+    } catch (err) {
+      logger.warn({ err, orderId: order.id }, '[Mbiyo] Could not fetch payment details, using default amounts')
+    }
+
+    const calc = await feeCalculator.calculate(order)
+    order.platformFeeAmount = String(calc.platformFee)
+    order.organizerNetAmount = String(calc.organizerNet)
+    await order.save()
+
+    await PlatformRevenueLog.create({
+      id: crypto.randomUUID(),
+      orderId: order.id,
+      feeRuleId: calc.feeRuleId,
+      calculatedFeeAmount: String(calc.platformFee),
+      feeBreakdown: calc.feeBreakdown,
+      collectedAt: DateTime.now(),
+    } as any)
 
     const orderItems = await OrderItem.query().where('orderId', order.id).preload('ticketType')
 

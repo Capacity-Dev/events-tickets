@@ -173,7 +173,7 @@ export default class BuyerController {
       })
 
       order.paymentIntentId = result.transaction_id
-      order.status = 'reserved'
+      order.status = 'processing'
       await order.save()
 
       if (result.auth_mode === 'pin') {

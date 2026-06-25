@@ -144,6 +144,9 @@ export default class PaymentController {
       }
 
       // Timed out — Mbiyopay continues in background
+      order.paymentIntentId = 'pending'
+      await order.save()
+
       initiateFn()
         .then(async (data) => {
           const o = await Order.find(order.id)

@@ -2,12 +2,10 @@ import type { HttpContext } from '@adonisjs/core/http'
 import TicketType from '#models/ticket_type'
 import Order from '#models/order'
 import OrderItem from '#models/order_item'
-import Ticket from '#models/ticket'
 import User from '#models/user'
 import Role from '#models/role'
 import Profile from '#models/profile'
 import Event from '#models/event'
-import { DateTime } from 'luxon'
 import { loadActiveCurrencies, getCurrencySymbol } from '../helpers/currency.js'
 
 export default class CartController {
@@ -226,13 +224,16 @@ export default class CartController {
         user = await User.create({
           email,
           fullName: name || email.split('@')[0],
+          password: crypto.randomUUID(),
           roleId: buyerRole?.id ?? null,
+          isShadow: true,
         })
         await Profile.create({
           id: crypto.randomUUID(),
           userId: user.id,
           firstName: name.split(' ')[0] || email.split('@')[0],
           lastName: name.split(' ').slice(1).join(' ') || '',
+          phoneNumber: (request.input('phone') as string) || null,
         })
       }
 
@@ -247,29 +248,45 @@ export default class CartController {
     const now = new Date()
     const orderNumber = `ORD-${now.getFullYear()}-${String(now.getTime()).slice(-6)}`
 
+    const firstItem = cart[0]
+    const firstTicketType = await TicketType.find(firstItem.ticketTypeId)
+    const currency = firstTicketType?.currency ?? 'USD'
+
     let totalGross = 0
 
     for (const item of cart) {
       const ticketType = await TicketType.find(item.ticketTypeId)
-      if (!ticketType) continue
-      const lineTotal = item.price * item.quantity
-      totalGross += lineTotal
+      if (!ticketType || ticketType.status !== 'active') {
+        session.flash('error', `Ticket type ${item.name} is no longer available`)
+        return response.redirect().back()
+      }
+
+      const remaining =
+        ticketType.quantityTotal -
+        (ticketType.quantitySold ?? 0) -
+        (ticketType.quantityReserved ?? 0)
+      if (remaining < item.quantity) {
+        session.flash('error', `Plus assez de places pour ${ticketType.name}`)
+        return response.redirect().back()
+      }
+
+      totalGross += item.price * item.quantity
     }
 
-    const order = await Order.create({
-      id: crypto.randomUUID(),
+    const orderId = crypto.randomUUID()
+    await Order.create({
+      id: orderId,
       orderNumber,
       buyerId,
       guestEmail: !buyerId ? email : null,
       guestPhone: !buyerId ? (request.input('phone') ?? '') : null,
       guestName: !buyerId ? name : null,
-      status: 'paid',
+      status: 'pending',
       totalGrossAmount: totalGross,
       platformFeeAmount: 0,
       organizerNetAmount: totalGross,
       paymentProcessorFee: 0,
-      currency: 'USD',
-      paidAt: DateTime.now(),
+      currency,
     } as any)
 
     for (const item of cart) {
@@ -278,9 +295,9 @@ export default class CartController {
 
       const lineTotal = item.price * item.quantity
 
-      const orderItem = await OrderItem.create({
+      await OrderItem.create({
         id: crypto.randomUUID(),
-        orderId: order.id,
+        orderId,
         ticketTypeId: item.ticketTypeId,
         unitPrice: item.price,
         quantity: item.quantity,
@@ -289,34 +306,11 @@ export default class CartController {
 
       await TicketType.query()
         .where('id', item.ticketTypeId)
-        .increment('quantitySold', item.quantity)
-      await TicketType.query()
-        .where('id', item.ticketTypeId)
-        .decrement('quantityReserved', item.quantity)
-
-      for (let i = 0; i < item.quantity; i++) {
-        const uuid = crypto.randomUUID()
-        const num = `${String(Date.now()).slice(-6)}${String(i).padStart(2, '0')}`
-        await Ticket.create({
-          id: crypto.randomUUID(),
-          orderItemId: orderItem.id,
-          eventId: ticketType.eventId,
-          ticketTypeId: item.ticketTypeId,
-          ticketNumber: `TKT-${num}`,
-          uuid,
-          qrToken: uuid,
-          status: 'valid',
-        })
-      }
+        .increment('quantityReserved', item.quantity)
     }
 
     session.forget('cart')
-    session.flash('success', 'Purchase complete! Tickets are ready.')
-
-    if (auth.user) {
-      response.redirect().toRoute('dashboard.orders.show', { id: order.id })
-    } else {
-      response.redirect().toRoute('events.index')
-    }
+    session.flash('success', 'Commande créée. Veuillez procéder au paiement.')
+    response.redirect().toRoute('payment.pay', { id: orderId })
   }
 }

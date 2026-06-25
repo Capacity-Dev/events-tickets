@@ -132,10 +132,10 @@ export default function AdminFinances({
         </div>
         <div className="border rounded-xl p-4 bg-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-            Net (Fees - Payouts)
+            Net Revenue
           </p>
           <p className="text-xl font-heading">
-            {formatCurrency(platformFees - payoutsProcessed, 'USD', currencies)}
+            {formatCurrency(platformFees, 'USD', currencies)}
           </p>
         </div>
       </div>

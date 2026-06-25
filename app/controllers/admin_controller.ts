@@ -266,6 +266,31 @@ export default class AdminController {
     const payout = await Payout.query().where('id', params.id).preload('organizer').first()
     if (!payout) return response.status(404).send('Not found')
 
+    const totalAvailableRow = await Order.query()
+      .where('buyerId', payout.organizerId)
+      .where('status', 'paid')
+      .select(db.raw(`COALESCE(SUM(CAST(organizer_net_amount AS NUMERIC)), 0) as total`))
+      .first()
+    const totalAvailable = parseFloat((totalAvailableRow?.$extras as any)?.total ?? '0')
+
+    const totalPayoutRow = await Payout.query()
+      .where('organizerId', payout.organizerId)
+      .whereIn('status', ['completed', 'pending'])
+      .whereNot('id', payout.id)
+      .select(db.raw(`COALESCE(SUM(CAST(amount AS NUMERIC)), 0) as total`))
+      .first()
+    const totalAlreadyPayout = parseFloat((totalPayoutRow?.$extras as any)?.total ?? '0')
+
+    const availableBalance = totalAvailable - totalAlreadyPayout
+
+    if (Number(payout.amount) > availableBalance) {
+      session.flash(
+        'error',
+        `Payout amount exceeds available balance. Available: ${availableBalance.toFixed(2)} ${payout.currency ?? 'USD'}`
+      )
+      return response.redirect().back()
+    }
+
     if (payout.phoneNumber && payout.network && payout.currency && payout.beneficiary) {
       try {
         const currency = await Currency.query().where('code', payout.currency).first()
