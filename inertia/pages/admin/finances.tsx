@@ -1,83 +1,319 @@
-import { Badge } from '~/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '~/components/ui/table'
+import { usePage } from '@inertiajs/react'
 import { formatCurrency, type CurrencyInfo } from '~/lib/currency'
 
-const statusVariant: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-  paid: 'default',
-  pending: 'outline',
-  failed: 'destructive',
-  refunded: 'secondary',
+interface RevenueEntry {
+  currency: string
+  total: number
+}
+
+interface Props {
+  orders: any[]
+  currencies: CurrencyInfo[]
+  revenueByCurrency: RevenueEntry[]
+  platformFees: number
+  payoutsProcessed: number
+  pagination: { total: number; perPage: number; currentPage: number; lastPage: number }
+  currentStatus: string
+  search: string
+  dateFrom: string
+  dateTo: string
+  sortField: string
+  sortDir: string
 }
 
 export default function AdminFinances({
   orders,
   currencies,
-}: {
-  orders: any[]
-  currencies: CurrencyInfo[]
-}) {
-  const totalRevenue = orders.reduce(
-    (s: number, o: any) => s + (o.totalGrossAmount ? Number(o.totalGrossAmount) : 0),
-    0
-  )
+  revenueByCurrency,
+  platformFees,
+  payoutsProcessed,
+  pagination,
+  currentStatus,
+  search,
+  dateFrom,
+  dateTo,
+  sortField,
+  sortDir,
+}: Props) {
+  const { adminPrefix } = usePage().props as any
+
+  const statusClass = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'bg-success/10 text-success'
+      case 'pending':
+        return 'bg-amber/10 text-amber'
+      case 'failed':
+        return 'bg-destructive/10 text-destructive'
+      case 'reserved':
+        return 'bg-primary/10 text-primary'
+      case 'refunded':
+        return 'bg-muted text-muted-foreground'
+      default:
+        return 'bg-muted text-muted-foreground'
+    }
+  }
+
+  const statuses = ['', 'pending', 'paid', 'reserved', 'failed', 'refunded']
+
+  const buildUrl = (overrides: Record<string, string>) => {
+    const params = new URLSearchParams()
+    if (overrides.page) params.set('page', overrides.page)
+    else if (pagination.currentPage > 1) params.set('page', String(pagination.currentPage))
+    const s = overrides.status !== undefined ? overrides.status : currentStatus
+    if (s) params.set('status', s)
+    const q = overrides.q !== undefined ? overrides.q : search
+    if (q) params.set('q', q)
+    const df = overrides.dateFrom !== undefined ? overrides.dateFrom : dateFrom
+    if (df) params.set('dateFrom', df)
+    const dt = overrides.dateTo !== undefined ? overrides.dateTo : dateTo
+    if (dt) params.set('dateTo', dt)
+    const sf = overrides.sort !== undefined ? overrides.sort : sortField
+    if (sf && sf !== 'created_at') params.set('sort', sf)
+    const sd = overrides.dir !== undefined ? overrides.dir : sortDir
+    if (sd && sf && sf !== 'created_at') params.set('dir', sd)
+    const qs = params.toString()
+    return `/${adminPrefix}/finances${qs ? '?' + qs : ''}`
+  }
+
+  const sortLink = (field: string) => {
+    const active = sortField === field
+    const nextDir = active && sortDir === 'desc' ? 'asc' : 'desc'
+    return buildUrl({ sort: field, dir: nextDir, page: '1' })
+  }
+
+  const sortIndicator = (field: string) => {
+    if (sortField !== field) return null
+    return sortDir === 'desc' ? ' ▼' : ' ▲'
+  }
+
+  const totalRevenue = revenueByCurrency.reduce((s, e) => s + e.total, 0)
 
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">Financial Overview</h1>
-      <div className="border rounded-xl p-5 bg-card mb-8 inline-block">
-        <p className="text-sm text-muted-foreground">Total Revenue (last 100 orders)</p>
-        <p className="text-3xl font-heading mt-1">
-          {formatCurrency(totalRevenue, 'USD', currencies)}
-        </p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-heading">Financial Overview</h1>
+        <p className="text-sm text-muted-foreground mt-1">{pagination.total} orders</p>
       </div>
 
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Order #</TableHead>
-              <TableHead>Buyer</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Payment</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {orders.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  No orders yet
-                </TableCell>
-              </TableRow>
-            ) : (
-              orders.map((o: any) => (
-                <TableRow key={o.id}>
-                  <TableCell className="font-mono text-sm">{o.orderNumber}</TableCell>
-                  <TableCell className="text-sm">{o.buyer?.email ?? '-'}</TableCell>
-                  <TableCell className="font-medium">
-                    {formatCurrency(o.totalGrossAmount, o.currency, currencies)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={statusVariant[o.status] ?? 'outline'}>{o.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {o.createdAt ? new Date(o.createdAt).toLocaleDateString() : '-'}
-                  </TableCell>
-                  <TableCell className="text-sm">{o.paymentMethod ?? '-'}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <div className="border rounded-xl p-4 bg-card">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            Revenue Total
+          </p>
+          <p className="text-2xl font-heading">
+            {formatCurrency(totalRevenue, 'USD', currencies)}
+          </p>
+        </div>
+        {revenueByCurrency.map((entry) => (
+            <div key={entry.currency} className="border rounded-xl p-4 bg-card">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                {entry.currency}
+              </p>
+              <p className="text-2xl font-heading">
+                {formatCurrency(entry.total, entry.currency, currencies)}
+              </p>
+            </div>
+        ))}
       </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+        <div className="border rounded-xl p-4 bg-card">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            Platform Fees
+          </p>
+          <p className="text-xl font-heading">
+            {formatCurrency(platformFees, 'USD', currencies)}
+          </p>
+        </div>
+        <div className="border rounded-xl p-4 bg-card">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            Payouts Processed
+          </p>
+          <p className="text-xl font-heading">
+            {formatCurrency(payoutsProcessed, 'USD', currencies)}
+          </p>
+        </div>
+        <div className="border rounded-xl p-4 bg-card">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            Net (Fees - Payouts)
+          </p>
+          <p className="text-xl font-heading">
+            {formatCurrency(platformFees - payoutsProcessed, 'USD', currencies)}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <form
+          action={`/${adminPrefix}/finances`}
+          method="GET"
+          className="flex flex-wrap gap-3 flex-1"
+        >
+          <input
+            type="text"
+            name="q"
+            defaultValue={search}
+            placeholder="Search order #, email, phone..."
+            className="input-field min-h-10 w-full sm:w-64 text-sm"
+          />
+          {currentStatus && <input type="hidden" name="status" value={currentStatus} />}
+          <input
+            type="date"
+            name="dateFrom"
+            defaultValue={dateFrom}
+            className="input-field min-h-10 w-auto text-sm"
+            title="From date"
+          />
+          <input
+            type="date"
+            name="dateTo"
+            defaultValue={dateTo}
+            className="input-field min-h-10 w-auto text-sm"
+            title="To date"
+          />
+          <button type="submit" className="btn-primary btn-sm">
+            Search
+          </button>
+          {(search || dateFrom || dateTo) && (
+            <a
+              href={buildUrl({ q: '', dateFrom: '', dateTo: '' })}
+              className="btn-outline btn-sm no-underline"
+            >
+              Clear
+            </a>
+          )}
+        </form>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {statuses.map((s) => (
+          <a
+            key={s}
+            href={buildUrl({ status: s, page: '1' })}
+            className={`text-xs font-medium px-3 py-1.5 rounded-full no-underline transition-colors ${
+              currentStatus === s
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            {s || 'All'}
+          </a>
+        ))}
+      </div>
+
+      <div className="border rounded-xl bg-card overflow-hidden">
+        {orders.length === 0 ? (
+          <div className="p-8 text-center text-muted-foreground">No orders found</div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="border-b bg-muted/50 text-left">
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Order #
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Buyer
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Currency
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <a
+                    href={sortLink('totalGrossAmount')}
+                    className="no-underline text-muted-foreground hover:text-foreground"
+                  >
+                    Amount{sortIndicator('totalGrossAmount')}
+                  </a>
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Platform Fee
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Organizer Net
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Status
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Method
+                </th>
+                <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <a
+                    href={sortLink('createdAt')}
+                    className="no-underline text-muted-foreground hover:text-foreground"
+                  >
+                    Date{sortIndicator('createdAt')}
+                  </a>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((o: any) => (
+                <tr key={o.id} className="border-b hover:bg-muted/30 transition-colors">
+                  <td className="p-3">
+                    <a
+                      href={`/${adminPrefix}/transactions/${o.id}`}
+                      className="font-mono text-sm text-primary no-underline hover:underline"
+                    >
+                      {o.orderNumber}
+                    </a>
+                  </td>
+                  <td className="p-3 text-sm">
+                    <div>{o.buyer?.fullName ?? 'Guest'}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {o.buyer?.email ?? o.guestEmail ?? o.guestPhone ?? ''}
+                    </div>
+                  </td>
+                  <td className="p-3 text-sm text-muted-foreground">{o.currency ?? 'USD'}</td>
+                  <td className="p-3 text-sm font-medium">
+                    {formatCurrency(o.totalGrossAmount, o.currency, currencies)}
+                  </td>
+                  <td className="p-3 text-sm text-muted-foreground">
+                    {formatCurrency(o.platformFeeAmount, o.currency, currencies)}
+                  </td>
+                  <td className="p-3 text-sm text-muted-foreground">
+                    {formatCurrency(o.organizerNetAmount, o.currency, currencies)}
+                  </td>
+                  <td className="p-3">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusClass(o.status)}`}>
+                      {o.status}
+                    </span>
+                  </td>
+                  <td className="p-3 text-sm text-muted-foreground">{o.paymentMethod ?? '—'}</td>
+                  <td className="p-3 text-sm text-muted-foreground">
+                    {o.createdAt ? new Date(o.createdAt).toLocaleDateString() : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {pagination.lastPage > 1 && (
+        <div className="flex justify-center gap-3 mt-6">
+          {pagination.currentPage > 1 && (
+            <a
+              href={buildUrl({ page: String(pagination.currentPage - 1) })}
+              className="btn-outline btn-sm no-underline"
+            >
+              Previous
+            </a>
+          )}
+          <span className="text-sm text-muted-foreground self-center">
+            Page {pagination.currentPage} of {pagination.lastPage}
+          </span>
+          {pagination.currentPage < pagination.lastPage && (
+            <a
+              href={buildUrl({ page: String(pagination.currentPage + 1) })}
+              className="btn-outline btn-sm no-underline"
+            >
+              Next
+            </a>
+          )}
+        </div>
+      )}
     </div>
   )
 }

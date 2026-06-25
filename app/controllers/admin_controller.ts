@@ -1,10 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
+import db from '@adonisjs/lucid/services/db'
 import Event from '#models/event'
 import User from '#models/user'
 import Category from '#models/category'
 import FeeRule from '#models/fee_rule'
 import Payout from '#models/payout'
+import PlatformRevenueLog from '#models/platform_revenue_log'
 import Order from '#models/order'
 import Currency from '#models/currency'
 import Role from '#models/role'
@@ -181,11 +183,83 @@ export default class AdminController {
     response.redirect().toRoute('admin.fee.rules')
   }
 
-  async finances({ inertia }: HttpContext) {
+  async finances({ inertia, request }: HttpContext) {
     const currencies = await loadActiveCurrencies()
-    const orders = await Order.query().preload('buyer').orderBy('createdAt', 'desc').limit(100)
+    const page = Number(request.input('page', 1))
+    const statusFilter = request.input('status', '')
+    const search = request.input('q', '').trim()
+    const dateFrom = request.input('dateFrom', '')
+    const dateTo = request.input('dateTo', '')
+    const sortField = request.input('sort', 'created_at')
+    const sortDir = request.input('dir', 'desc') === 'asc' ? 'asc' : 'desc'
 
-    return (inertia.render as any)('admin/finances', { orders, currencies })
+    const query = Order.query().preload('buyer')
+    if (statusFilter) query.where('status', statusFilter)
+
+    if (search) {
+      query.where((q) => {
+        q.whereILike('orderNumber', `%${search}%`)
+          .orWhereILike('guestEmail', `%${search}%`)
+          .orWhereILike('guestPhone', `%${search}%`)
+      })
+    }
+
+    if (dateFrom) query.where('createdAt', '>=', new Date(dateFrom))
+    if (dateTo) query.where('createdAt', '<=', new Date(dateTo))
+
+    if (sortField === 'totalGrossAmount') {
+      query.orderByRaw(`CAST(total_gross_amount AS NUMERIC) ${sortDir}`)
+    } else if (sortField === 'createdAt') {
+      query.orderBy('createdAt', sortDir as any)
+    } else {
+      query.orderBy(sortField, sortDir as any)
+    }
+
+    const orders = await query.paginate(page, 50)
+
+    const revenueRows = await Order.query()
+      .select('currency')
+      .select(db.raw(`SUM(CAST(total_gross_amount AS NUMERIC)) as total`))
+      .where('status', 'paid')
+      .groupBy('currency')
+      .exec()
+
+    const revenueByCurrency = (revenueRows as any[]).map((r) => ({
+      currency: r.currency || 'USD',
+      total: parseFloat(r.$extras?.total ?? r.total ?? '0'),
+    }))
+
+    const platformRow = await PlatformRevenueLog.query()
+      .select(db.raw(`SUM(CAST(calculated_fee_amount AS NUMERIC)) as total`))
+      .first()
+
+    const platformFees = platformRow
+      ? parseFloat((platformRow as any).$extras?.total ?? (platformRow as any).total ?? '0')
+      : 0
+
+    const payoutsTotal = await Payout.query()
+      .where('status', 'completed')
+      .select(db.raw(`SUM(CAST(amount AS NUMERIC)) as total`))
+      .first()
+
+    const payoutsProcessed = payoutsTotal
+      ? parseFloat((payoutsTotal as any).$extras?.total ?? (payoutsTotal as any).total ?? '0')
+      : 0
+
+    return (inertia.render as any)('admin/finances', {
+      orders: orders.all(),
+      currencies,
+      revenueByCurrency,
+      platformFees,
+      payoutsProcessed,
+      pagination: orders.getMeta(),
+      currentStatus: statusFilter,
+      search,
+      dateFrom,
+      dateTo,
+      sortField,
+      sortDir,
+    })
   }
 
   async processPayout({ params, response, session }: HttpContext) {
