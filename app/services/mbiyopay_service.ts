@@ -224,7 +224,10 @@ export class MbiyopayService {
         await order.save()
       }
     } catch (err) {
-      logger.warn({ err, orderId: order.id }, '[Mbiyo] Could not fetch payment details, using default amounts')
+      logger.warn(
+        { err, orderId: order.id },
+        '[Mbiyo] Could not fetch payment details, using default amounts'
+      )
     }
 
     const calc = await feeCalculator.calculate(order)

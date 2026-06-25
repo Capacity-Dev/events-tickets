@@ -52,7 +52,7 @@ export class FeeCalculator {
       })
 
       platformFee += feeForThisRule
-      feeRuleId = (rule.id as any) as string
+      feeRuleId = rule.id as any as string
     }
 
     platformFee = Math.round(platformFee * 100) / 100
@@ -75,10 +75,7 @@ export class FeeCalculator {
     return null
   }
 
-  async #resolveFeeRules(
-    eventId: string | null,
-    organizerId: number | null
-  ): Promise<FeeRule[]> {
+  async #resolveFeeRules(eventId: string | null, organizerId: number | null): Promise<FeeRule[]> {
     const rules: FeeRule[] = []
 
     if (eventId) {

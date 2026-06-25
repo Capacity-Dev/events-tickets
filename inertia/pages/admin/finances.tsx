@@ -134,9 +134,7 @@ export default function AdminFinances({
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
             Net Revenue
           </p>
-          <p className="text-xl font-heading">
-            {formatCurrency(platformFees, 'USD', currencies)}
-          </p>
+          <p className="text-xl font-heading">{formatCurrency(platformFees, 'USD', currencies)}</p>
         </div>
       </div>
 
