@@ -88,8 +88,7 @@ export default function Notifications({
       const form = document.createElement('form')
       form.method = 'POST'
       form.action = `/${adminPrefix}/whatsapp-settings/connect`
-      form.innerHTML =
-        '<input type="hidden" name="_method" value="POST" />'
+      form.innerHTML = '<input type="hidden" name="_method" value="POST" />'
       document.body.appendChild(form)
       form.submit()
     } catch {}
@@ -383,9 +382,7 @@ export default function Notifications({
                             </Badge>
                           </TableCell>
                           <TableCell className="text-sm">
-                            {t.createdAt
-                              ? new Date(t.createdAt).toLocaleDateString()
-                              : ''}
+                            {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}
                           </TableCell>
                         </TableRow>
                       ))
@@ -414,7 +411,10 @@ export default function Notifications({
                     Envoyer une confirmation WhatsApp après achat
                   </p>
                 </div>
-                <Switch checked={notifyPurchaseWhatsapp} onCheckedChange={setNotifyPurchaseWhatsapp} />
+                <Switch
+                  checked={notifyPurchaseWhatsapp}
+                  onCheckedChange={setNotifyPurchaseWhatsapp}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <div>
