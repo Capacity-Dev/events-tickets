@@ -148,3 +148,24 @@ Last updated: 2026-06-16
 | Title | `font-body text-xl font-semibold mb-2` |
 | Text | `text-muted-foreground` |
 | Container | `text-center py-20 px-4` |
+
+### Secondary Icon Button (Copy / Share)
+
+File: `resources/views/events/show.edge`, `inertia/pages/dashboard/organizer/analytics.tsx`
+Last updated: 2026-06-25
+
+| Property | Edge (ghost, inline) | Inertia (outline, standalone) |
+|---|---|---|
+| Variant | `.btn-ghost.btn-sm` | `variant="outline" size="sm"` |
+| Border radius | `rounded-lg` | `rounded-lg` (via shadcn Button) |
+| Text | `text-muted-foreground` | default outline text |
+| Hover | `hover:text-foreground` | `hover:bg-muted hover:text-foreground` |
+| Icon size | 16×16, strokeWidth 2 | 14×14, strokeWidth 2 |
+| Gap (icon-label) | `gap-1.5` on container | `mr-1.5` on icon |
+| Font | `text-sm font-medium` (via .btn-sm) | `text-[0.8rem] font-medium` (via size=sm) |
+| Min-height | `min-h-9` (36px) | `h-7` |
+| Padding | `px-3` | `px-2.5` |
+| Confirmation | inline `<span>` with `text-success text-xs` | `toast.success()` (sonner) |
+
+**Pattern notes:**
+Ghost variant used when inline with a title or heading (so it blends in). Outline variant used when grouped with other standalone buttons (cards, toolbars, action bars). Both use the link SVG icon (chain-link style from Lucide) at 2px stroke. Confirmation styling references `text-success` CSS var — do NOT use `text-green-*`.
