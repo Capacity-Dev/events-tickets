@@ -39,9 +39,7 @@ export class NotificationService {
 
       const ticketNumbers = tickets.map((t) => t.ticketNumber)
       const ticketLinks = tickets.map((t) => `${appUrl}/tickets/${t.uuid}`)
-      const ticketList = ticketLinks
-        .map((link, i) => `${ticketNumbers[i]}: ${link}`)
-        .join('\n')
+      const ticketList = ticketLinks.map((link, i) => `${ticketNumbers[i]}: ${link}`).join('\n')
       const ticketRowsHtml = ticketLinks
         .map(
           (link, i) =>

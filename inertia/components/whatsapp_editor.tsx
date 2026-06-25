@@ -34,7 +34,13 @@ function renderMarkdownPreview(text: string): string {
     .replace(/\{\{(\w+)\}\}/g, '<span class="var-tag">{{$1}}</span>')
 }
 
-export function WhatsAppEditor({ open, onClose, template, adminPrefix, onSaved }: WhatsAppEditorProps) {
+export function WhatsAppEditor({
+  open,
+  onClose,
+  template,
+  adminPrefix,
+  onSaved,
+}: WhatsAppEditorProps) {
   const [body, setBody] = useState(template?.body ?? '')
   const [saving, setSaving] = useState(false)
 

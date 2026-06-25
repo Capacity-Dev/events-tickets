@@ -33,7 +33,13 @@ interface TemplateEditorProps {
   onSaved: () => void
 }
 
-export function TemplateEditor({ open, onClose, template, adminPrefix, onSaved }: TemplateEditorProps) {
+export function TemplateEditor({
+  open,
+  onClose,
+  template,
+  adminPrefix,
+  onSaved,
+}: TemplateEditorProps) {
   const [subject, setSubject] = useState(template?.subject ?? '')
   const [saving, setSaving] = useState(false)
 
@@ -184,26 +190,84 @@ export function TemplateEditor({ open, onClose, template, adminPrefix, onSaved }
                 onClick={() => editor?.chain().focus().toggleBulletList().run()}
                 active={editor?.isActive('bulletList')}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="4" cy="18" r="1.5"/></svg>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <line x1="8" y1="6" x2="20" y2="6" />
+                  <line x1="8" y1="12" x2="20" y2="12" />
+                  <line x1="8" y1="18" x2="20" y2="18" />
+                  <circle cx="4" cy="6" r="1.5" />
+                  <circle cx="4" cy="12" r="1.5" />
+                  <circle cx="4" cy="18" r="1.5" />
+                </svg>
               </ToolbarButton>
               <ToolbarButton
                 onClick={() => editor?.chain().focus().toggleOrderedList().run()}
                 active={editor?.isActive('orderedList')}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="10" y1="6" x2="20" y2="6"/><line x1="10" y1="12" x2="20" y2="12"/><line x1="10" y1="18" x2="20" y2="18"/><text x="3" y="8" fontSize="10" fontWeight="bold">1</text><text x="3" y="14" fontSize="10" fontWeight="bold">2</text><text x="3" y="20" fontSize="10" fontWeight="bold">3</text></svg>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <line x1="10" y1="6" x2="20" y2="6" />
+                  <line x1="10" y1="12" x2="20" y2="12" />
+                  <line x1="10" y1="18" x2="20" y2="18" />
+                  <text x="3" y="8" fontSize="10" fontWeight="bold">
+                    1
+                  </text>
+                  <text x="3" y="14" fontSize="10" fontWeight="bold">
+                    2
+                  </text>
+                  <text x="3" y="20" fontSize="10" fontWeight="bold">
+                    3
+                  </text>
+                </svg>
               </ToolbarButton>
               <span className="w-px h-5 bg-border mx-1" />
               <ToolbarButton
                 onClick={() => editor?.chain().focus().setTextAlign('left').run()}
                 active={editor?.isActive({ textAlign: 'left' })}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="17" y1="6" x2="3" y2="6"/><line x1="21" y1="10" x2="3" y2="10"/><line x1="17" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <line x1="17" y1="6" x2="3" y2="6" />
+                  <line x1="21" y1="10" x2="3" y2="10" />
+                  <line x1="17" y1="14" x2="3" y2="14" />
+                  <line x1="21" y1="18" x2="3" y2="18" />
+                </svg>
               </ToolbarButton>
               <ToolbarButton
                 onClick={() => editor?.chain().focus().setTextAlign('center').run()}
                 active={editor?.isActive({ textAlign: 'center' })}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="6"/><line x1="21" y1="10" x2="3" y2="10"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <line x1="18" y1="6" x2="6" y2="6" />
+                  <line x1="21" y1="10" x2="3" y2="10" />
+                  <line x1="18" y1="14" x2="6" y2="14" />
+                  <line x1="21" y1="18" x2="3" y2="18" />
+                </svg>
               </ToolbarButton>
             </div>
             <EditorContent editor={editor} />

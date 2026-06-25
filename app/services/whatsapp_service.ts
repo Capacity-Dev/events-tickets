@@ -24,11 +24,7 @@ export class WhatsAppService {
     await BaileysProvider.reset()
   }
 
-  static async sendText(
-    logId: string,
-    phone: string,
-    message: string
-  ): Promise<void> {
+  static async sendText(logId: string, phone: string, message: string): Promise<void> {
     if (whatsappConfig.provider === 'disabled') return
     try {
       await BaileysProvider.sendMessage(phone, message)

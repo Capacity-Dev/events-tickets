@@ -32,7 +32,11 @@ export class TemplateService {
     return { body, subject: subject ? this.#substitute(subject, data) : null }
   }
 
-  async resolveOrDefault(channel: string, type: string, data: TemplateData): Promise<ResolvedTemplate> {
+  async resolveOrDefault(
+    channel: string,
+    type: string,
+    data: TemplateData
+  ): Promise<ResolvedTemplate> {
     try {
       const result = await this.resolve(channel, type, data)
       if (result.body) return result

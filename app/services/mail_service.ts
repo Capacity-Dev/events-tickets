@@ -45,8 +45,8 @@ ${htmlBody}
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
-          Authorization: `Zoho-enczapikey ${mailConfig.zeptomail.token}`,
+          'Accept': 'application/json',
+          'Authorization': `Zoho-enczapikey ${mailConfig.zeptomail.token}`,
         },
         body: JSON.stringify({
           from: {
