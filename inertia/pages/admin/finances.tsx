@@ -99,7 +99,7 @@ export default function AdminFinances({
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <div className="border rounded-xl p-4 bg-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-            Revenue Total
+            Volume total
           </p>
           <p className="text-2xl font-heading">{formatCurrency(totalRevenueUSD, 'USD', currencies)}</p>
         </div>
