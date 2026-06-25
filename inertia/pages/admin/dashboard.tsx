@@ -1,7 +1,9 @@
 import { usePage } from '@inertiajs/react'
+import { formatCurrency, type CurrencyInfo } from '~/lib/currency'
 
 interface Props {
   stats: { totalUsers: number; totalEvents: number; totalOrders: number; totalRevenue: number }
+  currencies: CurrencyInfo[]
   recentUsers: any[]
   recentOrders: any[]
   eventsByStatus: { status: string; count: number }[]
@@ -9,6 +11,7 @@ interface Props {
 
 export default function AdminDashboard({
   stats,
+  currencies,
   recentUsers,
   recentOrders,
   eventsByStatus,
@@ -51,9 +54,9 @@ export default function AdminDashboard({
           <p className="text-3xl font-heading mt-2">{stats.totalOrders}</p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Total Revenue</p>
+          <p className="text-sm text-muted-foreground">Volume total</p>
           <p className="text-3xl font-heading mt-2">
-            ${Number(stats.totalRevenue).toLocaleString()}
+            {formatCurrency(stats.totalRevenue, 'USD', currencies)}
           </p>
         </div>
       </div>

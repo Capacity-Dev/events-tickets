@@ -52,7 +52,7 @@ export default function DashboardIndex({
           <p className="text-3xl font-heading mt-2">{stats.totalSold ?? 0}</p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Revenue</p>
+          <p className="text-sm text-muted-foreground">Volume total</p>
           <p className="text-3xl font-heading mt-2">
             {formatCurrency(Math.round(stats.totalRevenue ?? 0), undefined, currencies)}
           </p>

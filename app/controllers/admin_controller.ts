@@ -20,12 +20,23 @@ import { loadActiveCurrencies } from '../helpers/currency.js'
 
 export default class AdminController {
   async dashboard({ inertia }: HttpContext) {
+    const currencies = await loadActiveCurrencies()
     const totalUsers = await User.query().count('* as total')
     const totalEvents = await Event.query().count('* as total')
     const totalOrders = await Order.query().count('* as total')
-    const totalRevenue = await Order.query()
+    const revenueRows = await Order.query()
+      .select('currency')
+      .select(db.raw(`SUM(CAST(total_gross_amount AS NUMERIC)) as total`))
       .where('status', 'paid')
-      .sum('total_gross_amount as total')
+      .groupBy('currency')
+      .exec()
+
+    const totalRevenue = (revenueRows as any[]).reduce((sum, r) => {
+      const code = r.currency || 'USD'
+      const curr = currencies.find((c) => c.code === code)
+      const rate = curr ? parseFloat(curr.exchangeRate) || 1 : 1
+      return sum + parseFloat(r.$extras?.total ?? r.total ?? '0') / rate
+    }, 0)
 
     const recentUsers = await User.query().preload('role').orderBy('createdAt', 'desc').limit(10)
     const recentOrders = await Order.query().preload('buyer').orderBy('createdAt', 'desc').limit(10)
@@ -36,8 +47,9 @@ export default class AdminController {
         totalUsers: Number(totalUsers[0].$extras.total),
         totalEvents: Number(totalEvents[0].$extras.total),
         totalOrders: Number(totalOrders[0].$extras.total),
-        totalRevenue: Number(totalRevenue[0].$extras.total ?? 0),
+        totalRevenue,
       },
+      currencies,
       recentUsers: recentUsers.map((u) => ({ ...u.toJSON(), role: u.role?.name })),
       recentOrders: recentOrders.map((o) => ({ ...o.toJSON(), buyer: o.buyer?.toJSON() })),
       eventsByStatus: eventsByStatus.map((e) => ({

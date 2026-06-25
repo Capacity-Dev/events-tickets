@@ -11,17 +11,24 @@ export default class DashboardController {
     const events = await Event.query().where('organizerId', user.id).orderBy('createdAt', 'desc')
 
     const eventIds = events.map((e) => e.id)
+    const currencies = await loadActiveCurrencies()
 
     let totalSold = 0
     let totalRevenue = 0
 
     if (eventIds.length > 0) {
-      const ticketTypes = await TicketType.query().whereIn('eventId', eventIds)
+      const ticketTypes = await TicketType.query()
+        .whereIn('eventId', eventIds)
+        .preload('event')
       totalSold = ticketTypes.reduce((s, t) => s + (t.quantitySold ?? 0), 0)
-      totalRevenue = ticketTypes.reduce(
-        (s, t) => s + (t.quantitySold ?? 0) * Number(t.basePrice),
-        0
-      )
+
+      totalRevenue = ticketTypes.reduce((s, t) => {
+        const revenue = (t.quantitySold ?? 0) * Number(t.basePrice)
+        const eventCurrency = (t.event as any).currency ?? 'USD'
+        const currencyInfo = currencies.find((c) => c.code === eventCurrency)
+        const rate = currencyInfo ? parseFloat(currencyInfo.exchangeRate) || 1 : 1
+        return s + revenue / rate
+      }, 0)
     }
 
     const orders = await Order.query()
@@ -53,7 +60,6 @@ export default class DashboardController {
       })),
     }
 
-    const currencies = await loadActiveCurrencies()
     return inertia.render('dashboard/index', { stats, currencies })
   }
 }
