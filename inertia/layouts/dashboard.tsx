@@ -199,7 +199,7 @@ export default function DashboardLayout({
       >
         <div className="flex h-14 items-center gap-2 px-6 border-b shrink-0">
           <a href="/" className="font-heading text-lg text-primary no-underline">
-            Events Tickets
+            Mbiyo Events
           </a>
         </div>
 

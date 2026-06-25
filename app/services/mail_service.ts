@@ -51,7 +51,7 @@ export class MailService {
 <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FFF1F2;padding:30px 0">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="background-color:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
-<tr><td style="background-color:#E11D48;padding:24px 32px;text-align:center"><h1 style="color:#FFFFFF;margin:0;font-size:24px">Events Tickets</h1></td></tr>
+<tr><td style="background-color:#E11D48;padding:24px 32px;text-align:center"><h1 style="color:#FFFFFF;margin:0;font-size:24px">Mbiyo Events</h1></td></tr>
 <tr><td style="padding:32px">
 <h2 style="color:#1F0A14;margin:0 0 8px;font-size:20px">${data.buyerName}, vos billets sont prêts !</h2>
 <p style="color:#6B4452;margin:0 0 24px;font-size:14px;line-height:1.5">Votre commande <strong>#${data.orderNumber}</strong> a été confirmée.</p>
@@ -66,7 +66,7 @@ ${venueStr}
 ${rows}
 </table>
 <p style="color:#6B4452;font-size:13px;line-height:1.5;margin:0 0 16px">Présentez vos billets à l'entrée. Cliquez sur "Voir le billet" pour afficher le QR code.</p>
-<p style="color:#9D7B87;font-size:12px;margin:0">Events Tickets — Tous droits réservés.</p>
+<p style="color:#9D7B87;font-size:12px;margin:0">Mbiyo Events — Tous droits réservés.</p>
 </td></tr>
 </table>
 </td></tr>
