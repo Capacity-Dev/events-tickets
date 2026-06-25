@@ -197,6 +197,9 @@ router
     router
       .post('notifications', [AdminController, 'updateNotificationSettings'])
       .as('admin.notifications.update')
+    router
+      .put('templates/:id', [AdminController, 'updateTemplate'])
+      .as('admin.templates.update')
     router.get('boosts', [AdminController, 'boosts']).as('admin.boosts')
     router.post('boosts/:id/cancel', [AdminController, 'cancelBoost']).as('admin.boosts.cancel')
     router.get('currencies', [AdminController, 'currencies']).as('admin.currencies')

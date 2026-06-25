@@ -480,6 +480,18 @@ export default class AdminController {
     })
   }
 
+  async updateTemplate({ params, request, response }: HttpContext) {
+    const template = await WhatsAppTemplate.findOrFail(params.id)
+    const data = request.all()
+    if (data.body !== undefined) (template as any).body = data.body
+    if (data.subject !== undefined) (template as any).subject = data.subject
+    if (data.channel !== undefined) (template as any).channel = data.channel
+    if (data.type !== undefined) (template as any).type = data.type
+    if (data.name !== undefined) template.name = data.name
+    await template.save()
+    return response.json({ success: true })
+  }
+
   async cancelBoost({ params, response }: HttpContext) {
     const boost = await EventBoost.findByOrFail('id', params.id)
     if (boost.metaCampaignId) {

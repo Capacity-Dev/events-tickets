@@ -16,6 +16,8 @@ import {
   TableRow,
 } from '~/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
+import { TemplateEditor } from '~/components/email_editor'
+import { WhatsAppEditor } from '~/components/whatsapp_editor'
 import { toast } from 'sonner'
 
 interface Props {
@@ -44,10 +46,18 @@ export default function Notifications({
   const [notifyReminder3d, setNotifyReminder3d] = useState(settings.notify_reminder_3d === '1')
   const [notifyReminder1d, setNotifyReminder1d] = useState(settings.notify_reminder_1d === '1')
   const [saving, setSaving] = useState(false)
+
   const [templateName, setTemplateName] = useState('')
   const [templateCategory, setTemplateCategory] = useState('utility')
   const [templateLanguage, setTemplateLanguage] = useState('en_US')
   const [templateVariables, setTemplateVariables] = useState('')
+  const [templateChannel, setTemplateChannel] = useState('whatsapp')
+
+  const [editingEmail, setEditingEmail] = useState<any>(null)
+  const [editingWhatsApp, setEditingWhatsApp] = useState<any>(null)
+
+  const whatsappTemplates = templates.filter((t) => !t.channel || t.channel === 'whatsapp')
+  const emailTemplates = templates.filter((t) => t.channel === 'email')
 
   const [tab, setTab] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -82,36 +92,28 @@ export default function Notifications({
     }
   }, [connectionStatus.status, polling, adminPrefix])
 
-  const handleConnect = async () => {
-    try {
-      await (typeof window !== 'undefined' && window)
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `/${adminPrefix}/whatsapp-settings/connect`
-      form.innerHTML = '<input type="hidden" name="_method" value="POST" />'
-      document.body.appendChild(form)
-      form.submit()
-    } catch {}
+  const handleConnect = () => {
+    const form = document.createElement('form')
+    form.method = 'POST'
+    form.action = `/${adminPrefix}/whatsapp-settings/connect`
+    document.body.appendChild(form)
+    form.submit()
   }
 
-  const handleDisconnect = async () => {
-    try {
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `/${adminPrefix}/whatsapp-settings/disconnect`
-      document.body.appendChild(form)
-      form.submit()
-    } catch {}
+  const handleDisconnect = () => {
+    const form = document.createElement('form')
+    form.method = 'POST'
+    form.action = `/${adminPrefix}/whatsapp-settings/disconnect`
+    document.body.appendChild(form)
+    form.submit()
   }
 
-  const handleReset = async () => {
-    try {
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `/${adminPrefix}/whatsapp-settings/reset`
-      document.body.appendChild(form)
-      form.submit()
-    } catch {}
+  const handleReset = () => {
+    const form = document.createElement('form')
+    form.method = 'POST'
+    form.action = `/${adminPrefix}/whatsapp-settings/reset`
+    document.body.appendChild(form)
+    form.submit()
   }
 
   const handleSaveSettings = async () => {
@@ -147,16 +149,14 @@ export default function Notifications({
           category: templateCategory,
           languageCode: templateLanguage,
           variables: templateVariables,
+          channel: templateChannel,
         }),
       })
       if (res.redirected) {
         window.location.href = res.url
         return
       }
-      if (!res.ok) {
-        const text = await res.text()
-        throw new Error(text || 'Failed to create template')
-      }
+      if (!res.ok) throw new Error('Failed to create template')
       window.location.reload()
     } catch (err: any) {
       toast.error(err.message)
@@ -187,6 +187,7 @@ export default function Notifications({
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-6">
           <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
+          <TabsTrigger value="email">Email</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
@@ -221,56 +222,22 @@ export default function Notifications({
               <CardContent className="flex flex-col gap-4">
                 {isConnected && (
                   <div className="flex items-center gap-2 text-sm text-success">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6L9 17l-5-5" />
                     </svg>
                     WhatsApp connected
                   </div>
                 )}
                 {connectionStatus.qrCode && (
-                  <img
-                    src={connectionStatus.qrCode}
-                    alt="WhatsApp QR Code"
-                    className="w-64 h-64 rounded-lg border border-border"
-                  />
+                  <img src={connectionStatus.qrCode} alt="WhatsApp QR Code" className="w-64 h-64 rounded-lg border border-border" />
                 )}
                 {polling && (
                   <p className="text-sm text-muted-foreground">Polling for connection...</p>
                 )}
                 <div className="flex gap-2 flex-wrap">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleConnect}
-                    disabled={isConnected || isConnecting}
-                  >
-                    Connect
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleDisconnect}
-                    disabled={!isConnected}
-                  >
-                    Disconnect
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleReset}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    Reset Session
-                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleConnect} disabled={isConnected || isConnecting}>Connect</Button>
+                  <Button variant="outline" size="sm" onClick={handleDisconnect} disabled={!isConnected}>Disconnect</Button>
+                  <Button variant="outline" size="sm" onClick={handleReset} className="text-destructive hover:text-destructive">Reset Session</Button>
                 </div>
               </CardContent>
             </Card>
@@ -278,13 +245,9 @@ export default function Notifications({
 
           {provider === 'meta' && (
             <Card>
-              <CardHeader>
-                <CardTitle>Meta API</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <p className="text-sm text-muted-foreground">
-                  Meta WhatsApp Cloud API will be available soon.
-                </p>
+              <CardHeader><CardTitle>Meta API</CardTitle></CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Meta WhatsApp Cloud API will be available soon.</p>
               </CardContent>
             </Card>
           )}
@@ -293,7 +256,7 @@ export default function Notifications({
 
           <Card>
             <CardHeader>
-              <CardTitle>Templates</CardTitle>
+              <CardTitle>WhatsApp Templates</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="rounded-lg border p-4">
@@ -301,21 +264,12 @@ export default function Notifications({
                 <div className="flex flex-col gap-3 max-w-md">
                   <div>
                     <Label htmlFor="tpl-name">Name</Label>
-                    <Input
-                      id="tpl-name"
-                      value={templateName}
-                      onChange={(e) => setTemplateName(e.target.value)}
-                      required
-                    />
+                    <Input id="tpl-name" value={templateName} onChange={(e) => setTemplateName(e.target.value)} required />
                   </div>
                   <div>
                     <Label htmlFor="tpl-category">Category</Label>
-                    <select
-                      id="tpl-category"
-                      value={templateCategory}
-                      onChange={(e) => setTemplateCategory(e.target.value)}
-                      className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
-                    >
+                    <select id="tpl-category" value={templateCategory} onChange={(e) => setTemplateCategory(e.target.value)}
+                      className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
                       <option value="utility">Utility</option>
                       <option value="authentication">Authentication</option>
                       <option value="marketing">Marketing</option>
@@ -323,24 +277,13 @@ export default function Notifications({
                   </div>
                   <div>
                     <Label htmlFor="tpl-lang">Language Code</Label>
-                    <Input
-                      id="tpl-lang"
-                      value={templateLanguage}
-                      onChange={(e) => setTemplateLanguage(e.target.value)}
-                    />
+                    <Input id="tpl-lang" value={templateLanguage} onChange={(e) => setTemplateLanguage(e.target.value)} />
                   </div>
                   <div>
                     <Label htmlFor="tpl-vars">Variables (JSON array)</Label>
-                    <Input
-                      id="tpl-vars"
-                      value={templateVariables}
-                      onChange={(e) => setTemplateVariables(e.target.value)}
-                      placeholder='["event_name","ticket_type"]'
-                    />
+                    <Input id="tpl-vars" value={templateVariables} onChange={(e) => setTemplateVariables(e.target.value)} placeholder='["event_name","ticket_type"]' />
                   </div>
-                  <Button onClick={handleCreateTemplate} size="sm">
-                    Create Template
-                  </Button>
+                  <Button onClick={handleCreateTemplate} size="sm">Create Template</Button>
                 </div>
               </div>
 
@@ -349,40 +292,26 @@ export default function Notifications({
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Language</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Created</TableHead>
+                      <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {templates.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          No templates
-                        </TableCell>
-                      </TableRow>
+                    {whatsappTemplates.length === 0 ? (
+                      <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No templates</TableCell></TableRow>
                     ) : (
-                      templates.map((t) => (
+                      whatsappTemplates.map((t) => (
                         <TableRow key={t.id}>
                           <TableCell className="font-medium">{t.name}</TableCell>
+                          <TableCell className="text-sm capitalize">{t.type}</TableCell>
                           <TableCell className="text-sm capitalize">{t.category}</TableCell>
-                          <TableCell className="text-sm">{t.languageCode}</TableCell>
                           <TableCell>
-                            <Badge
-                              variant={
-                                t.status === 'approved'
-                                  ? 'default'
-                                  : t.status === 'rejected'
-                                    ? 'destructive'
-                                    : 'outline'
-                              }
-                            >
-                              {t.status}
-                            </Badge>
+                            <Badge variant={t.status === 'approved' ? 'default' : t.status === 'rejected' ? 'destructive' : 'outline'}>{t.status}</Badge>
                           </TableCell>
-                          <TableCell className="text-sm">
-                            {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}
+                          <TableCell>
+                            <Button variant="outline" size="sm" onClick={() => setEditingWhatsApp(t)}>Edit</Button>
                           </TableCell>
                         </TableRow>
                       ))
@@ -393,72 +322,139 @@ export default function Notifications({
             </CardContent>
           </Card>
 
-          <Button onClick={handleSaveSettings} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Settings'}
-          </Button>
+          <Button onClick={handleSaveSettings} disabled={saving}>{saving ? 'Saving...' : 'Save Settings'}</Button>
+        </TabsContent>
+
+        <TabsContent value="email" className="flex flex-col gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Email Templates</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <div className="rounded-lg border p-4">
+                <h3 className="font-semibold mb-3">New Email Template</h3>
+                <div className="flex flex-col gap-3 max-w-md">
+                  <div>
+                    <Label htmlFor="email-tpl-name">Name</Label>
+                    <Input id="email-tpl-name" value={templateName} onChange={(e) => setTemplateName(e.target.value)} required />
+                  </div>
+                  <div>
+                    <Label htmlFor="email-tpl-type">Type</Label>
+                    <select id="email-tpl-type" value={templateCategory} onChange={(e) => setTemplateCategory(e.target.value)}
+                      className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
+                      <option value="purchase_confirmation">Purchase Confirmation</option>
+                      <option value="reminder_3d">Reminder J-3</option>
+                      <option value="reminder_1d">Reminder J-1</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="email-tpl-lang">Language Code</Label>
+                    <Input id="email-tpl-lang" value={templateLanguage} onChange={(e) => setTemplateLanguage(e.target.value)} />
+                  </div>
+                  <Button onClick={async () => {
+                    setTemplateChannel('email')
+                    await handleCreateTemplate()
+                  }} size="sm">Create Template</Button>
+                </div>
+              </div>
+
+              <div className="rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Subject</TableHead>
+                      <TableHead>Language</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {emailTemplates.length === 0 ? (
+                      <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No email templates</TableCell></TableRow>
+                    ) : (
+                      emailTemplates.map((t) => (
+                        <TableRow key={t.id}>
+                          <TableCell className="font-medium">{t.name}</TableCell>
+                          <TableCell className="text-sm capitalize">{t.type}</TableCell>
+                          <TableCell className="text-sm">{t.subject || '—'}</TableCell>
+                          <TableCell className="text-sm">{t.languageCode}</TableCell>
+                          <TableCell>
+                            <Button variant="outline" size="sm" onClick={() => setEditingEmail(t)}>Edit</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Button onClick={handleSaveSettings} disabled={saving}>{saving ? 'Saving...' : 'Save Settings'}</Button>
         </TabsContent>
 
         <TabsContent value="notifications" className="flex flex-col gap-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Confirmation d'achat</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Confirmation d'achat</CardTitle></CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
                   <Label>WhatsApp</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Envoyer une confirmation WhatsApp après achat
-                  </p>
+                  <p className="text-sm text-muted-foreground">Envoyer une confirmation WhatsApp après achat</p>
                 </div>
-                <Switch
-                  checked={notifyPurchaseWhatsapp}
-                  onCheckedChange={setNotifyPurchaseWhatsapp}
-                />
+                <Switch checked={notifyPurchaseWhatsapp} onCheckedChange={setNotifyPurchaseWhatsapp} />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Email</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Envoyer un email de confirmation après achat
-                  </p>
+                  <p className="text-sm text-muted-foreground">Envoyer un email de confirmation après achat</p>
                 </div>
                 <Switch checked={notifyPurchaseEmail} onCheckedChange={setNotifyPurchaseEmail} />
               </div>
             </CardContent>
           </Card>
-
           <Card>
-            <CardHeader>
-              <CardTitle>Rappels d'événement</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Rappels d'événement</CardTitle></CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Rappel J-3</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notification WhatsApp 3 jours avant l'événement
-                  </p>
+                  <p className="text-sm text-muted-foreground">Notification WhatsApp 3 jours avant l'événement</p>
                 </div>
                 <Switch checked={notifyReminder3d} onCheckedChange={setNotifyReminder3d} />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Rappel J-1</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notification WhatsApp 1 jour avant l'événement
-                  </p>
+                  <p className="text-sm text-muted-foreground">Notification WhatsApp 1 jour avant l'événement</p>
                 </div>
                 <Switch checked={notifyReminder1d} onCheckedChange={setNotifyReminder1d} />
               </div>
             </CardContent>
           </Card>
-
-          <Button onClick={handleSaveSettings} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Settings'}
-          </Button>
+          <Button onClick={handleSaveSettings} disabled={saving}>{saving ? 'Saving...' : 'Save Settings'}</Button>
         </TabsContent>
       </Tabs>
+
+      {editingEmail && (
+        <TemplateEditor
+          open={true}
+          onClose={() => setEditingEmail(null)}
+          template={editingEmail}
+          adminPrefix={adminPrefix}
+          onSaved={() => { window.location.reload() }}
+        />
+      )}
+      {editingWhatsApp && (
+        <WhatsAppEditor
+          open={true}
+          onClose={() => setEditingWhatsApp(null)}
+          template={editingWhatsApp}
+          adminPrefix={adminPrefix}
+          onSaved={() => { window.location.reload() }}
+        />
+      )}
     </div>
   )
 }

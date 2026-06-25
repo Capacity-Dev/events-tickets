@@ -3,6 +3,8 @@ import Event from '#models/event'
 import Ticket from '#models/ticket'
 import { WhatsAppService } from './whatsapp_service.js'
 import { MailService } from './mail_service.js'
+import { templateService } from './template_service.js'
+import Setting from '#models/setting'
 import logger from '@adonisjs/core/services/logger'
 
 export class NotificationService {
@@ -30,19 +32,34 @@ export class NotificationService {
         (order as any).guestName ??
         (await order.load('buyer').then(() => order.buyer?.fullName)) ??
         'Client'
+      const firstName = buyerName.split(' ')[0]
 
       const eventDate = event.startDate.toFormat('EEEE d MMMM yyyy · h:mm a')
       const appUrl = process.env.APP_URL ?? 'http://localhost:3333'
 
-      const ticketData = {
+      const ticketNumbers = tickets.map((t) => t.ticketNumber)
+      const ticketLinks = tickets.map((t) => `${appUrl}/tickets/${t.uuid}`)
+      const ticketList = ticketLinks
+        .map((link, i) => `${ticketNumbers[i]}: ${link}`)
+        .join('\n')
+      const ticketRowsHtml = ticketLinks
+        .map(
+          (link, i) =>
+            `<tr><td style="padding:8px 12px;font-family:monospace;font-size:13px;border-top:1px solid #EEE">${ticketNumbers[i]}</td><td style="padding:8px 12px;border-top:1px solid #EEE"><a href="${link}" style="display:inline-block;background-color:#E11D48;color:#FFF;border-radius:6px;padding:4px 12px;text-decoration:none;font-size:12px;font-weight:600">Voir le billet</a></td></tr>`
+        )
+        .join('\n')
+
+      const templateData: Record<string, any> = {
         buyerName,
+        firstName,
+        orderNumber: order.orderNumber,
         eventTitle: event.title,
         eventDate,
-        venueName: event.venueName ?? 'N/A',
+        venueName: event.venueName ?? '',
         ticketCount: tickets.length,
-        ticketNumbers: tickets.map((t) => t.ticketNumber),
-        orderNumber: order.orderNumber,
-        ticketLinks: tickets.map((t) => `${appUrl}/tickets/${t.uuid}`),
+        ticketList,
+        ticketRowsHtml,
+        ticketNumbers: ticketNumbers.join(', '),
         totalAmount: String(order.totalGrossAmount),
         currency: order.currency ?? 'USD',
       }
@@ -55,20 +72,34 @@ export class NotificationService {
         ticketCount: tickets.length,
       }
 
-      // Send via WhatsApp
-      if (order.guestPhone) {
+      const settings = await Setting.query()
+      const settingsMap: Record<string, string> = {}
+      for (const s of settings) {
+        settingsMap[s.key] = (s as any).value ?? ''
+      }
+
+      if (order.guestPhone && settingsMap.notify_purchase_whatsapp !== '0') {
         try {
+          const { body } = await templateService.resolveOrDefault(
+            'whatsapp',
+            'purchase_confirmation',
+            templateData
+          )
           const logId = await WhatsAppService.logQueued('buyer', order.guestPhone, payloadBase)
-          await WhatsAppService.sendTicketNotification(logId, order.guestPhone, ticketData)
+          await WhatsAppService.sendText(logId, order.guestPhone, body)
         } catch (error) {
           logger.error('WhatsApp notification failed:', error)
         }
       }
 
-      // Send via Email
-      if (order.guestEmail) {
+      if (order.guestEmail && settingsMap.notify_purchase_email !== '0') {
         try {
-          await MailService.sendTicketEmail(order.guestEmail, ticketData)
+          const { body, subject } = await templateService.resolveOrDefault(
+            'email',
+            'purchase_confirmation',
+            templateData
+          )
+          await MailService.sendEmail(order.guestEmail, subject ?? '', body, templateData as any)
         } catch (error) {
           logger.error('Email notification failed:', error)
         }
