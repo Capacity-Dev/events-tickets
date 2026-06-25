@@ -1,4 +1,7 @@
 :root {
+  --font-heading: 'Righteous', cursive;
+  --font-body: 'Poppins', sans-serif;
+
   --gray-1: oklch(98.5% 0 0);
   --gray-2: oklch(97% 0 0);
   --gray-3: oklch(92.2% 0 0);
@@ -19,7 +22,7 @@
 html,
 body {
   height: 100%;
-  font-family: system-ui, sans-serif;
+  font-family: var(--font-body), sans-serif;
   -webkit-font-smoothing: antialiased;
   background: var(--gray-2);
   color: var(--gray-10);
