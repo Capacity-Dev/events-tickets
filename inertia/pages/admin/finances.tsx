@@ -10,6 +10,7 @@ interface Props {
   orders: any[]
   currencies: CurrencyInfo[]
   revenueByCurrency: RevenueEntry[]
+  totalRevenueUSD: number
   platformFees: number
   payoutsProcessed: number
   pagination: { total: number; perPage: number; currentPage: number; lastPage: number }
@@ -25,6 +26,7 @@ export default function AdminFinances({
   orders,
   currencies,
   revenueByCurrency,
+  totalRevenueUSD,
   platformFees,
   payoutsProcessed,
   pagination,
@@ -87,8 +89,6 @@ export default function AdminFinances({
     return sortDir === 'desc' ? ' ▼' : ' ▲'
   }
 
-  const totalRevenue = revenueByCurrency.reduce((s, e) => s + e.total, 0)
-
   return (
     <div>
       <div className="mb-6">
@@ -101,7 +101,7 @@ export default function AdminFinances({
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
             Revenue Total
           </p>
-          <p className="text-2xl font-heading">{formatCurrency(totalRevenue, 'USD', currencies)}</p>
+          <p className="text-2xl font-heading">{formatCurrency(totalRevenueUSD, 'USD', currencies)}</p>
         </div>
         {revenueByCurrency.map((entry) => (
           <div key={entry.currency} className="border rounded-xl p-4 bg-card">

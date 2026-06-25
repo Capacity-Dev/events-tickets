@@ -1,4 +1,4 @@
-export type CurrencyInfo = { code: string; symbol: string }
+export type CurrencyInfo = { code: string; symbol: string; exchangeRate?: string }
 
 export function formatCurrency(
   amount: number | string | null | undefined,

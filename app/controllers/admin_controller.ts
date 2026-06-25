@@ -229,6 +229,12 @@ export default class AdminController {
       total: parseFloat(r.$extras?.total ?? r.total ?? '0'),
     }))
 
+    const totalRevenueUSD = revenueByCurrency.reduce((sum, entry) => {
+      const currency = currencies.find((c) => c.code === entry.currency)
+      const rate = currency ? parseFloat(currency.exchangeRate) || 1 : 1
+      return sum + entry.total / rate
+    }, 0)
+
     const platformRow = await PlatformRevenueLog.query()
       .select(db.raw(`SUM(CAST(calculated_fee_amount AS NUMERIC)) as total`))
       .first()
@@ -250,6 +256,7 @@ export default class AdminController {
       orders: orders.all(),
       currencies,
       revenueByCurrency,
+      totalRevenueUSD,
       platformFees,
       payoutsProcessed,
       pagination: orders.getMeta(),
