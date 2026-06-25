@@ -54,4 +54,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   ZEPTOMAIL_TOKEN: Env.schema.string.optional(),
   MAIL_FROM: Env.schema.string.optional(),
   MAIL_FROM_NAME: Env.schema.string.optional(),
+
+  // Meta Ads
+  META_ADS_AD_ACCOUNT_ID: Env.schema.string.optional(),
+  META_ADS_ACCESS_TOKEN: Env.schema.string.optional(),
+  META_PAGE_ID: Env.schema.string.optional(),
+  META_ADS_APP_ID: Env.schema.string.optional(),
+  META_API_VERSION: Env.schema.string.optional(),
+  META_ADS_DEFAULT_CURRENCY: Env.schema.string.optional(),
 })

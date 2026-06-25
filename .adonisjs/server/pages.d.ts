@@ -12,6 +12,7 @@ type ExtractProps<T> =
 
 declare module '@adonisjs/inertia/types' {
   export interface InertiaPages {
+    'admin/boosts': ExtractProps<(typeof import('../../inertia/pages/admin/boosts.tsx'))['default']>
     'admin/categories': ExtractProps<(typeof import('../../inertia/pages/admin/categories.tsx'))['default']>
     'admin/currencies': ExtractProps<(typeof import('../../inertia/pages/admin/currencies.tsx'))['default']>
     'admin/dashboard': ExtractProps<(typeof import('../../inertia/pages/admin/dashboard.tsx'))['default']>
@@ -39,6 +40,9 @@ declare module '@adonisjs/inertia/types' {
     'dashboard/buyer/tickets': ExtractProps<(typeof import('../../inertia/pages/dashboard/buyer/tickets.tsx'))['default']>
     'dashboard/index': ExtractProps<(typeof import('../../inertia/pages/dashboard/index.tsx'))['default']>
     'dashboard/organizer/analytics': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/analytics.tsx'))['default']>
+    'dashboard/organizer/boost_create': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/boost_create.tsx'))['default']>
+    'dashboard/organizer/boost_show': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/boost_show.tsx'))['default']>
+    'dashboard/organizer/boosts': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/boosts.tsx'))['default']>
     'dashboard/organizer/check_in': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/check_in.tsx'))['default']>
     'dashboard/organizer/clients': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/clients.tsx'))['default']>
     'dashboard/organizer/events_create': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/events_create.tsx'))['default']>

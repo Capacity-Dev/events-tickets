@@ -5,6 +5,7 @@
 
 export const controllers = {
   Admin: () => import('#controllers/admin_controller'),
+  Boost: () => import('#controllers/boost_controller'),
   Buyer: () => import('#controllers/buyer_controller'),
   Cart: () => import('#controllers/cart_controller'),
   Dashboard: () => import('#controllers/dashboard_controller'),

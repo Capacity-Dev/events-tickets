@@ -53,6 +53,7 @@ export default function AdminFeeRules({ rules }: { rules: any[] }) {
                 <option value="buyer">Buyer</option>
                 <option value="organizer">Organizer</option>
                 <option value="split">Split</option>
+                <option value="boost">Boost</option>
               </select>
             </div>
           </div>

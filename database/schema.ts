@@ -53,6 +53,75 @@ export class CurrencySchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class EventBoostSchema extends BaseModel {
+  static $columns = ['budget', 'budgetType', 'callToAction', 'channels', 'createdAt', 'currency', 'endDate', 'eventId', 'failureReason', 'feeRuleId', 'headline', 'id', 'lastSyncedAt', 'markupAmount', 'metaAdAccountId', 'metaAdId', 'metaAdsetId', 'metaBudget', 'metaCampaignId', 'metaClicks', 'metaCpc', 'metaCtr', 'metaImpressions', 'metaSpent', 'organizerId', 'paymentReference', 'paymentStatus', 'primaryText', 'startDate', 'status', 'targetAudience', 'updatedAt'] as const
+  $columns = EventBoostSchema.$columns
+  @column()
+  declare budget: string
+  @column()
+  declare budgetType: string
+  @column()
+  declare callToAction: string | null
+  @column()
+  declare channels: any
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column.dateTime()
+  declare endDate: DateTime | null
+  @column()
+  declare eventId: string
+  @column()
+  declare failureReason: string | null
+  @column()
+  declare feeRuleId: string | null
+  @column()
+  declare headline: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare lastSyncedAt: DateTime | null
+  @column()
+  declare markupAmount: string | null
+  @column()
+  declare metaAdAccountId: string | null
+  @column()
+  declare metaAdId: string | null
+  @column()
+  declare metaAdsetId: string | null
+  @column()
+  declare metaBudget: string
+  @column()
+  declare metaCampaignId: string | null
+  @column()
+  declare metaClicks: number | null
+  @column()
+  declare metaCpc: string | null
+  @column()
+  declare metaCtr: string | null
+  @column()
+  declare metaImpressions: number | null
+  @column()
+  declare metaSpent: string | null
+  @column()
+  declare organizerId: number
+  @column()
+  declare paymentReference: string | null
+  @column()
+  declare paymentStatus: string | null
+  @column()
+  declare primaryText: string | null
+  @column.dateTime()
+  declare startDate: DateTime
+  @column()
+  declare status: string
+  @column()
+  declare targetAudience: any | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class EventFeeRuleSchema extends BaseModel {
   static $columns = ['createdAt', 'effectiveFrom', 'effectiveUntil', 'eventId', 'feeRuleId', 'id', 'overrideValue', 'updatedAt'] as const
   $columns = EventFeeRuleSchema.$columns

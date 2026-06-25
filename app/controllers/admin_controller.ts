@@ -8,6 +8,9 @@ import Payout from '#models/payout'
 import Order from '#models/order'
 import Currency from '#models/currency'
 import Role from '#models/role'
+import EventBoost from '#models/event_boost'
+import { metaAds } from '#services/meta_ads_service'
+import adminConfig from '#config/admin'
 import WhatsAppTemplate from '#models/whatsapp_template'
 import { MbiyopayService } from '#services/mbiyopay_service'
 import { loadActiveCurrencies } from '../helpers/currency.js'
@@ -459,5 +462,32 @@ export default class AdminController {
     await currency.save()
 
     response.redirect().toRoute('admin.currencies')
+  }
+
+  async boosts({ inertia }: HttpContext) {
+    const boosts = await EventBoost.query()
+      .preload('event')
+      .preload('organizer')
+      .orderBy('createdAt', 'desc')
+
+    return (inertia.render as any)('admin/boosts', {
+      boosts: boosts.map((b) => ({
+        ...b.toJSON(),
+        event: b.event ? { ...b.event.toJSON(), slug: (b.event as any).slug } : null,
+        organizer: b.organizer ? b.organizer.toJSON() : null,
+      })),
+    })
+  }
+
+  async cancelBoost({ params, response }: HttpContext) {
+    const boost = await EventBoost.findByOrFail('id', params.id)
+    if (boost.metaCampaignId) {
+      try {
+        await metaAds.pauseCampaign(boost.metaCampaignId)
+      } catch (_err) {}
+    }
+    boost.status = 'cancelled'
+    await boost.save()
+    return response.redirect().toPath(`/${adminConfig.prefix}/boosts`)
   }
 }

@@ -14,6 +14,7 @@ import SettingsController from '#controllers/settings_controller'
 import CartController from '#controllers/cart_controller'
 import PaymentController from '#controllers/payment_controller'
 import WebhookController from '#controllers/webhook_controller'
+import BoostController from '#controllers/boost_controller'
 
 router.get('uploads/:fileName', async ({ params, response }) => {
   const base = join(app.makePath('..', 'storage/uploads'))
@@ -108,6 +109,26 @@ router
       .as('dashboard.payouts.request')
     router.get('dashboard/clients', [OrganizerController, 'clients']).as('dashboard.clients')
 
+    router
+      .get('dashboard/events/:id/boost', [BoostController, 'create'])
+      .as('dashboard.events.boost')
+    router
+      .post('dashboard/events/:id/boost', [BoostController, 'store'])
+      .as('dashboard.events.boost.store')
+    router
+      .post('dashboard/boosts/pay', [BoostController, 'pay'])
+      .as('dashboard.boosts.pay')
+    router.get('dashboard/boosts', [BoostController, 'index']).as('dashboard.boosts')
+    router
+      .get('dashboard/boosts/:id', [BoostController, 'show'])
+      .as('dashboard.boosts.show')
+    router
+      .post('dashboard/boosts/:id/pause', [BoostController, 'pause'])
+      .as('dashboard.boosts.pause')
+    router
+      .post('dashboard/boosts/:id/resume', [BoostController, 'resume'])
+      .as('dashboard.boosts.resume')
+
     router.get('dashboard/orders', [BuyerController, 'orders']).as('dashboard.orders')
     router.get('dashboard/orders/:id', [BuyerController, 'showOrder']).as('dashboard.orders.show')
     router.get('dashboard/orders/:id/pay', [BuyerController, 'payForm']).as('dashboard.orders.pay')
@@ -170,6 +191,10 @@ router
       .post('whatsapp-settings/reset', [AdminController, 'resetWhatsapp'])
       .as('admin.whatsapp.reset')
     router.get('settings', [SettingsController, 'index']).as('admin.settings')
+    router.get('boosts', [AdminController, 'boosts']).as('admin.boosts')
+    router
+      .post('boosts/:id/cancel', [AdminController, 'cancelBoost'])
+      .as('admin.boosts.cancel')
     router.get('currencies', [AdminController, 'currencies']).as('admin.currencies')
     router.post('currencies', [AdminController, 'storeCurrency']).as('admin.currencies.store')
     router
