@@ -135,7 +135,10 @@ export default class TemplateSeeder {
         .where('type', tpl.type)
         .first()
       if (!existing) {
-        await WhatsAppTemplate.create(tpl as any)
+        await WhatsAppTemplate.create({
+          ...tpl,
+          variables: JSON.stringify(tpl.variables),
+        } as any)
         console.log(`[Seeder] Created template: ${tpl.name}`)
       }
     }
