@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Separator } from '~/components/ui/separator'
+import { CountrySelect } from '~/components/country_select'
 import { toast } from 'sonner'
 
 const BUDGET_PRESETS = [10, 25, 50, 100, 250, 500]
@@ -28,7 +29,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
   const [headline, setHeadline] = useState(event.title?.slice(0, 40) ?? '')
   const [primaryText, setPrimaryText] = useState((event.description ?? '').slice(0, 125))
   const [callToAction, setCallToAction] = useState('LEARN_MORE')
-  const [countries, setCountries] = useState('CD')
+  const [countries, setCountries] = useState<string[]>(['CD'])
   const [ageMin, setAgeMin] = useState(18)
   const [ageMax, setAgeMax] = useState(65)
   const [loading, setLoading] = useState(false)
@@ -49,7 +50,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
       endDate.setDate(endDate.getDate() + durationDays)
 
       const targeting = {
-        countries: countries.split(',').map((s) => s.trim()),
+        countries,
         ageMin,
         ageMax,
         languages: ['fr'],
@@ -192,18 +193,14 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                 </div>
               </div>
               <Separator />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <div>
-                  <Label htmlFor="countries">Countries (ISO2, comma-separated)</Label>
-                  <Input
-                    id="countries"
-                    value={countries}
-                    onChange={(e) => setCountries(e.target.value)}
-                    placeholder="CD, CG, CM"
-                  />
+                  <Label className="mb-2 block">Countries</Label>
+                  <CountrySelect selected={countries} onChange={setCountries} />
                 </div>
-                <div>
-                  <Label htmlFor="age-min">Age Min</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="age-min">Age Min</Label>
                   <Input
                     id="age-min"
                     type="number"
@@ -225,6 +222,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                   />
                 </div>
               </div>
+            </div>
             </CardContent>
           </Card>
 
