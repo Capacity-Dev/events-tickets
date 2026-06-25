@@ -122,7 +122,10 @@ export function CountrySelect({ selected, onChange }: CountrySelectProps) {
           </div>
         )}
         <svg
-          className={cn('ml-auto h-4 w-4 shrink-0 opacity-50 transition-transform', open && 'rotate-180')}
+          className={cn(
+            'ml-auto h-4 w-4 shrink-0 opacity-50 transition-transform',
+            open && 'rotate-180'
+          )}
           width="16"
           height="16"
           viewBox="0 0 24 24"
@@ -159,7 +162,8 @@ export function CountrySelect({ selected, onChange }: CountrySelectProps) {
                   className="cursor-pointer gap-1 pr-1 text-xs"
                   onClick={() => remove(c.code)}
                 >
-                  {c.name.slice(0, 10)}{c.name.length > 10 ? '…' : ''}
+                  {c.name.slice(0, 10)}
+                  {c.name.length > 10 ? '…' : ''}
                   <svg
                     width="12"
                     height="12"

@@ -154,18 +154,18 @@ Last updated: 2026-06-16
 File: `inertia/components/country_select.tsx`
 Last updated: 2026-06-25
 
-| Property | Trigger (button) | Dropdown |
-|---|---|---|
-| Background | `bg-background` | `bg-card` |
-| Border | `border border-input` | `border border-border` |
-| Border radius | `rounded-lg` | `rounded-lg` |
-| Min-height | `min-h-10` | — |
-| Padding | `px-3 py-2` | — |
-| Font | `text-sm` | `text-sm` |
-| Shadow | none | `shadow-lg` |
-| Focus | `focus:ring-2 focus:ring-ring focus:ring-offset-2` | — |
-| Open state | `border-ring` | — |
-| Empty/muted text | `text-muted-foreground` | `text-muted-foreground` |
+| Property         | Trigger (button)                                   | Dropdown                |
+| ---------------- | -------------------------------------------------- | ----------------------- |
+| Background       | `bg-background`                                    | `bg-card`               |
+| Border           | `border border-input`                              | `border border-border`  |
+| Border radius    | `rounded-lg`                                       | `rounded-lg`            |
+| Min-height       | `min-h-10`                                         | —                       |
+| Padding          | `px-3 py-2`                                        | —                       |
+| Font             | `text-sm`                                          | `text-sm`               |
+| Shadow           | none                                               | `shadow-lg`             |
+| Focus            | `focus:ring-2 focus:ring-ring focus:ring-offset-2` | —                       |
+| Open state       | `border-ring`                                      | —                       |
+| Empty/muted text | `text-muted-foreground`                            | `text-muted-foreground` |
 
 **List items:**
 | Property | Class |
@@ -196,17 +196,17 @@ Dropdown triggers use `border-input` (input-style border, matching `.input-field
 File: `inertia/components/email_editor.tsx`
 Last updated: 2026-06-25
 
-| Property | Class |
-|---|---|
-| Dialog max-width | `max-w-3xl` |
-| Toolbar container | `border rounded-lg overflow-hidden` |
-| Toolbar bg | `bg-muted/20` |
-| Toolbar buttons | `inline-flex items-center justify-center rounded h-7 w-7 text-sm hover:bg-muted` |
-| Toolbar active | `bg-muted text-primary` |
-| Toolbar separators | `w-px h-5 bg-border mx-1` |
-| Editor area | `prose prose-sm max-w-none min-h-[300px] px-4 py-3 focus:outline-none` |
-| Variable button | `rounded bg-background border border-border px-2 py-0.5 text-xs hover:bg-primary hover:text-primary-foreground hover:border-primary` |
-| Save/cancel buttons | `justify-end gap-2` (right-aligned) |
+| Property            | Class                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Dialog max-width    | `max-w-3xl`                                                                                                                          |
+| Toolbar container   | `border rounded-lg overflow-hidden`                                                                                                  |
+| Toolbar bg          | `bg-muted/20`                                                                                                                        |
+| Toolbar buttons     | `inline-flex items-center justify-center rounded h-7 w-7 text-sm hover:bg-muted`                                                     |
+| Toolbar active      | `bg-muted text-primary`                                                                                                              |
+| Toolbar separators  | `w-px h-5 bg-border mx-1`                                                                                                            |
+| Editor area         | `prose prose-sm max-w-none min-h-[300px] px-4 py-3 focus:outline-none`                                                               |
+| Variable button     | `rounded bg-background border border-border px-2 py-0.5 text-xs hover:bg-primary hover:text-primary-foreground hover:border-primary` |
+| Save/cancel buttons | `justify-end gap-2` (right-aligned)                                                                                                  |
 
 **Pattern notes:**
 TipTap editor instance uses `immediatelyRender={false}` to avoid SSR hydration mismatch. The TipTap extensions used: StarterKit (bold/italic/strike/code/heading), Placeholder, Link, TextAlign. Heading levels limited to 1-3. The editor content area uses Tailwind Typography's `prose` class for default text styling.
@@ -216,14 +216,14 @@ TipTap editor instance uses `immediatelyRender={false}` to avoid SSR hydration m
 File: `inertia/components/whatsapp_editor.tsx`
 Last updated: 2026-06-25
 
-| Property | Class |
-|---|---|
-| Dialog max-width | `max-w-3xl` |
-| Textarea | `w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-mono resize-y focus:outline-none focus:border-ring focus:ring-3 focus:ring-ring/50` |
-| Preview panel | `rounded-lg border border-border bg-card p-4 text-sm min-h-[300px] whitespace-pre-wrap` |
-| Format buttons | `inline-flex items-center rounded border border-border px-2 py-1 text-xs hover:bg-muted` |
-| Variable button | Same as Email editor variable buttons |
-| Layout | `grid grid-cols-1 lg:grid-cols-2 gap-4` (textarea + preview side by side) |
+| Property         | Class                                                                                                                                                           |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dialog max-width | `max-w-3xl`                                                                                                                                                     |
+| Textarea         | `w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-mono resize-y focus:outline-none focus:border-ring focus:ring-3 focus:ring-ring/50` |
+| Preview panel    | `rounded-lg border border-border bg-card p-4 text-sm min-h-[300px] whitespace-pre-wrap`                                                                         |
+| Format buttons   | `inline-flex items-center rounded border border-border px-2 py-1 text-xs hover:bg-muted`                                                                        |
+| Variable button  | Same as Email editor variable buttons                                                                                                                           |
+| Layout           | `grid grid-cols-1 lg:grid-cols-2 gap-4` (textarea + preview side by side)                                                                                       |
 
 **Pattern notes:**
 WhatsApp uses Markdown-like formatting: `*bold*`, `_italic_`, `~strikethrough~`, ` ```code``` `. The preview renders these as HTML via a simple regex-based `renderMarkdownPreview()` function. No third-party Markdown library needed since WhatsApp's formatting syntax is minimal. Character counter shown below textarea.
@@ -233,14 +233,14 @@ WhatsApp uses Markdown-like formatting: `*bold*`, `_italic_`, `~strikethrough~`,
 File: `inertia/components/ui/tabs.tsx`
 Last updated: 2026-06-25 (fixed `data-[orientation=horizontal]` selector)
 
-| Property | Class |
-|---|---|
-| Root | `group/tabs flex gap-2 data-[orientation=horizontal]:flex-col` |
-| List | `group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground bg-muted` |
-| Trigger | `inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center rounded-md px-1.5 py-0.5 text-sm font-medium text-foreground/60` |
-| Trigger active | `data-active:bg-background data-active:text-foreground data-active:shadow-sm` |
-| Trigger hover | `hover:text-foreground` |
-| Content | `flex-1 text-sm outline-none` |
+| Property       | Class                                                                                                                               |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Root           | `group/tabs flex gap-2 data-[orientation=horizontal]:flex-col`                                                                      |
+| List           | `group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground bg-muted`                   |
+| Trigger        | `inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center rounded-md px-1.5 py-0.5 text-sm font-medium text-foreground/60` |
+| Trigger active | `data-active:bg-background data-active:text-foreground data-active:shadow-sm`                                                       |
+| Trigger hover  | `hover:text-foreground`                                                                                                             |
+| Content        | `flex-1 text-sm outline-none`                                                                                                       |
 
 **Pattern notes:**
 Uses `@base-ui/react/tabs` (not Radix). The `data-[orientation=horizontal]` Tailwind variant is critical — the base-ui component sets `data-orientation="horizontal"` (not a separate `data-horizontal` attribute). Must use `group-data-[orientation=horizontal]/tabs:` for child element orientation-dependent styling, NOT `group-data-horizontal/tabs:` which would never match.

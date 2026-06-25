@@ -201,28 +201,28 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="age-min">Age Min</Label>
-                  <Input
-                    id="age-min"
-                    type="number"
-                    min={13}
-                    max={65}
-                    value={ageMin}
-                    onChange={(e) => setAgeMin(Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="age-max">Age Max</Label>
-                  <Input
-                    id="age-max"
-                    type="number"
-                    min={18}
-                    max={65}
-                    value={ageMax}
-                    onChange={(e) => setAgeMax(Number(e.target.value))}
-                  />
+                    <Input
+                      id="age-min"
+                      type="number"
+                      min={13}
+                      max={65}
+                      value={ageMin}
+                      onChange={(e) => setAgeMin(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="age-max">Age Max</Label>
+                    <Input
+                      id="age-max"
+                      type="number"
+                      min={18}
+                      max={65}
+                      value={ageMax}
+                      onChange={(e) => setAgeMax(Number(e.target.value))}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
             </CardContent>
           </Card>
 
