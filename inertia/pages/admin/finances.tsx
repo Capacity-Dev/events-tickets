@@ -101,19 +101,17 @@ export default function AdminFinances({
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
             Revenue Total
           </p>
-          <p className="text-2xl font-heading">
-            {formatCurrency(totalRevenue, 'USD', currencies)}
-          </p>
+          <p className="text-2xl font-heading">{formatCurrency(totalRevenue, 'USD', currencies)}</p>
         </div>
         {revenueByCurrency.map((entry) => (
-            <div key={entry.currency} className="border rounded-xl p-4 bg-card">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                {entry.currency}
-              </p>
-              <p className="text-2xl font-heading">
-                {formatCurrency(entry.total, entry.currency, currencies)}
-              </p>
-            </div>
+          <div key={entry.currency} className="border rounded-xl p-4 bg-card">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+              {entry.currency}
+            </p>
+            <p className="text-2xl font-heading">
+              {formatCurrency(entry.total, entry.currency, currencies)}
+            </p>
+          </div>
         ))}
       </div>
 
@@ -122,9 +120,7 @@ export default function AdminFinances({
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
             Platform Fees
           </p>
-          <p className="text-xl font-heading">
-            {formatCurrency(platformFees, 'USD', currencies)}
-          </p>
+          <p className="text-xl font-heading">{formatCurrency(platformFees, 'USD', currencies)}</p>
         </div>
         <div className="border rounded-xl p-4 bg-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
