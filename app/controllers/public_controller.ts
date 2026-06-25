@@ -194,6 +194,7 @@ export default class PublicController {
   `
 
     return view.render('events/show', {
+      title: event.title,
       event,
       ticketTypes: enrichedTicketTypes,
       appUrl: appUrlVal,
