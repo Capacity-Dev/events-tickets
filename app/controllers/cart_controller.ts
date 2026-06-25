@@ -6,6 +6,7 @@ import User from '#models/user'
 import Role from '#models/role'
 import Profile from '#models/profile'
 import Event from '#models/event'
+import { MbiyopayService } from '#services/mbiyopay_service'
 import { loadActiveCurrencies, getCurrencySymbol } from '../helpers/currency.js'
 
 export default class CartController {
@@ -111,6 +112,42 @@ export default class CartController {
         })
       }
       buyerId = user.id
+    }
+
+    if (lineTotal === 0) {
+      const freeOrder = await Order.create({
+        id: orderId,
+        orderNumber,
+        buyerId,
+        guestEmail: email || null,
+        guestPhone: phone || null,
+        guestName: name || null,
+        status: 'paid',
+        totalGrossAmount: 0,
+        platformFeeAmount: 0,
+        organizerNetAmount: 0,
+        paymentProcessorFee: 0,
+        currency: ticketType.currency ?? 'USD',
+        paidAt: new Date(),
+        paymentMethod: 'free',
+      } as any)
+
+      await OrderItem.createMany([
+        {
+          id: crypto.randomUUID(),
+          orderId: orderId,
+          ticketTypeId: ticketType.id,
+          unitPrice: 0,
+          quantity,
+          lineTotal: 0,
+        },
+      ] as any)
+
+      await MbiyopayService.processFreeOrder(freeOrder)
+
+      session.flash('success', 'Billets gratuits réservés !')
+      response.redirect().toRoute('payment.success', { id: orderId })
+      return
     }
 
     await Order.create({
@@ -271,6 +308,45 @@ export default class CartController {
       }
 
       totalGross += item.price * item.quantity
+    }
+
+    if (totalGross === 0) {
+      const freeOrderId = crypto.randomUUID()
+      await Order.create({
+        id: freeOrderId,
+        orderNumber,
+        buyerId,
+        guestEmail: !buyerId ? email : null,
+        guestPhone: !buyerId ? (request.input('phone') ?? '') : null,
+        guestName: !buyerId ? name : null,
+        status: 'paid',
+        totalGrossAmount: 0,
+        platformFeeAmount: 0,
+        organizerNetAmount: 0,
+        paymentProcessorFee: 0,
+        currency,
+        paidAt: new Date(),
+        paymentMethod: 'free',
+      } as any)
+
+      for (const item of cart) {
+        await OrderItem.create({
+          id: crypto.randomUUID(),
+          orderId: freeOrderId,
+          ticketTypeId: item.ticketTypeId,
+          unitPrice: 0,
+          quantity: item.quantity,
+          lineTotal: 0,
+        } as any)
+      }
+
+      const freeOrder = await Order.find(freeOrderId)
+      if (freeOrder) await MbiyopayService.processFreeOrder(freeOrder)
+
+      session.forget('cart')
+      session.flash('success', 'Billets gratuits réservés !')
+      response.redirect().toRoute('payment.success', { id: freeOrderId })
+      return
     }
 
     const orderId = crypto.randomUUID()

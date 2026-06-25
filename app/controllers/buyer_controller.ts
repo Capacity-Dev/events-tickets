@@ -90,6 +90,37 @@ export default class BuyerController {
       })
     }
 
+    if (totalGross === 0) {
+      const now = new Date()
+      const orderNumber = `ORD-${now.getFullYear()}-${String(now.getTime()).slice(-6)}`
+      const order = await Order.create({
+        id: crypto.randomUUID(),
+        orderNumber,
+        buyerId: auth.user!.id,
+        status: 'paid',
+        totalGrossAmount: 0,
+        platformFeeAmount: 0,
+        organizerNetAmount: 0,
+        paymentProcessorFee: 0,
+        currency: 'USD',
+        paidAt: new Date(),
+        paymentMethod: 'free',
+      } as any)
+
+      await OrderItem.createMany(
+        orderItems.map((oi) => ({
+          ...oi,
+          unitPrice: 0,
+          lineTotal: 0,
+          orderId: order.id,
+        })) as any
+      )
+
+      await MbiyopayService.processFreeOrder(order)
+      response.redirect().toRoute('dashboard.orders.show', { id: order.id })
+      return
+    }
+
     const now = new Date()
     const orderNumber = `ORD-${now.getFullYear()}-${String(now.getTime()).slice(-6)}`
 
@@ -148,6 +179,12 @@ export default class BuyerController {
     if (!order) return response.status(404).json({ error: 'Order not found' })
     if (order.status !== 'pending')
       return response.status(400).json({ error: 'Order cannot be paid' })
+
+    if (Number(order.totalGrossAmount) === 0) {
+      await MbiyopayService.processFreeOrder(order)
+      session.flash('success', 'Commande gratuite confirmée !')
+      return response.redirect().toRoute('dashboard.orders.show', { id: order.id })
+    }
 
     const phone = request.input('phone')
     const network = request.input('network')

@@ -104,6 +104,11 @@ export default class PaymentController {
 
     // Validate form inputs for fresh payment
     if (order.status === 'pending') {
+      if (Number(order.totalGrossAmount) === 0) {
+        await MbiyopayService.processFreeOrder(order)
+        return response.redirect().toRoute('payment.success', { id: order.id })
+      }
+
       if (!phone || !network) {
         session.flash('error', 'Téléphone et réseau requis')
         return response.redirect().back()

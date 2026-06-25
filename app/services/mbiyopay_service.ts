@@ -199,6 +199,47 @@ export class MbiyopayService {
     return json
   }
 
+  static async processFreeOrder(order: Order): Promise<void> {
+    if (!order || order.status === 'paid') return
+
+    order.status = 'paid'
+    order.paidAt = DateTime.now()
+    order.paymentMethod = 'free'
+    await order.save()
+
+    const orderItems = await OrderItem.query()
+      .where('orderId', order.id)
+      .preload('ticketType')
+
+    for (const item of orderItems) {
+      if (item.ticketTypeId) {
+        await TicketType.query()
+          .where('id', item.ticketTypeId)
+          .increment('quantitySold', item.quantity)
+      }
+
+      const tt = item.ticketType
+      const eventId = tt?.eventId ?? ''
+
+      for (let i = 0; i < item.quantity; i++) {
+        const uuid = crypto.randomUUID()
+        const num = `${String(Date.now()).slice(-6)}${String(i).padStart(2, '0')}`
+        await Ticket.create({
+          id: crypto.randomUUID(),
+          orderItemId: item.id,
+          eventId,
+          ticketTypeId: item.ticketTypeId ?? '',
+          ticketNumber: `TKT-${num}`,
+          uuid,
+          qrToken: uuid,
+          status: 'valid',
+        })
+      }
+    }
+
+    await NotificationService.dispatch(order)
+  }
+
   static async processSuccessfulPayment(orderId: string): Promise<void> {
     const order = await Order.query()
       .whereRaw('CAST(id AS text) = ?', [orderId])
