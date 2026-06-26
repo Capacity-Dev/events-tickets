@@ -33,6 +33,8 @@ export default class GoogleAuthController {
           fullName: googleUser.name || googleUser.email,
           googleId: googleUser.id,
           roleId: buyerRole?.id ?? null,
+          password: crypto.randomUUID(),
+          isShadow: true,
         })
 
         await Profile.create({
