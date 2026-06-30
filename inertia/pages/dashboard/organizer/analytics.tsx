@@ -25,6 +25,7 @@ import {
   Megaphone,
   MoreHorizontal,
   Copy,
+  UserPlus,
 } from 'lucide-react'
 import {
   Table,
@@ -206,6 +207,16 @@ export default function OrganizerAnalytics({
 
               {/* Desktop overflow actions */}
               <div className="hidden sm:flex flex-wrap gap-2">
+                <a
+                  href={`/dashboard/events/${event.id}/invite-guests`}
+                  className={cn(
+                    buttonVariants({ size: 'sm', variant: 'outline' }),
+                    'shrink-0 border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 no-underline'
+                  )}
+                >
+                  <UserPlus className="size-3.5" />
+                  {t('organizer.analytics.invite_guests')}
+                </a>
                 <Button size="sm" variant="outline" onClick={handleCopyLink}>
                   <Copy className="size-3.5" />
                   {t('common.copy_link')}
@@ -232,6 +243,14 @@ export default function OrganizerAnalytics({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        window.location.href = `/dashboard/events/${event.id}/invite-guests`
+                      }}
+                    >
+                      <UserPlus className="size-4" />
+                      {t('organizer.analytics.invite_guests')}
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleCopyLink}>
                       <LinkIcon className="size-4" />
                       {t('common.copy_link')}

@@ -13,6 +13,8 @@ import Order from '#models/order'
 import Payout from '#models/payout'
 import Setting from '#models/setting'
 import { createEventValidator, updateEventValidator } from '#validators/event'
+import { inviteGuestsValidator } from '#validators/invite_guests'
+import { GuestInvitationService } from '#services/guest_invitation_service'
 import { generatePrivateSlug } from '../helpers/base32.js'
 import { loadActiveCurrencies } from '../helpers/currency.js'
 
@@ -693,6 +695,84 @@ export default class OrganizerController {
       search: search || '',
       eventId: eventId || '',
     })
+  }
+
+  async inviteGuestsPage({ inertia, params, auth, response: _response }: HttpContext) {
+    if (!params.id || params.id === 'undefined')
+      return inertia.render('errors/not_found', {} as any)
+    const event = await Event.query()
+      .where('id', params.id)
+      .where('organizerId', auth.user!.id)
+      .preload('ticketTypes')
+      .first()
+
+    if (!event) return inertia.render('errors/not_found', {} as any)
+
+    const invitations = await Order.query()
+      .where('eventId', event.id)
+      .where('source', 'manual_invite')
+      .preload('items', (iq) => iq.preload('tickets'))
+      .orderBy('createdAt', 'desc')
+      .limit(50)
+
+    const invitationRows = invitations.map((order) => {
+      const tickets = order.items.flatMap((item) =>
+        item.tickets.map((ticket) => ({
+          ticketNumber: ticket.ticketNumber,
+          uuid: ticket.uuid,
+          status: ticket.status,
+        }))
+      )
+
+      return {
+        id: order.id,
+        guestName: order.guestName,
+        guestEmail: order.guestEmail,
+        guestPhone: order.guestPhone,
+        ticketCount: tickets.length,
+        tickets,
+        createdAt: order.createdAt?.toISO() ?? null,
+      }
+    })
+
+    return (inertia.render as any)('dashboard/organizer/invite_guests', {
+      event: event.toJSON(),
+      ticketTypes: event.ticketTypes.map((tt) => ({
+        id: tt.id,
+        name: tt.name,
+        basePrice: tt.basePrice,
+        quantityTotal: tt.quantityTotal,
+        quantitySold: tt.quantitySold,
+      })),
+      invitations: invitationRows,
+    })
+  }
+
+  async inviteGuests({ params, request, response, auth }: HttpContext) {
+    if (!params.id || params.id === 'undefined')
+      return response.status(404).json({ error: 'Event not found' })
+
+    const event = await Event.query()
+      .where('id', params.id)
+      .where('organizerId', auth.user!.id)
+      .preload('ticketTypes')
+      .first()
+
+    if (!event) return response.status(404).json({ error: 'Event not found' })
+
+    const payload = await request.validateUsing(inviteGuestsValidator)
+
+    const ticketType = event.ticketTypes.find((tt) => tt.id === payload.ticketTypeId)
+    if (!ticketType) return response.status(404).json({ error: 'Ticket type not found' })
+
+    const result = await GuestInvitationService.invite(
+      event,
+      ticketType,
+      payload.guests,
+      String(auth.user!.id)
+    )
+
+    return response.json(result)
   }
 
   async requestPayout({ request, response, auth, session }: HttpContext) {

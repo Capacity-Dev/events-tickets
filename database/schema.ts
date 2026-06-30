@@ -292,7 +292,7 @@ export class OrderItemSchema extends BaseModel {
 }
 
 export class OrderSchema extends BaseModel {
-  static $columns = ['buyerId', 'cancellationReason', 'createdAt', 'currency', 'guestEmail', 'guestName', 'guestPhone', 'id', 'ipAddress', 'mbiyopayAuthMode', 'orderNumber', 'organizerNetAmount', 'paidAt', 'paymentIntentId', 'paymentMethod', 'paymentProcessorFee', 'platformFeeAmount', 'refundedAt', 'status', 'totalGrossAmount', 'updatedAt', 'userAgent'] as const
+  static $columns = ['buyerId', 'cancellationReason', 'createdAt', 'currency', 'guestEmail', 'guestName', 'guestPhone', 'id', 'invitedBy', 'ipAddress', 'mbiyopayAuthMode', 'orderNumber', 'organizerNetAmount', 'paidAt', 'paymentIntentId', 'paymentMethod', 'paymentProcessorFee', 'platformFeeAmount', 'refundedAt', 'source', 'status', 'totalGrossAmount', 'updatedAt', 'userAgent'] as const
   $columns = OrderSchema.$columns
   @column()
   declare buyerId: number | null
@@ -310,6 +310,8 @@ export class OrderSchema extends BaseModel {
   declare guestPhone: string | null
   @column({ isPrimary: true })
   declare id: string
+  @column()
+  declare invitedBy: string | null
   @column()
   declare ipAddress: string | null
   @column()
@@ -330,6 +332,8 @@ export class OrderSchema extends BaseModel {
   declare platformFeeAmount: string | null
   @column.dateTime()
   declare refundedAt: DateTime | null
+  @column()
+  declare source: string
   @column()
   declare status: string
   @column()

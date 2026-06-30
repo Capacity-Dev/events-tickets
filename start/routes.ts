@@ -119,6 +119,12 @@ router
       .post('dashboard/payouts', [OrganizerController, 'requestPayout'])
       .as('dashboard.payouts.request')
     router.get('dashboard/clients', [OrganizerController, 'clients']).as('dashboard.clients')
+    router
+      .get('dashboard/events/:id/invite-guests', [OrganizerController, 'inviteGuestsPage'])
+      .as('dashboard.events.inviteGuests')
+    router
+      .post('dashboard/events/:id/invite-guests', [OrganizerController, 'inviteGuests'])
+      .as('dashboard.events.inviteGuests.store')
 
     router
       .get('dashboard/events/:id/boost', [BoostController, 'create'])

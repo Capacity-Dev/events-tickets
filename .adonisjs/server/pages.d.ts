@@ -48,6 +48,7 @@ declare module '@adonisjs/inertia/types' {
     'dashboard/organizer/clients': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/clients.tsx'))['default']>
     'dashboard/organizer/events_create': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/events_create.tsx'))['default']>
     'dashboard/organizer/events': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/events.tsx'))['default']>
+    'dashboard/organizer/invite_guests': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/invite_guests.tsx'))['default']>
     'dashboard/organizer/payouts': ExtractProps<(typeof import('../../inertia/pages/dashboard/organizer/payouts.tsx'))['default']>
     'dashboard/settings': ExtractProps<(typeof import('../../inertia/pages/dashboard/settings.tsx'))['default']>
     'errors/not_found': ExtractProps<(typeof import('../../inertia/pages/errors/not_found.tsx'))['default']>
