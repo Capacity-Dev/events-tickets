@@ -589,12 +589,17 @@ export default class AdminController {
       .preload('organizer')
       .orderBy('createdAt', 'desc')
 
+    const feeSetting = await Setting.findBy('key', 'private_event_fee')
+    const currencySetting = await Setting.findBy('key', 'private_event_currency')
+
     return (inertia.render as any)('admin/boosts', {
       boosts: boosts.map((b) => ({
         ...b.toJSON(),
         event: b.event ? { ...b.event.toJSON(), slug: (b.event as any).slug } : null,
         organizer: b.organizer ? b.organizer.toJSON() : null,
       })),
+      privateEventFee: feeSetting?.value ?? '0',
+      privateEventCurrency: currencySetting?.value ?? 'USD',
     })
   }
 
@@ -620,6 +625,36 @@ export default class AdminController {
     boost.status = 'cancelled'
     await boost.save()
     return response.redirect().toPath(`/${adminConfig.prefix}/boosts`)
+  }
+
+  async savePrivateEventSettings({ request, response }: HttpContext) {
+    const { fee, currency } = request.all()
+
+    const feeSetting = await Setting.findBy('key', 'private_event_fee')
+    if (feeSetting) {
+      feeSetting.value = String(fee ?? '0')
+      await feeSetting.save()
+    } else {
+      await Setting.create({
+        id: crypto.randomUUID(),
+        key: 'private_event_fee',
+        value: String(fee ?? '0'),
+      })
+    }
+
+    const currencySetting = await Setting.findBy('key', 'private_event_currency')
+    if (currencySetting) {
+      currencySetting.value = String(currency ?? 'USD')
+      await currencySetting.save()
+    } else {
+      await Setting.create({
+        id: crypto.randomUUID(),
+        key: 'private_event_currency',
+        value: String(currency ?? 'USD'),
+      })
+    }
+
+    return response.json({ success: true })
   }
 
   async notifications({ inertia }: HttpContext) {

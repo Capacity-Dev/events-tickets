@@ -21,6 +21,7 @@ export default class PublicController {
     const featuredEvents = await Event.query()
       .where('status', 'published')
       .andWhere('is_frozen', false)
+      .andWhere('visibility', 'public')
       .andWhere('isFeatured', true)
       .preload('category')
       .select('*')
@@ -38,6 +39,7 @@ export default class PublicController {
     const recentEvents = await Event.query()
       .where('status', 'published')
       .andWhere('is_frozen', false)
+      .andWhere('visibility', 'public')
       .andWhere('isFeatured', false)
       .preload('category')
       .select('*')
@@ -70,6 +72,7 @@ export default class PublicController {
     const query = Event.query()
       .where('events.status', 'published')
       .andWhere('events.is_frozen', false)
+      .andWhere('visibility', 'public')
       .preload('category')
       .orderBy('startDate', 'asc')
 
@@ -122,6 +125,7 @@ export default class PublicController {
       .where('slug', params.slug)
       .where('status', 'published')
       .andWhere('is_frozen', false)
+      .andWhere('visibility', 'public')
       .preload('category')
       .preload('organizer')
       .first()
@@ -211,6 +215,7 @@ export default class PublicController {
     const query = Event.query()
       .where('status', 'published')
       .andWhere('is_frozen', false)
+      .andWhere('visibility', 'public')
       .preload('category')
       .orderBy('startDate', 'asc')
 
@@ -265,6 +270,7 @@ export default class PublicController {
     const events = await Event.query()
       .where('status', 'published')
       .andWhere('is_frozen', false)
+      .andWhere('visibility', 'public')
       .select('slug', 'updatedAt')
       .orderBy('updatedAt', 'desc')
 

@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react'
 import { Badge } from '~/components/ui/badge'
+import { toast } from 'sonner'
 
 const statusVariant: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
   draft: 'outline',
@@ -15,6 +16,9 @@ interface EventSummary {
   slug: string
   status: string
   startDate: string | null
+  visibility?: string
+  privateSlug?: string | null
+  privatePaymentStatus?: string | null
   ticketTypes?: { quantitySold: number; quantityTotal: number }[]
 }
 
@@ -61,6 +65,7 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                   <Badge variant={statusVariant[event.status] ?? 'outline'}>
                     {event.status.replace('_', ' ')}
                   </Badge>
+                  {event.visibility === 'unlisted' && <Badge variant="outline">private</Badge>}
                   {event.ticketTypes && event.ticketTypes.length > 0 && (
                     <span className="text-xs text-muted-foreground">
                       {totalSold} / {totalCapacity} sold
@@ -115,6 +120,35 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                       className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-7 px-2 text-xs font-medium border-none cursor-pointer"
                     >
                       Publish
+                    </button>
+                  )}
+
+                  {event.visibility === 'unlisted' &&
+                    event.privatePaymentStatus !== 'paid' &&
+                    event.status === 'draft' && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          event.id && router.post(`/dashboard/events/${event.id}/pay-private-fee`)
+                        }
+                        className="inline-flex items-center justify-center rounded-lg border border-primary text-primary bg-transparent hover:bg-primary/10 h-7 px-2 text-xs font-medium cursor-pointer"
+                      >
+                        Pay Fee
+                      </button>
+                    )}
+
+                  {event.privateSlug && event.status === 'published' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${window.location.origin}/e/${event.privateSlug}`
+                        )
+                        toast.success('Private link copied')
+                      }}
+                      className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-2 text-xs font-medium cursor-pointer"
+                    >
+                      Copy Link
                     </button>
                   )}
                 </div>

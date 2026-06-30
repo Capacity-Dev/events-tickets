@@ -20,6 +20,8 @@ export const createEventValidator = vine.compile(
     startDate: vine.string(),
     endDate: vine.string().optional(),
     ticketTypes: vine.array(ticketTypeSchema).optional(),
+    visibility: vine.enum(['public', 'unlisted']).optional(),
+    accessPassword: vine.string().minLength(4).maxLength(100).optional(),
   })
 )
 
@@ -34,5 +36,7 @@ export const updateEventValidator = vine.compile(
     startDate: vine.string().optional(),
     endDate: vine.string().optional(),
     ticketTypes: vine.array(ticketTypeSchema).optional(),
+    visibility: vine.enum(['public', 'unlisted']).optional(),
+    accessPassword: vine.string().minLength(4).maxLength(100).optional(),
   })
 )

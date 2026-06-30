@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { writeFile, mkdir } from 'node:fs/promises'
 import app from '@adonisjs/core/services/app'
 import db from '@adonisjs/lucid/services/db'
+import hash from '@adonisjs/core/services/hash'
 import Event from '#models/event'
 import Category from '#models/category'
 import Currency from '#models/currency'
@@ -10,7 +11,9 @@ import TicketType from '#models/ticket_type'
 import Ticket from '#models/ticket'
 import Order from '#models/order'
 import Payout from '#models/payout'
+import Setting from '#models/setting'
 import { createEventValidator, updateEventValidator } from '#validators/event'
+import { generatePrivateSlug } from '../helpers/base32.js'
 import { loadActiveCurrencies } from '../helpers/currency.js'
 
 export default class OrganizerController {
@@ -52,14 +55,20 @@ export default class OrganizerController {
       }
 
       const safeTitle = String(raw.title).trim()
+      const slug = safeTitle
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+
+      const visibility = raw.visibility ?? 'public'
+      const privateSlug = visibility === 'unlisted' ? generatePrivateSlug(slug) : null
+      const accessPassword = raw.accessPassword ? await hash.make(raw.accessPassword) : null
+
       const event = await Event.create({
         id: crypto.randomUUID(),
         organizerId: auth.user!.id,
         title: safeTitle,
-        slug: safeTitle
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9-]/g, ''),
+        slug,
         description: raw.description ?? null,
         categoryId: raw.categoryId || null,
         venueName: raw.venueName ?? null,
@@ -69,7 +78,10 @@ export default class OrganizerController {
         coverImageUrl: coverImageUrl ?? null,
         status: 'draft',
         isFeatured: false,
-      })
+        visibility,
+        privateSlug,
+        accessPassword,
+      } as any)
 
       if (raw.ticketTypes && Array.isArray(raw.ticketTypes)) {
         await TicketType.createMany(
@@ -213,7 +225,7 @@ export default class OrganizerController {
     response.redirect().toRoute('dashboard.events')
   }
 
-  async publish({ params, response, auth }: HttpContext) {
+  async publish({ params, response, auth, session }: HttpContext) {
     if (!params.id || params.id === 'undefined') return response.notFound()
     const event = await Event.query()
       .where('id', params.id)
@@ -224,10 +236,53 @@ export default class OrganizerController {
       return response.status(404).send('Event not found')
     }
 
+    if ((event as any).visibility === 'unlisted') {
+      const feeSetting = await Setting.findBy('key', 'private_event_fee')
+      const fee = feeSetting ? Number(feeSetting.value) : 0
+
+      if (fee > 0 && (event as any).privatePaymentStatus !== 'paid') {
+        session.flash('error', `Payment required: ${fee} to publish a private event`)
+        return response.redirect().toRoute('dashboard.events')
+      }
+    }
+
     event.status = 'published'
     await event.save()
 
+    session.flash('success', 'Event published successfully')
     response.redirect().toRoute('dashboard.events')
+  }
+
+  async payPrivateFee({ params, response, auth, session }: HttpContext) {
+    if (!params.id || params.id === 'undefined') return response.notFound()
+    const event = await Event.query()
+      .where('id', params.id)
+      .where('organizerId', auth.user!.id)
+      .first()
+
+    if (!event) {
+      return response.status(404).send('Event not found')
+    }
+
+    if ((event as any).visibility !== 'unlisted') {
+      return response.status(400).json({ error: 'Event is not private' })
+    }
+
+    const feeSetting = await Setting.findBy('key', 'private_event_fee')
+    const fee = feeSetting ? Number(feeSetting.value) : 0
+
+    if (fee === 0) {
+      ;(event as any).privatePaymentStatus = 'paid'
+      await event.save()
+      session.flash('success', 'No fee required — event unlocked')
+      return response.redirect().toRoute('dashboard.events')
+    }
+
+    ;(event as any).privatePaymentStatus = 'paid'
+    await event.save()
+
+    session.flash('success', 'Private event fee paid — you can now publish')
+    return response.redirect().toRoute('dashboard.events')
   }
 
   async analytics({ inertia, params, auth }: HttpContext) {
@@ -653,14 +708,14 @@ export default class OrganizerController {
       .where('status', 'paid')
       .select(db.raw(`COALESCE(SUM(CAST(organizer_net_amount AS NUMERIC)), 0) as total`))
       .first()
-    const totalAvailable = parseFloat((totalAvailableRow?.$extras as any)?.total ?? '0')
+    const totalAvailable = Number.parseFloat((totalAvailableRow?.$extras as any)?.total ?? '0')
 
     const totalPayoutRow = await Payout.query()
       .where('organizerId', auth.user!.id)
       .whereIn('status', ['completed', 'pending'])
       .select(db.raw(`COALESCE(SUM(CAST(amount AS NUMERIC)), 0) as total`))
       .first()
-    const totalAlreadyPayout = parseFloat((totalPayoutRow?.$extras as any)?.total ?? '0')
+    const totalAlreadyPayout = Number.parseFloat((totalPayoutRow?.$extras as any)?.total ?? '0')
 
     const availableBalance = totalAvailable - totalAlreadyPayout
 

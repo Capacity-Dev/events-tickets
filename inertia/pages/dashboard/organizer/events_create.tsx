@@ -51,6 +51,8 @@ export default function OrganizerEventForm({
     startDate: event?.startDate ? new Date(event.startDate).toISOString().slice(0, 16) : '',
     endDate: event?.endDate ? new Date(event.endDate).toISOString().slice(0, 16) : '',
   })
+  const [visibility, setVisibility] = useState<string>(event?.visibility ?? 'public')
+  const [accessPassword, setAccessPassword] = useState('')
   const [ticketTypes, setTicketTypes] = useState<TicketTypeInput[]>(
     event?.ticketTypes?.map((t: any) => ({
       name: t.name ?? '',
@@ -65,7 +67,7 @@ export default function OrganizerEventForm({
 
   const formAction = isEditing && event?.id ? `/dashboard/events/${event.id}` : '/dashboard/events'
   const formMethod = isEditing && event?.id ? 'put' : 'post'
-  const steps = ['Basic Info', 'Date & Venue', 'Tickets', 'Review']
+  const steps = ['Basic Info', 'Date & Venue', 'Tickets', 'Privacy', 'Review']
 
   const update = (field: string, value: string) => setFormData((d) => ({ ...d, [field]: value }))
 
@@ -389,19 +391,113 @@ export default function OrganizerEventForm({
 
           <Card className={step === 3 ? '' : 'hidden'}>
             <CardHeader>
+              <CardTitle>Privacy &amp; Visibility</CardTitle>
+              <CardDescription>Control who can access your event page.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
+                <label className="flex items-start gap-3 p-4 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors">
+                  <input
+                    type="radio"
+                    name="visibility"
+                    value="public"
+                    checked={visibility === 'public'}
+                    onChange={() => setVisibility('public')}
+                    className="mt-0.5"
+                  />
+                  <div>
+                    <span className="font-medium text-sm">Public</span>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Visible in search results, homepage, and sitemap. Anyone can find it.
+                    </p>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 p-4 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors">
+                  <input
+                    type="radio"
+                    name="visibility"
+                    value="unlisted"
+                    checked={visibility === 'unlisted'}
+                    onChange={() => setVisibility('unlisted')}
+                    className="mt-0.5"
+                  />
+                  <div>
+                    <span className="font-medium text-sm">Private (Unlisted)</span>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Not visible in search or listings. Only accessible via a unique link.
+                      {accessPassword ? ' Also protected by password.' : ''}
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              <Separator />
+
+              <Field>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="secureEvent"
+                    checked={accessPassword.length > 0}
+                    onChange={(e) => {
+                      if (!e.target.checked) setAccessPassword('')
+                    }}
+                    disabled={visibility === 'public'}
+                    className="h-4 w-4 rounded border-input text-primary"
+                  />
+                  <Label
+                    htmlFor="secureEvent"
+                    className={visibility === 'public' ? 'opacity-50' : ''}
+                  >
+                    Secure invitation with a password
+                  </Label>
+                </div>
+                <FieldDescription>
+                  Guests will need this password to view event details and buy tickets.
+                </FieldDescription>
+              </Field>
+
+              {accessPassword.length > 0 && (
+                <Field>
+                  <Label htmlFor="accessPassword">Event Password</Label>
+                  <Input
+                    id="accessPassword"
+                    type="text"
+                    value={accessPassword}
+                    onChange={(e) => setAccessPassword(e.target.value)}
+                    minLength={4}
+                    placeholder="Enter a password (min 4 characters)"
+                  />
+                </Field>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className={step === 4 ? '' : 'hidden'}>
+            <CardHeader>
               <CardTitle>Review</CardTitle>
               <CardDescription>
                 Ready to submit. Review your details then click below.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col gap-3">
               <p className="text-sm text-muted-foreground">
                 All steps completed. Your event will be saved as a draft.
               </p>
+              {visibility === 'unlisted' && (
+                <div className="p-3 rounded-lg bg-muted/50 text-sm">
+                  <span className="font-medium">Private event</span> — accessible only via unique
+                  link
+                  {accessPassword ? ', protected by password' : ''}.
+                </div>
+              )}
             </CardContent>
           </Card>
 
           <Separator />
+
+          <input type="hidden" name="visibility" value={visibility} />
+          {accessPassword && <input type="hidden" name="accessPassword" value={accessPassword} />}
 
           <div className="flex justify-between">
             <Button

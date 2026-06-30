@@ -4,17 +4,18 @@ import router from '@adonisjs/core/services/router'
 import adminConfig from '#config/admin'
 import app from '@adonisjs/core/services/app'
 import { join } from 'node:path'
-import PublicController from '#controllers/public_controller'
-import OrganizerController from '#controllers/organizer_controller'
-import BuyerController from '#controllers/buyer_controller'
-import AdminController from '#controllers/admin_controller'
-import GoogleAuthController from '#controllers/google_auth_controller'
-import DashboardController from '#controllers/dashboard_controller'
-import SettingsController from '#controllers/settings_controller'
-import CartController from '#controllers/cart_controller'
-import PaymentController from '#controllers/payment_controller'
-import WebhookController from '#controllers/webhook_controller'
-import BoostController from '#controllers/boost_controller'
+const PublicController = () => import('#controllers/public_controller')
+const OrganizerController = () => import('#controllers/organizer_controller')
+const BuyerController = () => import('#controllers/buyer_controller')
+const AdminController = () => import('#controllers/admin_controller')
+const GoogleAuthController = () => import('#controllers/google_auth_controller')
+const DashboardController = () => import('#controllers/dashboard_controller')
+const SettingsController = () => import('#controllers/settings_controller')
+const CartController = () => import('#controllers/cart_controller')
+const PaymentController = () => import('#controllers/payment_controller')
+const WebhookController = () => import('#controllers/webhook_controller')
+const PrivateEventController = () => import('#controllers/private_event_controller')
+const BoostController = () => import('#controllers/boost_controller')
 
 router
   .get('uploads/:fileName', async ({ params, response }) => {
@@ -31,6 +32,10 @@ router.get('tickets/:uuid', [PublicController, 'showTicket']).as('tickets.show')
 router.get('events', [PublicController, 'index']).as('events.index')
 router.get('events/search', [PublicController, 'search']).as('events.search')
 router.get('events/:slug', [PublicController, 'show']).as('events.show')
+router.get('e/:privateSlug', [PrivateEventController, 'show']).as('private.events.show')
+router
+  .post('e/:privateSlug/access', [PrivateEventController, 'verifyPassword'])
+  .as('private.events.access')
 router.get('sitemap.xml', [PublicController, 'sitemap']).as('sitemap')
 
 router.post('webhooks/mbiyopay', [WebhookController, 'mbiyopay']).as('webhooks.mbiyopay')
@@ -90,6 +95,9 @@ router
     router
       .post('dashboard/events/:id/publish', [OrganizerController, 'publish'])
       .as('dashboard.events.publish')
+    router
+      .post('dashboard/events/:id/pay-private-fee', [OrganizerController, 'payPrivateFee'])
+      .as('dashboard.events.payPrivateFee')
     router
       .get('dashboard/events/:id/analytics', [OrganizerController, 'analytics'])
       .as('dashboard.events.analytics')
@@ -208,6 +216,9 @@ router
     router.put('templates/:id', [AdminController, 'updateTemplate']).as('admin.templates.update')
     router.get('boosts', [AdminController, 'boosts']).as('admin.boosts')
     router.post('boosts/:id/cancel', [AdminController, 'cancelBoost']).as('admin.boosts.cancel')
+    router
+      .post('settings/private-event-fee', [AdminController, 'savePrivateEventSettings'])
+      .as('admin.settings.privateEventFee')
     router.get('currencies', [AdminController, 'currencies']).as('admin.currencies')
     router.post('currencies', [AdminController, 'storeCurrency']).as('admin.currencies.store')
     router
