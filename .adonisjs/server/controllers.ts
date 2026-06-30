@@ -13,6 +13,7 @@ export const controllers = {
   NewAccount: () => import('#controllers/new_account_controller'),
   Organizer: () => import('#controllers/organizer_controller'),
   Payment: () => import('#controllers/payment_controller'),
+  PrivateEvent: () => import('#controllers/private_event_controller'),
   Public: () => import('#controllers/public_controller'),
   Session: () => import('#controllers/session_controller'),
   Settings: () => import('#controllers/settings_controller'),
