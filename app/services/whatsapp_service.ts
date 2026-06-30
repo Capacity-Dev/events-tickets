@@ -45,6 +45,41 @@ export class WhatsAppService {
     }
   }
 
+  static async sendTicketQr(
+    phone: string,
+    imageBuffer: Buffer,
+    ticketNumber: string,
+    eventTitle: string
+  ): Promise<void> {
+    if (whatsappConfig.provider === 'disabled') return
+    const logId = crypto.randomUUID()
+    await NotificationLog.create({
+      id: logId,
+      recipientType: 'buyer',
+      recipientIdentifier: phone,
+      channel: 'whatsapp',
+      status: 'queued',
+      payload: { ticketNumber, eventTitle, type: 'ticket_qr' } as any,
+    })
+
+    try {
+      const caption = `🎫 ${ticketNumber}\n${eventTitle}\n📲 Présentez ce QR code à l'entrée`
+      await BaileysProvider.sendImage(phone, imageBuffer, caption)
+      await NotificationLog.query().where('id', logId).update({
+        status: 'sent',
+        sentAt: new Date(),
+      })
+    } catch (error) {
+      await NotificationLog.query()
+        .where('id', logId)
+        .update({
+          status: 'failed',
+          errorDetails: JSON.stringify({ message: (error as Error).message }),
+        })
+      throw error
+    }
+  }
+
   static async sendTicketNotification(
     logId: string,
     phone: string,

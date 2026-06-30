@@ -5,7 +5,7 @@ import makeWASocket, {
   type WAMessage,
   fetchLatestWaWebVersion,
 } from '@whiskeysockets/baileys'
-import { Boom } from '@hapi/boom'
+import { type Boom } from '@hapi/boom'
 import QRCode from 'qrcode'
 import app from '@adonisjs/core/services/app'
 import logger from '@adonisjs/core/services/logger'
@@ -124,6 +124,22 @@ export class BaileysProvider {
     const cleaned = phone.replace(/\D/g, '')
     const jid = cleaned + '@s.whatsapp.net'
     return this.sock.sendMessage(jid, { text: message })
+  }
+
+  static async sendImage(
+    phone: string,
+    imageBuffer: Buffer,
+    caption?: string
+  ): Promise<WAMessage | null> {
+    if (!this.isConnected || !this.sock) {
+      throw new Error('WhatsApp is not connected')
+    }
+    const cleaned = phone.replace(/\D/g, '')
+    const jid = cleaned + '@s.whatsapp.net'
+    return this.sock.sendMessage(jid, {
+      image: imageBuffer,
+      caption: caption ?? '',
+    })
   }
 
   static async sendTicketNotification(

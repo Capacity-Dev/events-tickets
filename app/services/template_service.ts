@@ -94,8 +94,18 @@ export class TemplateService {
     if (channel === 'email') {
       if (type === 'purchase_confirmation') {
         const ticketRowsHtml = (data.ticketRowsHtml as string) ?? ''
+        const ticketQrImgTags = (data.ticketQrImgTags as string) ?? ''
         const firstName = (data.firstName as string) ?? 'Client'
         const venueName = (data.venueName as string) ?? ''
+
+        const qrSection = ticketQrImgTags
+          ? [
+              `<div style="margin-bottom:24px">`,
+              `<h3 style="font-size:15px;margin:0 0 12px;color:#1F0A14">📱 QR Codes — Présentez à l'entrée</h3>`,
+              ticketQrImgTags,
+              `</div>`,
+            ].join('\n')
+          : ''
 
         const body = [
           `<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FFF1F2;padding:40px 0">`,
@@ -115,6 +125,7 @@ export class TemplateService {
           `<tr style="background-color:#FECDD3"><td style="padding:8px 12px;font-weight:600;font-size:13px">Numéro</td><td style="padding:8px 12px;font-weight:600;font-size:13px">Billet</td></tr>`,
           ticketRowsHtml,
           `</table>`,
+          qrSection,
           `<p style="font-size:13px;color:#555">Présentez ce billet à l'entrée. Vous pouvez également présenter le QR code sur votre téléphone.</p>`,
           `</td></tr>`,
           `<tr><td style="border-top:1px solid #EEE;padding:16px 32px;text-align:center"><p style="color:#9D7B87;font-size:12px;margin:0">Mbiyo Events — Tous droits réservés.</p></td></tr>`,
