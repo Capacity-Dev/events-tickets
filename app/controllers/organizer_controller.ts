@@ -709,8 +709,10 @@ export default class OrganizerController {
     if (!event) return inertia.render('errors/not_found', {} as any)
 
     const invitations = await Order.query()
-      .where('eventId', event.id)
       .where('source', 'manual_invite')
+      .whereHas('items', (iq) => {
+        iq.whereHas('tickets', (tq) => tq.where('eventId', event.id))
+      })
       .preload('items', (iq) => iq.preload('tickets'))
       .orderBy('createdAt', 'desc')
       .limit(50)
