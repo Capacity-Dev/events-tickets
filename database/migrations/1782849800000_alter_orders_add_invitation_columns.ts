@@ -6,7 +6,7 @@ export default class extends BaseSchema {
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
       table.string('source', 30).notNullable().defaultTo('checkout')
-      table.uuid('invited_by').nullable()
+      table.string('invited_by', 40).nullable()
     })
   }
 

@@ -19,8 +19,7 @@ export class GuestInvitationService {
   static async invite(
     event: Event,
     ticketType: TicketType,
-    guests: GuestData[],
-    invitedBy: string
+    guests: GuestData[]
   ): Promise<{ success: number; failed: number; orders: string[] }> {
     let success = 0
     let failed = 0
@@ -42,7 +41,6 @@ export class GuestInvitationService {
           guestPhone: guest.phone ?? null,
           status: 'paid',
           source: 'manual_invite',
-          invitedBy: invitedBy as any,
           totalGrossAmount: '0',
           platformFeeAmount: '0',
           organizerNetAmount: '0',

@@ -770,8 +770,7 @@ export default class OrganizerController {
     const result = await GuestInvitationService.invite(
       event,
       ticketType,
-      payload.guests,
-      String(auth.user!.id)
+      payload.guests
     )
 
     return response.json(result)
