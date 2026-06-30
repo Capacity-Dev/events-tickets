@@ -3,6 +3,7 @@ import OrderItem from '#models/order_item'
 import Ticket from '#models/ticket'
 import TicketType from '#models/ticket_type'
 import type Event from '#models/event'
+import { DateTime } from 'luxon'
 import { NotificationService } from './notification_service.js'
 import logger from '@adonisjs/core/services/logger'
 
@@ -28,7 +29,7 @@ export class GuestInvitationService {
     for (const guest of guests) {
       try {
         const orderId = crypto.randomUUID()
-        const now = new Date()
+        const paidAt = DateTime.now()
         const num = `${String(Date.now()).slice(-6)}${String(guest.name.length).padStart(2, '0')}`
         const orderNumber = `INV-${num}`
 
@@ -47,7 +48,7 @@ export class GuestInvitationService {
           organizerNetAmount: '0',
           currency: ticketType.currency ?? 'USD',
           paymentMethod: 'free',
-          paidAt: now as any,
+          paidAt,
         } as any)
 
         const itemId = crypto.randomUUID()
