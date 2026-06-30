@@ -263,3 +263,130 @@ Last updated: 2026-06-25
 
 **Pattern notes:**
 Ghost variant used when inline with a title or heading (so it blends in). Outline variant used when grouped with other standalone buttons (cards, toolbars, action bars). Both use the link SVG icon (chain-link style from Lucide) at 2px stroke. Confirmation styling references `text-success` CSS var — do NOT use `text-green-*`.
+
+### Boost Create Page
+
+File: `inertia/pages/dashboard/organizer/boost_create.tsx`
+Last updated: 2026-06-30
+
+| Property          | Class                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| Page container    | `max-w-5xl mx-auto py-8 px-4`                                                         |
+| Page title        | `<h1 className="text-2xl font-heading mb-2">`                                         |
+| Page subtitle     | `<p className="text-muted-foreground mb-8">`                                          |
+| Layout            | `grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8` (form + sticky preview sidebar)     |
+| Form card         | Standard `<Card>` + `<CardHeader><CardTitle>` + `<CardContent className="flex flex-col gap-4">` |
+| Budget presets    | `<Button variant="default|outline" size="sm">` (toggle-style, inline flex gap-2)      |
+| Channel toggles   | `<Button variant="default|outline" size="sm">` (same toggle pattern as budget)        |
+| Raw select (CTA)  | `flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm`     |
+| Create CTA button | `<Button size="lg">` at bottom of preview sidebar                                     |
+
+**Pattern notes:**
+Budget presets and channel toggles share the same toggle-button pattern (default = selected, outline = unselected, `size="sm"`). Grid layout places form on the left and a sticky preview sidebar (400px) on the right. Raw selects in this page use `h-10` — the standard height for raw selects across the entire project (NOT `h-8` which is the shadcn Input height). The CTA select (`#cta`) does NOT use the shadcn `Select` component but a raw `<select>` with inline classes matching all other forms in the project.
+
+**Important — overflow clipping with dropdowns:** The shadcn Card component has `overflow-hidden` in its base class (for rounded image clipping). When a Card contains a dropdown component (like CountrySelect), the `overflow-hidden` clips the absolutely-positioned dropdown panel. Fix: add `overflow-visible` to the Card's `className` prop. Example: `<Card className="overflow-visible">`. Only apply to cards that contain dropdowns — cards without dropdowns should keep the default `overflow-hidden` for proper image clipping.
+
+### Boost Show Page
+
+File: `inertia/pages/dashboard/organizer/boost_show.tsx`
+Last updated: 2026-06-30
+
+| Property         | Class                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------ |
+| Page container   | `max-w-5xl mx-auto py-8 px-4`                                                        |
+| Header row       | `flex items-center justify-between mb-8 flex-wrap gap-4`                              |
+| Title            | `<h1 className="text-2xl font-heading mb-1">`                                        |
+| Status badge     | `<Badge variant={boostStatusVariant[status] || 'outline'}>` — see Boost Status Badge |
+| Action buttons   | `<Button variant="outline" size="sm">` in `flex gap-2`                                |
+| Metrics grid     | `grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8`                          |
+| Metric card      | `<Card>` with `<CardHeader className="pb-2">`                                         |
+| Metric label     | `<CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">` |
+| Metric value     | `<p className="text-2xl font-heading">`                                               |
+| Metric subtitle  | `<p className="text-xs text-muted-foreground mt-0.5">` (below value, optional)        |
+| Detail section   | `grid grid-cols-1 lg:grid-cols-2 gap-6`                                               |
+| Detail card      | `<Card>` + `<CardHeader><CardTitle>` + `<CardContent className="flex flex-col gap-3 text-sm">` |
+| Detail row       | `<div className="flex justify-between">` + `<span className="text-muted-foreground">` label + `<span>` value |
+| Link             | `<a className="text-primary hover:underline" target="_blank">`                        |
+
+**Pattern notes:**
+Metrics are displayed as compact stat cards with uppercase tracking-wider labels and large heading-font values. The 5-column grid collapses to 3 then 2 on smaller screens. Detail rows use a consistent `flex justify-between` pattern with muted-foreground labels on the left and values on the right. The `font-mono text-xs` class is used for technical IDs (Meta campaign/ad set/ad IDs).
+
+### Boost List (Organizer)
+
+File: `inertia/pages/dashboard/organizer/boosts.tsx`
+Last updated: 2026-06-30
+
+| Property         | Class                                                                   |
+| ---------------- | ----------------------------------------------------------------------- |
+| Page container   | `max-w-5xl mx-auto py-8 px-4`                                           |
+| Page title       | `<h1 className="text-2xl font-heading mb-2">`                           |
+| Page subtitle    | `<p className="text-muted-foreground mb-8">`                            |
+| Empty state      | `<Card><CardContent className="py-12 text-center text-muted-foreground">` |
+| Table wrapper    | `rounded-lg border`                                                     |
+| Table            | Standard shadcn `<Table>`                                               |
+| Event link       | `<a className="font-medium hover:text-primary transition-colors">`       |
+| Status badge     | `<Badge variant={...}>` — status logic matches boostStatusVariant map    |
+| Financial cells  | `className="text-sm"` with `$` prefix                                   |
+| Number cells     | `className="text-sm"` with `.toLocaleString()`                          |
+| CTR cell         | `className="text-sm"` with `Number(...).toFixed(2)%`                    |
+
+**Pattern notes:**
+The event name links to the boost detail page (`/dashboard/boosts/${b.id}`). Empty state uses a padded Card with centered muted text. The status badge logic is slightly simplified here (only checks active/failed/default) — should ideally use `boostStatusVariant` for full consistency.
+
+### Admin Boost Table
+
+File: `inertia/pages/admin/boosts.tsx`
+Last updated: 2026-06-30
+
+| Property       | Class                                                                                         |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| Root wrapper   | `<div>` (no container class — admin layout provides wrapping)                                  |
+| Page title     | `<h1 className="text-2xl font-heading mb-6">` (admin pattern: no subtitle)                     |
+| Table wrapper  | `rounded-lg border`                                                                           |
+| Table          | Standard shadcn `<Table>`                                                                     |
+| Empty state    | `<TableCell colSpan={9} className="text-center py-8 text-muted-foreground">`                   |
+| Event cell     | `className="font-medium text-sm"`                                                              |
+| Data cells     | `className="text-sm"`                                                                          |
+| Status badge   | `<Badge variant={boostStatusVariant[b.status] || 'outline'}>` — uses shared `boostStatusVariant` |
+| Cancel button  | `<Button type="submit" variant="destructive" size="sm">` inside a `<form>` (POST with confirm) |
+
+**Pattern notes:**
+Follows the admin page heading convention: `text-2xl font-heading mb-6` with NO subtitle — this is the standard across all admin pages. Empty state uses a single TableCell with `colSpan` spanning all columns. The cancel button is a destructive `size="sm"` button wrapped in a form for POST submission.
+
+### Boost Status Badge
+
+File: `inertia/lib/boost_status.ts`
+Last updated: 2026-06-30
+
+| Status            | Badge variant |
+| ----------------- | ------------- |
+| `active`          | `default`     |
+| `pending_payment` | `outline`     |
+| `launching`       | `outline`     |
+| `paused`          | `secondary`   |
+| `completed`       | `secondary`   |
+| `failed`          | `destructive` |
+| `cancelled`       | `destructive` |
+
+**Pattern notes:**
+Shared constant `boostStatusVariant` used by `boost_show.tsx` and `admin/boosts.tsx`. All status maps MUST import from `~/lib/boost-status` — never redefine inline. The Badge component itself uses shadcn standard: `rounded-4xl h-5 text-xs font-medium`.
+
+### Boost Preview Card
+
+File: `inertia/pages/dashboard/organizer/boost_create.tsx`
+Last updated: 2026-06-30
+
+| Property         | Class                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Section label    | `text-xs uppercase tracking-wider text-muted-foreground font-semibold`                   |
+| Preview card     | `bg-muted rounded-lg overflow-hidden`                                                    |
+| Cover image      | `w-full aspect-[1.91/1] object-cover`                                                    |
+| Cover fallback   | `w-full aspect-[1.91/1] flex items-center justify-center text-3xl font-heading text-primary bg-secondary` |
+| Card body        | `p-4 flex flex-col gap-2`                                                                |
+| Headline         | `text-sm font-semibold`                                                                  |
+| Body text        | `text-xs text-muted-foreground`                                                          |
+| Link             | `text-xs font-semibold text-primary hover:underline`                                     |
+| CTA button       | `inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground h-8 px-4 text-xs font-medium self-start` |
+
+**Pattern notes:**
+The preview card simulates a Facebook Feed ad appearance. The CTA button uses `rounded-lg` (not `rounded-4xl` like shadcn Badge) to match Facebook's ad button style — this is intentional and specific to Facebook ad preview. The 1.91:1 aspect ratio matches Meta's recommended image dimensions. The fallback shows the event initial letter in `text-primary` on `bg-secondary` when no cover image is available.

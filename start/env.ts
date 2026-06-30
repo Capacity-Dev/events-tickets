@@ -57,9 +57,12 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Meta Ads
   META_ADS_AD_ACCOUNT_ID: Env.schema.string.optional(),
-  META_ADS_ACCESS_TOKEN: Env.schema.string.optional(),
+  META_ADS_ACCESS_TOKEN: Env.schema.secret.optional(),
   META_PAGE_ID: Env.schema.string.optional(),
   META_ADS_APP_ID: Env.schema.string.optional(),
   META_API_VERSION: Env.schema.string.optional(),
   META_ADS_DEFAULT_CURRENCY: Env.schema.string.optional(),
+  META_ADS_DEFAULT_CTA: Env.schema.string.optional(),
+  META_ADS_DEFAULT_BUDGET_TYPE: Env.schema.enum.optional(['daily', 'lifetime'] as const),
+  META_WEBHOOK_VERIFY_TOKEN: Env.schema.string.optional(),
 })

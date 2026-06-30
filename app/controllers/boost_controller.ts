@@ -3,6 +3,8 @@ import Event from '#models/event'
 import EventBoost from '#models/event_boost'
 import { metaAds } from '#services/meta_ads_service'
 import { boostPricing } from '#services/boost_pricing_service'
+import { boostLaunch } from '#services/boost_launch_service'
+import { storeBoostValidator, payBoostValidator } from '#validators/boost'
 import logger from '@adonisjs/core/services/logger'
 import env from '#start/env'
 
@@ -20,6 +22,7 @@ export default class BoostController {
   }
 
   async store({ request, auth, response }: HttpContext) {
+    const payload = await request.validateUsing(storeBoostValidator)
     const {
       eventId,
       budget,
@@ -32,7 +35,7 @@ export default class BoostController {
       headline,
       primaryText,
       callToAction,
-    } = request.all()
+    } = payload
 
     const event = await Event.findByOrFail('id', eventId)
     if ((event as any).organizerId !== auth.user!.id) {
@@ -56,8 +59,16 @@ export default class BoostController {
       budget: pricing.totalBudget,
       budgetType: budgetType || 'daily',
       currency: pricing.currency,
-      startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : null,
+      startDate: startDate
+        ? (startDate as any).toJSDate
+          ? (startDate as any).toJSDate()
+          : new Date(startDate as any)
+        : new Date(),
+      endDate: endDate
+        ? (endDate as any).toJSDate
+          ? (endDate as any).toJSDate()
+          : new Date(endDate as any)
+        : null,
       targetAudience: targeting
         ? typeof targeting === 'string'
           ? JSON.parse(targeting)
@@ -77,80 +88,35 @@ export default class BoostController {
   }
 
   async pay({ request, response }: HttpContext) {
-    const { boostId } = request.all()
+    const { boostId } = await request.validateUsing(payBoostValidator)
     const boost = await EventBoost.findByOrFail('id', boostId)
-    const event = await Event.findByOrFail('id', boost.eventId)
 
-    let coverImageUrl = event.coverImageUrl
-    if (coverImageUrl && !coverImageUrl?.startsWith('http')) {
-      const appUrl = env.get('APP_URL')
-      coverImageUrl = `${appUrl}${coverImageUrl}`
+    if (boost.status !== 'pending_payment') {
+      return response.status(409).json({ error: `Boost is already ${boost.status}` })
     }
 
-    try {
-      let imageHash: string | null = null
-      if (coverImageUrl) {
-        imageHash = await metaAds.uploadImage(coverImageUrl!)
-        logger.info(`[Boost] Image uploaded, hash: ${imageHash}`)
-      }
+    boost.paymentStatus = 'paid'
+    await boost.save()
 
-      const campaignId = await metaAds.createCampaign({
-        adAccountId: metaAds.adAccountId,
-        accessToken: metaAds.accessToken,
-        campaignName: `${event.title.slice(0, 40)} - Boost`,
-        objective: 'OUTCOME_TRAFFIC',
-        status: 'PAUSED',
+    setImmediate(() => {
+      boostLaunch.launchBoost(boostId).catch((err) => {
+        logger.error({ err, boostId }, '[Boost] Background launch failed')
       })
+    })
 
-      const adSetId = await metaAds.createAdSet({
-        adAccountId: metaAds.adAccountId,
-        accessToken: metaAds.accessToken,
-        campaignId,
-        adSetName: `${event.title.slice(0, 30)} - ${new Date().toISOString().slice(0, 10)}`,
-        budget: Number(boost.metaBudget),
-        budgetType: boost.budgetType,
-        startDate: boost.startDate.toISO()!,
-        endDate: boost.endDate?.toISO() ?? undefined,
-        targeting: (boost as any).targetAudience || {},
-        placementChannels: (boost as any).channels || ['facebook'],
-      })
+    return response.json({ success: true, boostId, status: boost.status })
+  }
 
-      const creativeId = await metaAds.createCreative({
-        adAccountId: metaAds.adAccountId,
-        accessToken: metaAds.accessToken,
-        pageId: metaAds.pageId || '',
-        imageHash: imageHash!,
-        headline: boost.headline || event.title.slice(0, 40),
-        primaryText: boost.primaryText || (event.description ?? '').slice(0, 125),
-        callToAction: boost.callToAction!,
-        linkUrl: `${env.get('APP_URL')}/events/${event.slug}`,
-      })
-
-      await metaAds.createAd({
-        adAccountId: metaAds.adAccountId,
-        accessToken: metaAds.accessToken,
-        adSetId,
-        creativeId,
-        adName: `${event.title.slice(0, 30)} - Ad`,
-        status: 'ACTIVE',
-      })
-
-      boost.metaCampaignId = campaignId
-      boost.metaAdsetId = adSetId
-      boost.metaAdId = creativeId
-      boost.status = 'active'
-      boost.paymentStatus = 'paid'
-      await boost.save()
-
-      logger.info(`[Boost] Campaign ${campaignId} launched for event ${event.title}`)
-      return response.json({ success: true, boost })
-    } catch (err: any) {
-      logger.error({ err }, '[Boost] Failed to launch Meta campaign')
-      boost.status = 'failed'
-      boost.failureReason = err.message
-      await boost.save()
-      return response.status(500).json({ error: err.message })
-    }
+  async status({ params, response }: HttpContext) {
+    const boost = await EventBoost.findByOrFail('id', params.id)
+    return response.json({
+      id: boost.id,
+      status: boost.status,
+      failureReason: boost.failureReason,
+      metaCampaignId: boost.metaCampaignId,
+      metaAdsetId: boost.metaAdsetId,
+      metaAdId: boost.metaAdId,
+    })
   }
 
   async index({ inertia, auth }: HttpContext) {

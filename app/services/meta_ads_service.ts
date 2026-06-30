@@ -52,11 +52,20 @@ interface BoostInsights {
   cpc: number
 }
 
+interface RateLimitEntry {
+  count: number
+  resetAt: number
+}
+
 export class MetaAdsService {
   #adAccountId: string
   #accessToken: string
   #pageId: string
   #apiVersion: string
+
+  #rateLimitWindow = 60000
+  #rateLimitMax = 200
+  #rateLimitStore = new Map<string, RateLimitEntry>()
 
   constructor() {
     this.#adAccountId = env.get('META_ADS_AD_ACCOUNT_ID', '')
@@ -82,32 +91,93 @@ export class MetaAdsService {
     return !!(this.#adAccountId && this.#accessToken)
   }
 
-  async #api(path: string, method: string = 'GET', body?: Record<string, any>): Promise<any> {
-    const url = `${BASE_URL}/${this.#apiVersion}${path}`
-    const fullUrl = `${url}?access_token=${this.#accessToken}`
+  #checkRateLimit(endpoint: string): void {
+    const now = Date.now()
+    const key = endpoint.split('?')[0]
+    let entry = this.#rateLimitStore.get(key)
 
-    logger.info(`[MetaAds] ${method} ${url}`)
-
-    const response = await fetch(
-      fullUrl,
-      method !== 'GET' && body
-        ? {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-          }
-        : { method, headers: { 'Content-Type': 'application/json' } }
-    )
-
-    const json: any = await response.json()
-
-    if (!response.ok) {
-      const errMsg = json?.error?.message ?? JSON.stringify(json)
-      logger.error({ err: json }, '[MetaAds] API error')
-      throw new Error(`Meta API error: ${errMsg}`)
+    if (!entry || now >= entry.resetAt) {
+      entry = { count: 0, resetAt: now + this.#rateLimitWindow }
+      this.#rateLimitStore.set(key, entry)
     }
 
-    return json
+    entry.count++
+
+    if (entry.count > this.#rateLimitMax) {
+      throw new Error(`Meta API rate limit exceeded for ${key}. Try again later.`)
+    }
+  }
+
+  async #api(
+    path: string,
+    method: string = 'GET',
+    body?: Record<string, any>,
+    retries: number = 3
+  ): Promise<any> {
+    const basePath = `/${this.#apiVersion}${path}`
+    this.#checkRateLimit(basePath)
+
+    const url = `${BASE_URL}${basePath}`
+    const fullUrl = body ? url : `${url}?access_token=${this.#accessToken}`
+
+    let lastError: Error | null = null
+
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      if (attempt > 0) {
+        const delay = Math.min(1000 * Math.pow(2, attempt), 30000)
+        logger.info(`[MetaAds] Retry ${attempt}/${retries} for ${method} ${basePath} in ${delay}ms`)
+        await new Promise((r) => setTimeout(r, delay))
+      }
+
+      try {
+        let fetchUrl = fullUrl
+        const fetchOptions: RequestInit = {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+        }
+
+        if (method !== 'GET' && body) {
+          fetchUrl = `${url}?access_token=${this.#accessToken}`
+          fetchOptions.body = JSON.stringify(body)
+        }
+
+        logger.info(`[MetaAds] ${method} ${basePath}`)
+
+        const response = await fetch(fetchUrl, fetchOptions)
+        const json: any = await response.json()
+
+        if (!response.ok) {
+          const errCode = json?.error?.code
+          const errMsg = json?.error?.message ?? JSON.stringify(json)
+
+          if (errCode === 2 || errCode === 4 || errCode === 17 || errCode === 80004) {
+            throw new Error(`Meta API rate/transient error [${errCode}]: ${errMsg}`)
+          }
+
+          throw new Error(`Meta API error [${errCode}]: ${errMsg}`)
+        }
+
+        return json
+      } catch (err: any) {
+        lastError = err
+
+        const msg: string = err.message ?? ''
+        const isRetryable =
+          msg.includes('rate') ||
+          msg.includes('transient') ||
+          msg.includes('ETIMEDOUT') ||
+          msg.includes('ECONNRESET') ||
+          msg.includes('fetch failed') ||
+          (err.cause && typeof err.cause === 'object' && 'code' in err.cause)
+
+        if (!isRetryable || attempt >= retries) {
+          break
+        }
+      }
+    }
+
+    logger.error({ err: lastError }, '[MetaAds] API error after retries')
+    throw lastError ?? new Error('Meta API request failed')
   }
 
   async createCampaign(params: CreateCampaignParams): Promise<string> {
@@ -200,7 +270,10 @@ export class MetaAdsService {
     const imageBuffer = Buffer.from(await imageData.arrayBuffer())
 
     const cleanedAccountId = this.#adAccountId.replace('act_', '')
-    const url = `${BASE_URL}/${this.#apiVersion}/act_${cleanedAccountId}/adimages`
+    const uploadPath = `/act_${cleanedAccountId}/adimages`
+    const url = `${BASE_URL}/${this.#apiVersion}${uploadPath}`
+
+    this.#checkRateLimit(uploadPath)
 
     const response = await fetch(`${url}?access_token=${this.#accessToken}`, {
       method: 'POST',
@@ -228,11 +301,11 @@ export class MetaAdsService {
 
     const data = result?.data?.[0] ?? {}
     return {
-      impressions: parseInt(data.impressions ?? '0', 10),
-      clicks: parseInt(data.clicks ?? '0', 10),
-      spend: parseFloat(data.spend ?? '0'),
-      ctr: parseFloat(data.ctr ?? '0'),
-      cpc: parseFloat(data.cpc ?? '0'),
+      impressions: Number.parseInt(data.impressions ?? '0', 10),
+      clicks: Number.parseInt(data.clicks ?? '0', 10),
+      spend: Number.parseFloat(data.spend ?? '0'),
+      ctr: Number.parseFloat(data.ctr ?? '0'),
+      cpc: Number.parseFloat(data.cpc ?? '0'),
     }
   }
 
@@ -248,6 +321,63 @@ export class MetaAdsService {
       status: 'ACTIVE',
       access_token: this.#accessToken,
     })
+  }
+
+  async deleteCampaign(campaignId: string): Promise<void> {
+    await this.#api(`/${campaignId}`, 'DELETE', {
+      access_token: this.#accessToken,
+    })
+  }
+
+  async deleteAdSet(adSetId: string): Promise<void> {
+    await this.#api(`/${adSetId}`, 'DELETE', {
+      access_token: this.#accessToken,
+    })
+  }
+
+  async deleteAd(adId: string): Promise<void> {
+    await this.#api(`/${adId}`, 'DELETE', {
+      access_token: this.#accessToken,
+    })
+  }
+
+  async cleanupCreatedEntities(
+    campaignId: string | null,
+    adSetId: string | null,
+    adId: string | null
+  ): Promise<void> {
+    const errors: string[] = []
+
+    if (adId) {
+      try {
+        await this.deleteAd(adId)
+        logger.info(`[MetaAds] Cleaned up ad ${adId}`)
+      } catch (err: any) {
+        errors.push(`ad(${adId}): ${err.message}`)
+      }
+    }
+
+    if (adSetId) {
+      try {
+        await this.deleteAdSet(adSetId)
+        logger.info(`[MetaAds] Cleaned up ad set ${adSetId}`)
+      } catch (err: any) {
+        errors.push(`adset(${adSetId}): ${err.message}`)
+      }
+    }
+
+    if (campaignId) {
+      try {
+        await this.deleteCampaign(campaignId)
+        logger.info(`[MetaAds] Cleaned up campaign ${campaignId}`)
+      } catch (err: any) {
+        errors.push(`campaign(${campaignId}): ${err.message}`)
+      }
+    }
+
+    if (errors.length > 0) {
+      logger.error({ errors }, '[MetaAds] Cleanup had failures')
+    }
   }
 
   #buildTargeting(targeting: Record<string, any>, channels: string[]): Record<string, any> {

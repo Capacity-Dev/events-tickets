@@ -8,17 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
+import { boostStatusVariant } from '~/lib/boost_status'
 
 export default function AdminBoosts({ boosts }: { boosts: any[] }) {
-  const statusVariant: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-    active: 'default',
-    pending_payment: 'outline',
-    paused: 'secondary',
-    completed: 'secondary',
-    failed: 'destructive',
-    cancelled: 'destructive',
-  }
-
   return (
     <div>
       <h1 className="text-2xl font-heading mb-6">Boosts</h1>
@@ -34,7 +26,7 @@ export default function AdminBoosts({ boosts }: { boosts: any[] }) {
               <TableHead>Status</TableHead>
               <TableHead>Impr.</TableHead>
               <TableHead>Clicks</TableHead>
-              <TableHead></TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -57,7 +49,7 @@ export default function AdminBoosts({ boosts }: { boosts: any[] }) {
                   <TableCell className="text-sm">${Number(b.markupAmount).toFixed(2)}</TableCell>
                   <TableCell className="text-sm">${Number(b.metaSpent).toFixed(2)}</TableCell>
                   <TableCell>
-                    <Badge variant={statusVariant[b.status] || 'outline'}>{b.status}</Badge>
+                    <Badge variant={boostStatusVariant[b.status] || 'outline'}>{b.status}</Badge>
                   </TableCell>
                   <TableCell className="text-sm">{b.metaImpressions.toLocaleString()}</TableCell>
                   <TableCell className="text-sm">{b.metaClicks.toLocaleString()}</TableCell>

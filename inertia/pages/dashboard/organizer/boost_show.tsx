@@ -4,19 +4,11 @@ import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 import { Separator } from '~/components/ui/separator'
+import { boostStatusVariant } from '~/lib/boost_status'
 
 export default function BoostShow({ boost, insights }: { boost: any; insights: any }) {
   const [pausing, setPausing] = useState(false)
   const [resuming, setResuming] = useState(false)
-
-  const statusVariant: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-    active: 'default',
-    pending_payment: 'outline',
-    paused: 'secondary',
-    completed: 'secondary',
-    failed: 'destructive',
-    cancelled: 'destructive',
-  }
 
   const stats = insights ?? {
     impressions: boost.metaImpressions,
@@ -37,7 +29,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
           <h1 className="text-2xl font-heading mb-1">{boost.headline || 'Boost'}</h1>
           <p className="text-muted-foreground">
             {boost.event?.title} &middot;{' '}
-            <Badge variant={statusVariant[boost.status] || 'outline'}>{boost.status}</Badge>
+            <Badge variant={boostStatusVariant[boost.status] || 'outline'}>{boost.status}</Badge>
           </p>
         </div>
         <div className="flex gap-2">

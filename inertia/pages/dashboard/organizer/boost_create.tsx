@@ -172,7 +172,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="overflow-visible">
             <CardHeader>
               <CardTitle>Channels & Targeting</CardTitle>
             </CardHeader>

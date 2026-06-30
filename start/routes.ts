@@ -34,6 +34,7 @@ router.get('events/:slug', [PublicController, 'show']).as('events.show')
 router.get('sitemap.xml', [PublicController, 'sitemap']).as('sitemap')
 
 router.post('webhooks/mbiyopay', [WebhookController, 'mbiyopay']).as('webhooks.mbiyopay')
+router.any('webhooks/meta-ads', [WebhookController, 'metaAds']).as('webhooks.meta-ads')
 
 router
   .get('lang/:locale', ({ params, session, response }) => {
@@ -126,6 +127,9 @@ router
     router
       .post('dashboard/boosts/:id/resume', [BoostController, 'resume'])
       .as('dashboard.boosts.resume')
+    router
+      .get('dashboard/boosts/:id/status', [BoostController, 'status'])
+      .as('dashboard.boosts.status')
 
     router.get('dashboard/orders', [BuyerController, 'orders']).as('dashboard.orders')
     router.get('dashboard/orders/:id', [BuyerController, 'showOrder']).as('dashboard.orders.show')

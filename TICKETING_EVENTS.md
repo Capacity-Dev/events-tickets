@@ -917,6 +917,180 @@ check the documentation on https://dashboard.mbiyo.africa/docs to find how to im
 
 ---
 
+### Phase 9.5: Event Boosts (Facebook/Instagram Ads)
+
+#### 9.5.1 Overview
+
+Event organizers can pay to promote their events through Meta Ads (Facebook, Instagram, Messenger). The platform acts as an intermediary, applying a configurable markup via fee rules and managing the full Meta campaign lifecycle.
+
+#### 9.5.2 Architecture
+
+```
+Organizer creates boost (frontend form)
+       |
+       v
+POST /dashboard/events/:id/boost  →  EventBoost record created (status=pending_payment)
+       |
+       v
+POST /dashboard/boosts/pay  →  paymentStatus=paid, async Meta campaign launch enqueued
+       |
+       v
+BoostLaunchService (background):
+  1. uploadImage()        →  upload event cover → image hash
+  2. createCampaign()     →  POST /act_{id}/campaigns  (objective=OUTCOME_TRAFFIC)
+  3. createAdSet()        →  POST /act_{id}/adsets      (budget, targeting, placements)
+  4. createCreative()     →  POST /act_{id}/adcreatives  (headline, text, CTA, link)
+  5. createAd()           →  POST /act_{id}/ads          (activate)
+       |
+       v
+EventBoost updated: meta_campaign_id, meta_adset_id, meta_ad_id saved, status=active
+```
+
+**On failure mid-sequence:** previously created Meta entities are cleaned up via `cleanupCreatedEntities()`.
+
+#### 9.5.3 Database Schema (`event_boosts`)
+
+| Column               | Type          | Purpose                        |
+|----------------------|---------------|--------------------------------|
+| id                   | uuid          | Primary key                    |
+| event_id             | uuid FK       | Event being promoted           |
+| organizer_id         | integer FK    | Organizer who created          |
+| budget               | decimal(12,2) | Total budget (incl. markup)    |
+| budget_type          | string(10)    | `daily` or `lifetime`          |
+| currency             | string(3)     | USD, CDF, etc.                 |
+| start_date           | timestamp     | Campaign start                 |
+| end_date             | timestamp     | Campaign end (nullable)        |
+| target_audience      | jsonb         | Countries, cities, age, languages |
+| channels             | jsonb         | `["facebook","instagram","messenger"]` |
+| headline             | string        | Ad headline (max 40 chars)     |
+| primary_text         | text          | Ad body (max 125 chars)        |
+| call_to_action       | string(30)    | LEARN_MORE, BOOK_NOW, etc.     |
+| meta_campaign_id     | string        | Meta campaign ID               |
+| meta_adset_id        | string        | Meta ad set ID                 |
+| meta_ad_id           | string        | Meta ad ID                     |
+| meta_ad_account_id   | string        | Meta ad account ID             |
+| status               | string(20)    | pending_payment, launching, active, paused, completed, failed, cancelled |
+| failure_reason       | text          | Error message if failed        |
+| meta_impressions     | integer       | Cached impressions             |
+| meta_clicks          | integer       | Cached clicks                  |
+| meta_spent           | decimal(12,2) | Cached spend (Meta side)       |
+| meta_ctr             | decimal(5,4)  | Cached CTR                     |
+| meta_cpc             | decimal(10,4) | Cached CPC                     |
+| last_synced_at       | timestamp     | Last insights sync             |
+| payment_status       | string(20)    | pending, paid                  |
+| payment_reference    | string        | Payment transaction ref        |
+| fee_rule_id          | uuid FK       | Fee rule applied               |
+| markup_amount        | decimal(12,2) | Platform markup                |
+| meta_budget          | decimal(12,2) | Net amount sent to Meta        |
+
+#### 9.5.4 API Routes
+
+**Organizer (authenticated):**
+
+| Method | Path | Action | Description |
+|--------|------|--------|-------------|
+| GET | `/dashboard/events/:id/boost` | create | Boost creation form |
+| POST | `/dashboard/events/:id/boost` | store | Create boost record |
+| POST | `/dashboard/boosts/pay` | pay | Pay and trigger async Meta launch |
+| GET | `/dashboard/boosts` | index | List organizer's boosts |
+| GET | `/dashboard/boosts/:id` | show | Boost detail with insights |
+| GET | `/dashboard/boosts/:id/status` | status | JSON poll for launch status |
+| POST | `/dashboard/boosts/:id/pause` | pause | Pause Meta campaign |
+| POST | `/dashboard/boosts/:id/resume` | resume | Resume Meta campaign |
+
+**Admin (auth + admin middleware):**
+
+| Method | Path | Action | Description |
+|--------|------|--------|-------------|
+| GET | `/admin/boosts` | boosts | All boosts with organizer/event |
+| POST | `/admin/boosts/:id/cancel` | cancelBoost | Cancel a boost |
+
+**Webhook (public):**
+
+| Method | Path | Action | Description |
+|--------|------|--------|-------------|
+| GET/POST | `/webhooks/meta-ads` | metaAds | Meta ad status notifications |
+
+#### 9.5.5 MetaAdsService
+
+Wraps the **Meta Graph API** (`graph.facebook.com`):
+
+| Method | Description |
+|--------|-------------|
+| `createCampaign()` | Create ad campaign |
+| `createAdSet()` | Create ad set with targeting/budget |
+| `createCreative()` | Create ad creative |
+| `createAd()` | Create and activate ad |
+| `uploadImage()` | Upload image for creative |
+| `getInsights()` | Fetch impressions, clicks, spend, CTR, CPC |
+| `pauseCampaign()` | Pause campaign |
+| `resumeCampaign()` | Resume campaign |
+| `deleteCampaign()` | Delete campaign |
+| `deleteAdSet()` | Delete ad set |
+| `deleteAd()` | Delete ad |
+| `cleanupCreatedEntities()` | Clean up partial creations on failure |
+| `isConfigured()` | Check if Meta credentials are set |
+
+**Rate limiting:** Built-in sliding window limiter (200 calls/60s per endpoint) to stay within Meta API limits.
+
+**Retry:** Automatic retry with exponential backoff (up to 3 attempts) on transient errors (rate limits, timeouts, network failures).
+
+#### 9.5.6 Pricing Service
+
+`BoostPricingService` resolves fee rules where `appliesTo = 'boost'`:
+1. First checks for an organizer-specific fee profile
+2. Falls back to the default active fee rule
+3. Supports `percentage` and `fixed` fee types with min/max caps
+4. Calculates: `metaBudget = budget - markupAmount`
+
+#### 9.5.7 Ace Commands
+
+| Command | Description |
+|---------|-------------|
+| `node ace boost:sync-insights` | Sync Meta insights for all active boosts |
+| `node ace boost:process-pending` | Retry boosts stuck in `pending_payment` (paid but not launched due to server restart) |
+
+#### 9.5.8 Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `META_ADS_AD_ACCOUNT_ID` | Yes | Meta ad account ID (e.g. `act_123456`) |
+| `META_ADS_ACCESS_TOKEN` | Yes | Meta Graph API access token |
+| `META_PAGE_ID` | Yes | Facebook page ID for ads |
+| `META_ADS_APP_ID` | No | Meta app ID |
+| `META_API_VERSION` | No | API version (default: `v22.0`) |
+| `META_ADS_DEFAULT_CURRENCY` | No | Default currency (default: `USD`) |
+| `META_ADS_DEFAULT_CTA` | No | Default call-to-action (default: `LEARN_MORE`) |
+| `META_ADS_DEFAULT_BUDGET_TYPE` | No | `daily` or `lifetime` (default: `daily`) |
+| `META_WEBHOOK_VERIFY_TOKEN` | No | Token for Meta webhook verification |
+
+#### 9.5.9 Validation (VineJS)
+
+- `storeBoostValidator`: Validates budget (1–50000), event UUID, budget type, start/end dates, channels, targeting (countries, cities, age, languages), headline, primary text, call-to-action
+- `payBoostValidator`: Validates boost UUID
+
+#### 9.5.10 Targeting Capabilities
+
+- **Channels:** Facebook, Instagram, Messenger (multi-select)
+- **Geo-targeting:** Countries + cities
+- **Age range:** Configurable min/max (13–65)
+- **Languages:** Locale targeting
+- **Placements:** Facebook Feed, Instagram Feed, Instagram Story, Messenger Home, Facebook Marketplace
+
+#### 9.5.11 Status Lifecycle
+
+```
+pending_payment → launching → active ⇄ paused
+                     ↓           ↓
+                   failed     completed
+                                ↓
+                             cancelled
+```
+
+Webhook from Meta can transition `launching` → `active` (confirmation) or `launching` → `failed` (ad disapproved).
+
+---
+
 ### Phase 10: Security & Compliance
 
 #### 10.1 QR Code & Ticket Security
