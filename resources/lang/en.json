@@ -730,5 +730,6 @@
   "role.admin": "admin",
   "role.organizer": "organizer",
   "role.buyer": "buyer",
-  "role.none": "none"
+  "role.none": "none",
+  "common.view": "View"
 }

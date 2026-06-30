@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import { useTranslation } from '~/lib/i18n'
+import { cn } from '~/lib/utils'
 import { Badge } from '~/components/ui/badge'
-import { Button } from '~/components/ui/button'
+import { Button, buttonVariants } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import { Input } from '~/components/ui/input'
@@ -10,6 +11,21 @@ import { Label } from '~/components/ui/label'
 import { Separator } from '~/components/ui/separator'
 import { toast } from 'sonner'
 import { formatCurrency, type CurrencyInfo } from '~/lib/currency'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import {
+  Pencil,
+  ExternalLink,
+  QrCode,
+  Link as LinkIcon,
+  Megaphone,
+  MoreHorizontal,
+  Copy,
+} from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -104,20 +120,31 @@ export default function OrganizerAnalytics({
     setEditDialog(null)
   }
 
+  const publicUrl = event.slug ? `${window.location.origin}/events/${event.slug}` : null
+
+  const handleCopyLink = () => {
+    if (!publicUrl) return
+    navigator.clipboard.writeText(publicUrl)
+    toast.success(t('organizer.analytics.toast_link_copied'))
+  }
+
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
             <a href="/dashboard/events" className="hover:text-foreground">
               {t('organizer.analytics.breadcrumb_events')}
             </a>
             <span>/</span>
-            <span className="text-foreground font-medium">{event.title}</span>
+            <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
+              {event.title}
+            </span>
           </div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-heading">{event.title}</h1>
-            <Badge variant={statusVariant[event.status] ?? 'outline'}>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <h1 className="text-xl sm:text-2xl font-heading truncate">{event.title}</h1>
+            <Badge variant={statusVariant[event.status] ?? 'outline'} className="w-fit">
               {t('status.' + event.status)}
             </Badge>
           </div>
@@ -128,83 +155,105 @@ export default function OrganizerAnalytics({
             </p>
           )}
         </div>
-        <div className="flex gap-2">
+
+        {/* Actions: mobile = primary row + dropdown, sm+ = inline */}
+        <div className="flex flex-wrap gap-2">
           <a
             href={event.id ? `/dashboard/events/${event.id}/edit` : '#'}
             onClick={!event.id ? (e) => e.preventDefault() : undefined}
-            className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-9 px-3 text-sm font-medium"
+            className={cn(
+              buttonVariants({ size: 'sm', variant: 'outline' }),
+              'shrink-0 no-underline'
+            )}
           >
-            {t('organizer.analytics.edit_event')}
+            <Pencil className="size-3.5" />
+            <span className="hidden sm:inline">{t('organizer.analytics.edit_event')}</span>
+            <span className="sm:hidden">{t('common.edit')}</span>
           </a>
+
           {event.status === 'published' && (
             <a
               href={event.id ? `/dashboard/check-in/${event.id}` : '#'}
               onClick={!event.id ? (e) => e.preventDefault() : undefined}
-              className="inline-flex items-center justify-center rounded-lg border border-success text-success bg-transparent hover:bg-success/10 h-9 px-3 text-sm font-medium no-underline"
+              className={cn(
+                buttonVariants({ size: 'sm', variant: 'outline' }),
+                'shrink-0 border-success text-success hover:bg-success/10 no-underline'
+              )}
             >
-              {t('organizer.analytics.check_in')}
+              <QrCode className="size-3.5" />
+              <span className="hidden sm:inline">{t('organizer.analytics.check_in')}</span>
+              <span className="sm:hidden">{t('organizer.events.check_in')}</span>
             </a>
           )}
+
           {event.slug && (
             <>
               <a
                 href={`/events/${event.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-9 px-3 text-sm font-medium"
+                className={cn(
+                  buttonVariants({ size: 'sm', variant: 'default' }),
+                  'shrink-0 no-underline'
+                )}
               >
-                {t('organizer.analytics.view_public_page')}
+                <ExternalLink className="size-3.5" />
+                <span className="hidden sm:inline">
+                  {t('organizer.analytics.view_public_page')}
+                </span>
+                <span className="sm:hidden">{t('common.view')}</span>
               </a>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(`${window.location.origin}/events/${event.slug}`)
-                  toast.success(t('organizer.analytics.toast_link_copied'))
-                }}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-1.5"
+
+              {/* Desktop overflow actions */}
+              <div className="hidden sm:flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" onClick={handleCopyLink}>
+                  <Copy className="size-3.5" />
+                  {t('common.copy_link')}
+                </Button>
+                <a
+                  href={`/dashboard/events/${event.id}/boost`}
+                  className={cn(
+                    buttonVariants({ size: 'sm', variant: 'outline' }),
+                    'shrink-0 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 no-underline'
+                  )}
                 >
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                </svg>
-                {t('common.copy_link')}
-              </Button>
-              <a
-                href={`/dashboard/events/${event.id}/boost`}
-                className="inline-flex items-center justify-center rounded-lg border border-amber-500 text-amber-600 dark:text-amber-400 bg-transparent hover:bg-amber-500/10 h-9 px-3 text-sm font-medium no-underline"
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-1.5"
-                >
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                </svg>
-                {t('organizer.analytics.boost')}
-              </a>
+                  <Megaphone className="size-3.5" />
+                  {t('organizer.analytics.boost')}
+                </a>
+              </div>
+
+              {/* Mobile overflow dropdown */}
+              <div className="sm:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button size="sm" variant="outline">
+                      <MoreHorizontal className="size-3.5" />
+                      {t('common.actions')}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleCopyLink}>
+                      <LinkIcon className="size-4" />
+                      {t('common.copy_link')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        window.location.href = `/dashboard/events/${event.id}/boost`
+                      }}
+                    >
+                      <Megaphone className="size-4" />
+                      {t('organizer.analytics.boost')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
@@ -212,7 +261,7 @@ export default function OrganizerAnalytics({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-heading">{stats.totalSold}</p>
+            <p className="text-xl sm:text-2xl font-heading">{stats.totalSold}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {t('organizer.analytics.stat_of_total', { total: stats.totalCapacity })}
             </p>
@@ -226,7 +275,7 @@ export default function OrganizerAnalytics({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-heading">{stats.fillRate}%</p>
+            <p className="text-xl sm:text-2xl font-heading">{stats.fillRate}%</p>
             <div className="mt-2 h-1.5 w-full rounded-full bg-muted">
               <div
                 className="h-1.5 rounded-full bg-primary transition-all"
@@ -243,7 +292,7 @@ export default function OrganizerAnalytics({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-heading">
+            <p className="text-xl sm:text-2xl font-heading">
               {formatCurrency(stats.totalRevenue, undefined, currencies)}
             </p>
           </CardContent>
@@ -256,18 +305,18 @@ export default function OrganizerAnalytics({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-heading">{stats.uniqueBuyers}</p>
+            <p className="text-xl sm:text-2xl font-heading">{stats.uniqueBuyers}</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="col-span-2 sm:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
               {t('organizer.analytics.stat_checked_in')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-heading">{stats.checkedInCount}</p>
+            <p className="text-xl sm:text-2xl font-heading">{stats.checkedInCount}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {t('organizer.analytics.stat_of_tickets', { count: stats.ticketCount })}
             </p>
@@ -275,80 +324,85 @@ export default function OrganizerAnalytics({
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      {/* Two-column content */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-6 lg:mb-8">
+        {/* Ticket types */}
         <Card>
           <CardHeader>
             <CardTitle>{t('organizer.analytics.section_ticket_types')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('organizer.analytics.table_type')}</TableHead>
-                  <TableHead>{t('organizer.analytics.table_price')}</TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_sold')}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_capacity')}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_revenue')}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_actions')}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {event.ticketTypes?.length > 0 ? (
-                  event.ticketTypes.map((tt: any) => {
-                    const sold = tt.quantitySold ?? 0
-                    const rev = sold * Number(tt.basePrice)
-                    const fill =
-                      tt.quantityTotal > 0 ? Math.round((sold / tt.quantityTotal) * 100) : 0
-                    return (
-                      <TableRow key={tt.id}>
-                        <TableCell className="font-medium">
-                          {tt.name}
-                          <div className="flex items-center gap-1 mt-1">
-                            <div className="h-1.5 flex-1 min-w-12 rounded-full bg-muted">
-                              <div
-                                className="h-1.5 rounded-full bg-primary"
-                                style={{ width: `${Math.min(fill, 100)}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-muted-foreground">{fill}%</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {formatCurrency(tt.basePrice, tt.currency, currencies)}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">{sold}</TableCell>
-                        <TableCell className="text-right text-sm">{tt.quantityTotal}</TableCell>
-                        <TableCell className="text-right text-sm font-medium">
-                          {formatCurrency(rev, tt.currency, currencies)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="outline" size="xs" onClick={() => openEdit(tt)}>
-                            {t('common.edit')}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      {t('organizer.analytics.no_ticket_types')}
-                    </TableCell>
+                    <TableHead>{t('organizer.analytics.table_type')}</TableHead>
+                    <TableHead>{t('organizer.analytics.table_price')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_sold')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_capacity')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_revenue')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_actions')}
+                    </TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {event.ticketTypes?.length > 0 ? (
+                    event.ticketTypes.map((tt: any) => {
+                      const sold = tt.quantitySold ?? 0
+                      const rev = sold * Number(tt.basePrice)
+                      const fill =
+                        tt.quantityTotal > 0 ? Math.round((sold / tt.quantityTotal) * 100) : 0
+                      return (
+                        <TableRow key={tt.id}>
+                          <TableCell className="font-medium min-w-[140px]">
+                            {tt.name}
+                            <div className="flex items-center gap-1 mt-1">
+                              <div className="h-1.5 flex-1 min-w-12 rounded-full bg-muted">
+                                <div
+                                  className="h-1.5 rounded-full bg-primary"
+                                  style={{ width: `${Math.min(fill, 100)}%` }}
+                                />
+                              </div>
+                              <span className="text-xs text-muted-foreground">{fill}%</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">
+                            {formatCurrency(tt.basePrice, tt.currency, currencies)}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">{sold}</TableCell>
+                          <TableCell className="text-right text-sm">{tt.quantityTotal}</TableCell>
+                          <TableCell className="text-right text-sm font-medium whitespace-nowrap">
+                            {formatCurrency(rev, tt.currency, currencies)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="outline" size="xs" onClick={() => openEdit(tt)}>
+                              {t('common.edit')}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        {t('organizer.analytics.no_ticket_types')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 
+        {/* Sales timeline */}
         <Card>
           <CardHeader>
             <CardTitle>{t('organizer.analytics.section_sales_timeline')}</CardTitle>
@@ -368,7 +422,7 @@ export default function OrganizerAnalytics({
                       <span>
                         {t('organizer.analytics.timeline_tickets', { count: entry.count })}
                       </span>
-                      <span className="font-medium">
+                      <span className="font-medium whitespace-nowrap">
                         {formatCurrency(entry.revenue, undefined, currencies)}
                       </span>
                     </div>
@@ -384,108 +438,120 @@ export default function OrganizerAnalytics({
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Bottom tables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        {/* Recent orders */}
         <Card>
           <CardHeader>
             <CardTitle>{t('organizer.analytics.section_recent_orders')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('organizer.analytics.table_order')}</TableHead>
-                  <TableHead>{t('organizer.analytics.table_buyer')}</TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_tickets')}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_amount')}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_date')}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stats.recentOrders.length > 0 ? (
-                  stats.recentOrders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-mono text-xs">{order.orderNumber}</TableCell>
-                      <TableCell className="text-sm">
-                        <span className="font-medium">{order.buyerName}</span>
-                        {order.buyerEmail && (
-                          <span className="block text-xs text-muted-foreground">
-                            {order.buyerEmail}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right text-sm">{order.ticketCount}</TableCell>
-                      <TableCell className="text-right text-sm font-medium">
-                        {formatCurrency(order.totalGrossAmount, order.currency, currencies)}
-                      </TableCell>
-                      <TableCell className="text-right text-xs text-muted-foreground">
-                        {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '-'}
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('organizer.analytics.table_order')}</TableHead>
+                    <TableHead>{t('organizer.analytics.table_buyer')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_tickets')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_amount')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_date')}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats.recentOrders.length > 0 ? (
+                    stats.recentOrders.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-mono text-xs whitespace-nowrap">
+                          {order.orderNumber}
+                        </TableCell>
+                        <TableCell className="text-sm min-w-[140px]">
+                          <span className="font-medium">{order.buyerName}</span>
+                          {order.buyerEmail && (
+                            <span className="block text-xs text-muted-foreground truncate max-w-[160px]">
+                              {order.buyerEmail}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">{order.ticketCount}</TableCell>
+                        <TableCell className="text-right text-sm font-medium whitespace-nowrap">
+                          {formatCurrency(order.totalGrossAmount, order.currency, currencies)}
+                        </TableCell>
+                        <TableCell className="text-right text-xs text-muted-foreground whitespace-nowrap">
+                          {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '-'}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                        {t('organizer.analytics.no_orders')}
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                      {t('organizer.analytics.no_orders')}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 
+        {/* Buyers */}
         <Card>
           <CardHeader>
             <CardTitle>{t('organizer.analytics.section_buyers')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('organizer.analytics.table_name_email')}</TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_tickets')}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t('organizer.analytics.table_total_spent')}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stats.buyers.length > 0 ? (
-                  stats.buyers.map((buyer) => (
-                    <TableRow key={buyer.id}>
-                      <TableCell className="text-sm">
-                        <span className="font-medium">{buyer.name}</span>
-                        {buyer.email && buyer.name !== buyer.email && (
-                          <span className="block text-xs text-muted-foreground">{buyer.email}</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right text-sm">{buyer.ticketCount}</TableCell>
-                      <TableCell className="text-right text-sm font-medium">
-                        {formatCurrency(buyer.totalSpent, undefined, currencies)}
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('organizer.analytics.table_name_email')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_tickets')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('organizer.analytics.table_total_spent')}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats.buyers.length > 0 ? (
+                    stats.buyers.map((buyer) => (
+                      <TableRow key={buyer.id}>
+                        <TableCell className="text-sm min-w-[160px]">
+                          <span className="font-medium">{buyer.name}</span>
+                          {buyer.email && buyer.name !== buyer.email && (
+                            <span className="block text-xs text-muted-foreground truncate max-w-[180px]">
+                              {buyer.email}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">{buyer.ticketCount}</TableCell>
+                        <TableCell className="text-right text-sm font-medium whitespace-nowrap">
+                          {formatCurrency(buyer.totalSpent, undefined, currencies)}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
+                        {t('organizer.analytics.no_buyers')}
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
-                      {t('organizer.analytics.no_buyers')}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Edit ticket type dialog */}
       <Dialog open={!!editDialog} onOpenChange={() => setEditDialog(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
