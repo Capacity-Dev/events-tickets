@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { router, usePage } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'
@@ -53,6 +54,7 @@ function getCheckedNetworks(parent: HTMLElement | null) {
 }
 
 export default function AdminCurrencies({ currencies }: { currencies: CurrencyData[] }) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
   const [editCurrency, setEditCurrency] = useState<CurrencyData | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -104,11 +106,11 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
 
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">Currencies</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.currencies.title')}</h1>
 
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Add Currency</CardTitle>
+          <CardTitle>{t('admin.currencies.add_currency')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form
@@ -117,23 +119,23 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
             className="grid grid-cols-1 sm:grid-cols-3 gap-4"
           >
             <div>
-              <Label htmlFor="code">ISO Code</Label>
+              <Label htmlFor="code">{t('admin.currencies.iso_code')}</Label>
               <Input id="code" name="code" maxLength={3} required placeholder="USD" />
             </div>
             <div>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">{t('common.name')}</Label>
               <Input id="name" name="name" required placeholder="US Dollar" />
             </div>
             <div>
-              <Label htmlFor="symbol">Symbol</Label>
+              <Label htmlFor="symbol">{t('admin.currencies.symbol')}</Label>
               <Input id="symbol" name="symbol" maxLength={10} required placeholder="$" />
             </div>
             <div>
-              <Label htmlFor="countryCode">Country Code</Label>
+              <Label htmlFor="countryCode">{t('admin.currencies.country_code')}</Label>
               <Input id="countryCode" name="countryCode" maxLength={2} required placeholder="CD" />
             </div>
             <div>
-              <Label htmlFor="exchangeRate">Exchange Rate (to USD)</Label>
+              <Label htmlFor="exchangeRate">{t('admin.currencies.exchange_rate')}</Label>
               <Input
                 id="exchangeRate"
                 name="exchangeRate"
@@ -145,11 +147,11 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
               />
             </div>
             <div>
-              <Label htmlFor="sortOrder">Sort Order</Label>
+              <Label htmlFor="sortOrder">{t('admin.currencies.sort_order')}</Label>
               <Input id="sortOrder" name="sortOrder" type="number" min="0" defaultValue="0" />
             </div>
             <div className="sm:col-span-3">
-              <Label>Supported Networks</Label>
+              <Label>{t('admin.currencies.supported_networks')}</Label>
               <div className="flex flex-wrap gap-2 mt-1">
                 {ALL_NETWORKS.map((n) => (
                   <label key={n} className="flex items-center gap-1 text-sm cursor-pointer">
@@ -159,7 +161,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                 ))}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Check all supported mobile money networks for this currency
+                {t('admin.currencies.networks_hint')}
               </p>
             </div>
             <div className="sm:col-span-3">
@@ -171,12 +173,12 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                   defaultChecked
                   className="rounded"
                 />
-                Active
+                {t('status.active')}
               </label>
             </div>
             <div className="sm:col-span-3">
               <Button type="submit" disabled={submitting}>
-                Add Currency
+                {t('admin.currencies.add_currency_btn')}
               </Button>
             </div>
           </form>
@@ -187,22 +189,22 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Symbol</TableHead>
-              <TableHead>Country</TableHead>
-              <TableHead>Rate</TableHead>
-              <TableHead>Networks</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Sort</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('admin.currencies.code')}</TableHead>
+              <TableHead>{t('common.name')}</TableHead>
+              <TableHead>{t('admin.currencies.symbol')}</TableHead>
+              <TableHead>{t('admin.currencies.country')}</TableHead>
+              <TableHead>{t('admin.currencies.rate')}</TableHead>
+              <TableHead>{t('admin.currencies.networks')}</TableHead>
+              <TableHead>{t('common.status')}</TableHead>
+              <TableHead>{t('admin.currencies.sort')}</TableHead>
+              <TableHead className="text-right">{t('common.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currencies.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                  No currencies yet
+                  {t('admin.currencies.no_currencies')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -226,7 +228,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                   </TableCell>
                   <TableCell>
                     <Badge variant={c.isActive ? 'default' : 'outline'}>
-                      {c.isActive ? 'Active' : 'Inactive'}
+                      {c.isActive ? t('status.active') : t('admin.currencies.inactive')}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm">{c.sortOrder}</TableCell>
@@ -236,7 +238,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                       onClick={() => setEditCurrency(c)}
                       className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-2 text-xs font-medium cursor-pointer"
                     >
-                      Edit
+                      {t('common.edit')}
                     </button>
                   </TableCell>
                 </TableRow>
@@ -249,14 +251,16 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
       <Dialog open={!!editCurrency} onOpenChange={() => setEditCurrency(null)}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Currency — {editCurrency?.code}</DialogTitle>
+            <DialogTitle>
+              {t('admin.currencies.edit_currency_title', { code: editCurrency?.code ?? '' })}
+            </DialogTitle>
           </DialogHeader>
           {editCurrency && (
             <div ref={editContainerRef}>
               <form onSubmit={handleEdit} className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="edit-code">ISO Code</Label>
+                    <Label htmlFor="edit-code">{t('admin.currencies.iso_code')}</Label>
                     <Input
                       id="edit-code"
                       name="code"
@@ -266,14 +270,14 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                     />
                   </div>
                   <div>
-                    <Label htmlFor="edit-name">Name</Label>
+                    <Label htmlFor="edit-name">{t('common.name')}</Label>
                     <Input id="edit-name" name="name" required defaultValue={editCurrency.name} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="edit-symbol">Symbol</Label>
+                    <Label htmlFor="edit-symbol">{t('admin.currencies.symbol')}</Label>
                     <Input
                       id="edit-symbol"
                       name="symbol"
@@ -283,7 +287,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                     />
                   </div>
                   <div>
-                    <Label htmlFor="edit-countryCode">Country Code</Label>
+                    <Label htmlFor="edit-countryCode">{t('admin.currencies.country_code')}</Label>
                     <Input
                       id="edit-countryCode"
                       name="countryCode"
@@ -296,7 +300,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="edit-exchangeRate">Exchange Rate (to USD)</Label>
+                    <Label htmlFor="edit-exchangeRate">{t('admin.currencies.exchange_rate')}</Label>
                     <Input
                       id="edit-exchangeRate"
                       name="exchangeRate"
@@ -308,7 +312,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                     />
                   </div>
                   <div>
-                    <Label htmlFor="edit-sortOrder">Sort Order</Label>
+                    <Label htmlFor="edit-sortOrder">{t('admin.currencies.sort_order')}</Label>
                     <Input
                       id="edit-sortOrder"
                       name="sortOrder"
@@ -320,7 +324,7 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                 </div>
 
                 <div>
-                  <Label>Supported Networks</Label>
+                  <Label>{t('admin.currencies.supported_networks')}</Label>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {ALL_NETWORKS.map((n) => (
                       <label key={n} className="flex items-center gap-1 text-sm cursor-pointer">
@@ -345,17 +349,17 @@ export default function AdminCurrencies({ currencies }: { currencies: CurrencyDa
                       defaultChecked={editCurrency.isActive}
                       className="rounded"
                     />
-                    Active
+                    {t('status.active')}
                   </label>
                 </div>
 
                 <Separator />
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setEditCurrency(null)}>
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                   <Button type="submit" disabled={submitting}>
-                    Save Changes
+                    {t('common.save_changes')}
                   </Button>
                 </div>
               </form>

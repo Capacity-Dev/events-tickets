@@ -1,3 +1,4 @@
+import { useTranslation } from '~/lib/i18n'
 import { usePage } from '@inertiajs/react'
 import { Badge } from '~/components/ui/badge'
 import {
@@ -10,22 +11,21 @@ import {
 } from '~/components/ui/table'
 
 export default function AdminHomepage({ events }: { events: any[] }) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
 
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">Homepage Curation</h1>
-      <p className="text-sm text-muted-foreground mb-4">
-        Toggle featured status to control which events appear on the homepage.
-      </p>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.homepage.title')}</h1>
+      <p className="text-sm text-muted-foreground mb-4">{t('admin.homepage.subtitle')}</p>
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Featured</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('admin.homepage.title_col')}</TableHead>
+              <TableHead>{t('admin.homepage.featured')}</TableHead>
+              <TableHead>{t('admin.homepage.date')}</TableHead>
+              <TableHead className="text-right">{t('admin.homepage.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -34,7 +34,9 @@ export default function AdminHomepage({ events }: { events: any[] }) {
                 <TableCell className="font-medium">{event.title}</TableCell>
                 <TableCell>
                   <Badge variant={event.isFeatured ? 'default' : 'outline'}>
-                    {event.isFeatured ? 'Featured' : 'Hidden'}
+                    {event.isFeatured
+                      ? t('admin.homepage.featured_badge')
+                      : t('admin.homepage.hidden_badge')}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
@@ -50,7 +52,9 @@ export default function AdminHomepage({ events }: { events: any[] }) {
                       type="submit"
                       className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-3 text-xs font-medium cursor-pointer"
                     >
-                      {event.isFeatured ? 'Unfeature' : 'Feature'}
+                      {event.isFeatured
+                        ? t('admin.homepage.unfeature')
+                        : t('admin.homepage.feature')}
                     </button>
                   </form>
                 </TableCell>

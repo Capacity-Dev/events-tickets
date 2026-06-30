@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Form } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
@@ -39,6 +40,7 @@ export default function OrganizerEventForm({
   currencies?: CurrencySummary[]
   event?: any
 }) {
+  const { t } = useTranslation()
   const isEditing = !!event
   const [step, setStep] = useState(0)
   const [formData, setFormData] = useState({
@@ -54,12 +56,12 @@ export default function OrganizerEventForm({
   const [visibility, setVisibility] = useState<string>(event?.visibility ?? 'public')
   const [accessPassword, setAccessPassword] = useState('')
   const [ticketTypes, setTicketTypes] = useState<TicketTypeInput[]>(
-    event?.ticketTypes?.map((t: any) => ({
-      name: t.name ?? '',
-      description: t.description ?? '',
-      basePrice: String(t.basePrice ?? ''),
-      quantityTotal: String(t.quantityTotal ?? ''),
-      maxPerOrder: String(t.maxPerOrder ?? ''),
+    event?.ticketTypes?.map((tt: any) => ({
+      name: tt.name ?? '',
+      description: tt.description ?? '',
+      basePrice: String(tt.basePrice ?? ''),
+      quantityTotal: String(tt.quantityTotal ?? ''),
+      maxPerOrder: String(tt.maxPerOrder ?? ''),
     })) ?? [
       { name: 'Standard', description: '', basePrice: '', quantityTotal: '', maxPerOrder: '' },
     ]
@@ -67,7 +69,13 @@ export default function OrganizerEventForm({
 
   const formAction = isEditing && event?.id ? `/dashboard/events/${event.id}` : '/dashboard/events'
   const formMethod = isEditing && event?.id ? 'put' : 'post'
-  const steps = ['Basic Info', 'Date & Venue', 'Tickets', 'Privacy', 'Review']
+  const steps = [
+    t('organizer.events_create.step_basic_info'),
+    t('organizer.events_create.step_date_venue'),
+    t('organizer.events_create.step_tickets'),
+    t('organizer.events_create.step_privacy'),
+    t('organizer.events_create.step_review'),
+  ]
 
   const update = (field: string, value: string) => setFormData((d) => ({ ...d, [field]: value }))
 
@@ -75,13 +83,21 @@ export default function OrganizerEventForm({
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
         <a href="/dashboard/events" className="hover:text-foreground">
-          Events
+          {t('organizer.events_create.breadcrumb_events')}
         </a>
         <span>/</span>
-        <span className="text-foreground font-medium">{isEditing ? 'Edit' : 'Create'} Event</span>
+        <span className="text-foreground font-medium">
+          {isEditing
+            ? t('organizer.events_create.edit_title')
+            : t('organizer.events_create.create_title')}
+        </span>
       </div>
 
-      <h1 className="text-2xl font-heading mb-8">{isEditing ? 'Edit Event' : 'Create Event'}</h1>
+      <h1 className="text-2xl font-heading mb-8">
+        {isEditing
+          ? t('organizer.events_create.edit_title')
+          : t('organizer.events_create.create_title')}
+      </h1>
 
       <div className="flex mb-8">
         {steps.map((s, i) => (
@@ -119,14 +135,14 @@ export default function OrganizerEventForm({
         <FieldGroup>
           <Card className={step === 0 ? '' : 'hidden'}>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>{t('organizer.events_create.section_basic_info')}</CardTitle>
               <CardDescription>
-                Event title, category, currency, description and cover image.
+                {t('organizer.events_create.section_basic_info_desc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <Field>
-                <Label htmlFor="title">Event Title</Label>
+                <Label htmlFor="title">{t('organizer.events_create.field_event_title')}</Label>
                 <Input
                   id="title"
                   name="title"
@@ -136,7 +152,7 @@ export default function OrganizerEventForm({
                 />
               </Field>
               <Field>
-                <Label htmlFor="categoryId">Category</Label>
+                <Label htmlFor="categoryId">{t('organizer.events_create.field_category')}</Label>
                 <select
                   id="categoryId"
                   name="categoryId"
@@ -144,7 +160,7 @@ export default function OrganizerEventForm({
                   onChange={(e) => update('categoryId', e.target.value)}
                   className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <option value="">No category</option>
+                  <option value="">{t('organizer.events_create.no_category')}</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -153,7 +169,7 @@ export default function OrganizerEventForm({
                 </select>
               </Field>
               <Field>
-                <Label htmlFor="currency">Currency</Label>
+                <Label htmlFor="currency">{t('organizer.events_create.field_currency')}</Label>
                 <select
                   id="currency"
                   name="currency"
@@ -167,10 +183,14 @@ export default function OrganizerEventForm({
                     </option>
                   ))}
                 </select>
-                <FieldDescription>Currency used for ticket pricing and payments</FieldDescription>
+                <FieldDescription>
+                  {t('organizer.events_create.field_currency_desc')}
+                </FieldDescription>
               </Field>
               <Field>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">
+                  {t('organizer.events_create.field_description')}
+                </Label>
                 <textarea
                   id="description"
                   name="description"
@@ -181,10 +201,10 @@ export default function OrganizerEventForm({
                 />
               </Field>
               <Field>
-                <Label>Cover Image</Label>
+                <Label>{t('organizer.events_create.field_cover_image')}</Label>
                 <CoverImageUpload name="coverImage" existingUrl={event?.coverImageUrl} />
                 <FieldDescription>
-                  Drag & drop or click to upload. Crop after selecting.
+                  {t('organizer.events_create.field_cover_image_desc')}
                 </FieldDescription>
               </Field>
             </CardContent>
@@ -192,12 +212,14 @@ export default function OrganizerEventForm({
 
           <Card className={step === 1 ? '' : 'hidden'}>
             <CardHeader>
-              <CardTitle>Date &amp; Venue</CardTitle>
-              <CardDescription>When and where your event takes place.</CardDescription>
+              <CardTitle>{t('organizer.events_create.section_date_venue')}</CardTitle>
+              <CardDescription>
+                {t('organizer.events_create.section_date_venue_desc')}
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <Field>
-                <Label htmlFor="venueName">Venue Name</Label>
+                <Label htmlFor="venueName">{t('organizer.events_create.field_venue_name')}</Label>
                 <Input
                   id="venueName"
                   name="venueName"
@@ -206,7 +228,9 @@ export default function OrganizerEventForm({
                 />
               </Field>
               <Field>
-                <Label htmlFor="venueAddress">Venue Address</Label>
+                <Label htmlFor="venueAddress">
+                  {t('organizer.events_create.field_venue_address')}
+                </Label>
                 <Input
                   id="venueAddress"
                   name="venueAddress"
@@ -216,7 +240,7 @@ export default function OrganizerEventForm({
               </Field>
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <Label htmlFor="startDate">Start Date &amp; Time</Label>
+                  <Label htmlFor="startDate">{t('organizer.events_create.field_start_date')}</Label>
                   <Input
                     id="startDate"
                     name="startDate"
@@ -227,7 +251,7 @@ export default function OrganizerEventForm({
                   />
                 </Field>
                 <Field>
-                  <Label htmlFor="endDate">End Date &amp; Time</Label>
+                  <Label htmlFor="endDate">{t('organizer.events_create.field_end_date')}</Label>
                   <Input
                     id="endDate"
                     name="endDate"
@@ -244,9 +268,9 @@ export default function OrganizerEventForm({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Ticket Types</CardTitle>
+                  <CardTitle>{t('organizer.events_create.section_ticket_types')}</CardTitle>
                   <CardDescription>
-                    Define ticket categories with prices and quantities.
+                    {t('organizer.events_create.section_ticket_types_desc')}
                   </CardDescription>
                 </div>
                 <Button
@@ -281,7 +305,7 @@ export default function OrganizerEventForm({
                     <line x1="12" y1="8" x2="12" y2="16" />
                     <line x1="8" y1="12" x2="16" y2="12" />
                   </svg>
-                  Add Ticket Type
+                  {t('organizer.events_create.add_ticket_type')}
                 </Button>
               </div>
             </CardHeader>
@@ -289,7 +313,9 @@ export default function OrganizerEventForm({
               {ticketTypes.map((ticket, i) => (
                 <div key={i} className="p-4 border rounded-lg flex flex-col gap-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium">Ticket #{i + 1}</h3>
+                    <h3 className="text-sm font-medium">
+                      {t('organizer.events_create.ticket_number', { n: i + 1 })}
+                    </h3>
                     {ticketTypes.length > 1 && (
                       <Button
                         type="button"
@@ -298,13 +324,13 @@ export default function OrganizerEventForm({
                         className="text-destructive"
                         onClick={() => setTicketTypes(ticketTypes.filter((_, j) => j !== i))}
                       >
-                        Remove
+                        {t('common.remove')}
                       </Button>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <Field>
-                      <Label htmlFor={`ticketName${i}`}>Name</Label>
+                      <Label htmlFor={`ticketName${i}`}>{t('common.name')}</Label>
                       <Input
                         id={`ticketName${i}`}
                         name={`ticketTypes[${i}][name]`}
@@ -318,7 +344,9 @@ export default function OrganizerEventForm({
                       />
                     </Field>
                     <Field>
-                      <Label htmlFor={`ticketPrice${i}`}>Price</Label>
+                      <Label htmlFor={`ticketPrice${i}`}>
+                        {t('organizer.events_create.field_price')}
+                      </Label>
                       <Input
                         id={`ticketPrice${i}`}
                         name={`ticketTypes[${i}][basePrice]`}
@@ -335,7 +363,9 @@ export default function OrganizerEventForm({
                       />
                     </Field>
                     <Field>
-                      <Label htmlFor={`ticketQty${i}`}>Total Quantity</Label>
+                      <Label htmlFor={`ticketQty${i}`}>
+                        {t('organizer.events_create.field_total_quantity')}
+                      </Label>
                       <Input
                         id={`ticketQty${i}`}
                         name={`ticketTypes[${i}][quantityTotal]`}
@@ -351,7 +381,9 @@ export default function OrganizerEventForm({
                       />
                     </Field>
                     <Field>
-                      <Label htmlFor={`ticketMax${i}`}>Max per Order</Label>
+                      <Label htmlFor={`ticketMax${i}`}>
+                        {t('organizer.events_create.field_max_per_order')}
+                      </Label>
                       <Input
                         id={`ticketMax${i}`}
                         name={`ticketTypes[${i}][maxPerOrder]`}
@@ -367,7 +399,9 @@ export default function OrganizerEventForm({
                     </Field>
                   </div>
                   <Field>
-                    <Label htmlFor={`ticketDesc${i}`}>Description (optional)</Label>
+                    <Label htmlFor={`ticketDesc${i}`}>
+                      {t('organizer.events_create.field_ticket_description')}
+                    </Label>
                     <Input
                       id={`ticketDesc${i}`}
                       name={`ticketTypes[${i}][description]`}
@@ -391,8 +425,8 @@ export default function OrganizerEventForm({
 
           <Card className={step === 3 ? '' : 'hidden'}>
             <CardHeader>
-              <CardTitle>Privacy &amp; Visibility</CardTitle>
-              <CardDescription>Control who can access your event page.</CardDescription>
+              <CardTitle>{t('organizer.events_create.section_privacy')}</CardTitle>
+              <CardDescription>{t('organizer.events_create.section_privacy_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-3">
@@ -406,9 +440,11 @@ export default function OrganizerEventForm({
                     className="mt-0.5"
                   />
                   <div>
-                    <span className="font-medium text-sm">Public</span>
+                    <span className="font-medium text-sm">
+                      {t('organizer.events_create.visibility_public')}
+                    </span>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Visible in search results, homepage, and sitemap. Anyone can find it.
+                      {t('organizer.events_create.visibility_public_desc')}
                     </p>
                   </div>
                 </label>
@@ -422,10 +458,14 @@ export default function OrganizerEventForm({
                     className="mt-0.5"
                   />
                   <div>
-                    <span className="font-medium text-sm">Private (Unlisted)</span>
+                    <span className="font-medium text-sm">
+                      {t('organizer.events_create.visibility_unlisted')}
+                    </span>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Not visible in search or listings. Only accessible via a unique link.
-                      {accessPassword ? ' Also protected by password.' : ''}
+                      {t('organizer.events_create.visibility_unlisted_desc')}
+                      {accessPassword
+                        ? ' ' + t('organizer.events_create.visibility_unlisted_password')
+                        : ''}
                     </p>
                   </div>
                 </label>
@@ -449,24 +489,26 @@ export default function OrganizerEventForm({
                     htmlFor="secureEvent"
                     className={visibility === 'public' ? 'opacity-50' : ''}
                   >
-                    Secure invitation with a password
+                    {t('organizer.events_create.secure_with_password')}
                   </Label>
                 </div>
                 <FieldDescription>
-                  Guests will need this password to view event details and buy tickets.
+                  {t('organizer.events_create.secure_with_password_desc')}
                 </FieldDescription>
               </Field>
 
               {accessPassword.length > 0 && (
                 <Field>
-                  <Label htmlFor="accessPassword">Event Password</Label>
+                  <Label htmlFor="accessPassword">
+                    {t('organizer.events_create.field_event_password')}
+                  </Label>
                   <Input
                     id="accessPassword"
                     type="text"
                     value={accessPassword}
                     onChange={(e) => setAccessPassword(e.target.value)}
                     minLength={4}
-                    placeholder="Enter a password (min 4 characters)"
+                    placeholder={t('organizer.events_create.field_event_password_placeholder')}
                   />
                 </Field>
               )}
@@ -475,20 +517,20 @@ export default function OrganizerEventForm({
 
           <Card className={step === 4 ? '' : 'hidden'}>
             <CardHeader>
-              <CardTitle>Review</CardTitle>
-              <CardDescription>
-                Ready to submit. Review your details then click below.
-              </CardDescription>
+              <CardTitle>{t('organizer.events_create.section_review')}</CardTitle>
+              <CardDescription>{t('organizer.events_create.section_review_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               <p className="text-sm text-muted-foreground">
-                All steps completed. Your event will be saved as a draft.
+                {t('organizer.events_create.review_draft_note')}
               </p>
               {visibility === 'unlisted' && (
                 <div className="p-3 rounded-lg bg-muted/50 text-sm">
-                  <span className="font-medium">Private event</span> — accessible only via unique
-                  link
-                  {accessPassword ? ', protected by password' : ''}.
+                  <span className="font-medium">
+                    {t('organizer.events_create.review_private_event')}
+                  </span>{' '}
+                  — {t('organizer.events_create.review_private_note')}
+                  {accessPassword ? ', ' + t('organizer.events_create.review_password_note') : ''}.
                 </div>
               )}
             </CardContent>
@@ -506,14 +548,16 @@ export default function OrganizerEventForm({
               onClick={() => setStep(Math.max(0, step - 1))}
               disabled={step === 0}
             >
-              Previous
+              {t('common.previous')}
             </Button>
             {step < steps.length - 1 ? (
               <Button type="button" onClick={() => setStep(step + 1)}>
-                Next
+                {t('common.next')}
               </Button>
             ) : (
-              <Button type="submit">{isEditing ? 'Save Changes' : 'Create Event'}</Button>
+              <Button type="submit">
+                {isEditing ? t('common.save_changes') : t('organizer.events.create_event')}
+              </Button>
             )}
           </div>
         </FieldGroup>

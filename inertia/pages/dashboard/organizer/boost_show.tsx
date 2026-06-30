@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
@@ -7,6 +8,7 @@ import { Separator } from '~/components/ui/separator'
 import { boostStatusVariant } from '~/lib/boost_status'
 
 export default function BoostShow({ boost, insights }: { boost: any; insights: any }) {
+  const { t } = useTranslation()
   const [pausing, setPausing] = useState(false)
   const [resuming, setResuming] = useState(false)
 
@@ -26,10 +28,14 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
     <div className="max-w-5xl mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-heading mb-1">{boost.headline || 'Boost'}</h1>
+          <h1 className="text-2xl font-heading mb-1">
+            {boost.headline || t('organizer.boost_show.title_fallback')}
+          </h1>
           <p className="text-muted-foreground">
             {boost.event?.title} &middot;{' '}
-            <Badge variant={boostStatusVariant[boost.status] || 'outline'}>{boost.status}</Badge>
+            <Badge variant={boostStatusVariant[boost.status] || 'outline'}>
+              {t('status.' + boost.status)}
+            </Badge>
           </p>
         </div>
         <div className="flex gap-2">
@@ -47,7 +53,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
                 }
               }}
             >
-              {pausing ? 'Pausing...' : 'Pause'}
+              {pausing ? t('organizer.boost_show.pausing') : t('organizer.boost_show.pause')}
             </Button>
           )}
           {boost.status === 'paused' && (
@@ -64,7 +70,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
                 }
               }}
             >
-              {resuming ? 'Resuming...' : 'Resume'}
+              {resuming ? t('organizer.boost_show.resuming') : t('organizer.boost_show.resume')}
             </Button>
           )}
         </div>
@@ -74,7 +80,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Budget
+              {t('organizer.boost_show.stat_budget')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -85,18 +91,20 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Spent
+              {t('organizer.boost_show.stat_spent')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-heading">${Number(stats.spend).toFixed(2)}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Meta Ads</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {t('organizer.boost_show.meta_ads')}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Impressions
+              {t('organizer.boost_show.stat_impressions')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -106,7 +114,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Clicks
+              {t('organizer.boost_show.stat_clicks')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -116,7 +124,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              CTR
+              {t('organizer.boost_show.stat_ctr')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -128,48 +136,58 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Campaign Details</CardTitle>
+            <CardTitle>{t('organizer.boost_show.campaign_details')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Meta Campaign ID</span>
+              <span className="text-muted-foreground">
+                {t('organizer.boost_show.meta_campaign_id')}
+              </span>
               <span className="font-mono text-xs">{boost.metaCampaignId || '—'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Meta Ad Set ID</span>
+              <span className="text-muted-foreground">
+                {t('organizer.boost_show.meta_adset_id')}
+              </span>
               <span className="font-mono text-xs">{boost.metaAdsetId || '—'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Meta Ad ID</span>
+              <span className="text-muted-foreground">{t('organizer.boost_show.meta_ad_id')}</span>
               <span className="font-mono text-xs">{boost.metaAdId || '—'}</span>
             </div>
             <Separator />
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Channels</span>
+              <span className="text-muted-foreground">
+                {t('organizer.boost_show.field_channels')}
+              </span>
               <span>{channels.join(', ') || '—'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">CTA</span>
+              <span className="text-muted-foreground">{t('organizer.boost_show.field_cta')}</span>
               <span>{boost.callToAction}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Start</span>
+              <span className="text-muted-foreground">{t('organizer.boost_show.field_start')}</span>
               <span>{boost.startDate ? new Date(boost.startDate).toLocaleDateString() : '—'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">End</span>
+              <span className="text-muted-foreground">{t('organizer.boost_show.field_end')}</span>
               <span>{boost.endDate ? new Date(boost.endDate).toLocaleDateString() : '—'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Fee Rule</span>
-              <span className="font-mono text-xs">{boost.feeRuleId || 'No markup'}</span>
+              <span className="text-muted-foreground">{t('organizer.boost_show.fee_rule')}</span>
+              <span className="font-mono text-xs">
+                {boost.feeRuleId || t('organizer.boost_show.no_markup')}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Markup</span>
+              <span className="text-muted-foreground">{t('organizer.boost_show.markup')}</span>
               <span>${Number(boost.markupAmount).toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Meta Net Budget</span>
+              <span className="text-muted-foreground">
+                {t('organizer.boost_show.meta_net_budget')}
+              </span>
               <span>${Number(boost.metaBudget).toFixed(2)}</span>
             </div>
           </CardContent>
@@ -177,7 +195,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
         {boost.event && (
           <Card>
             <CardHeader>
-              <CardTitle>Event</CardTitle>
+              <CardTitle>{t('organizer.boost_show.event_card_title')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               <p className="font-semibold">{boost.event.title}</p>
@@ -188,7 +206,7 @@ export default function BoostShow({ boost, insights }: { boost: any; insights: a
                 rel="noopener noreferrer"
                 className="text-sm text-primary hover:underline"
               >
-                View public page
+                {t('organizer.boost_show.view_public_page')}
               </a>
             </CardContent>
           </Card>

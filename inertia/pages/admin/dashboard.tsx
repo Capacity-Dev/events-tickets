@@ -1,4 +1,5 @@
 import { usePage } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { formatCurrency, type CurrencyInfo } from '~/lib/currency'
 
 interface Props {
@@ -16,6 +17,7 @@ export default function AdminDashboard({
   recentOrders,
   eventsByStatus,
 }: Props) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
 
   const statusClass = (status: string) => {
@@ -36,25 +38,25 @@ export default function AdminDashboard({
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-heading">Admin Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Platform overview and management.</p>
+        <h1 className="text-2xl font-heading">{t('admin.dashboard.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('admin.dashboard.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Total Users</p>
+          <p className="text-sm text-muted-foreground">{t('admin.dashboard.total_users')}</p>
           <p className="text-3xl font-heading mt-2">{stats.totalUsers}</p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Total Events</p>
+          <p className="text-sm text-muted-foreground">{t('admin.dashboard.total_events')}</p>
           <p className="text-3xl font-heading mt-2">{stats.totalEvents}</p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Total Orders</p>
+          <p className="text-sm text-muted-foreground">{t('admin.dashboard.total_orders')}</p>
           <p className="text-3xl font-heading mt-2">{stats.totalOrders}</p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Volume total</p>
+          <p className="text-sm text-muted-foreground">{t('admin.dashboard.total_volume')}</p>
           <p className="text-3xl font-heading mt-2">
             {formatCurrency(stats.totalRevenue, 'USD', currencies)}
           </p>
@@ -77,7 +79,7 @@ export default function AdminDashboard({
             <line x1="12" y1="8" x2="12" y2="16" />
             <line x1="8" y1="12" x2="16" y2="12" />
           </svg>
-          Moderation
+          {t('admin.dashboard.moderation')}
         </a>
         <a href={`/${adminPrefix}/transactions`} className="btn-outline btn-sm no-underline">
           <svg
@@ -93,7 +95,7 @@ export default function AdminDashboard({
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
           </svg>
-          Transactions
+          {t('admin.dashboard.transactions')}
         </a>
         <a href={`/${adminPrefix}/users`} className="btn-outline btn-sm no-underline">
           <svg
@@ -111,7 +113,7 @@ export default function AdminDashboard({
             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
-          Users
+          {t('admin.dashboard.users')}
         </a>
         <a href={`/${adminPrefix}/finances`} className="btn-outline btn-sm no-underline">
           <svg
@@ -127,14 +129,14 @@ export default function AdminDashboard({
             <line x1="12" y1="1" x2="12" y2="23" />
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
           </svg>
-          Finances
+          {t('admin.dashboard.finances')}
         </a>
       </div>
 
       {eventsByStatus.length > 0 && (
         <div className="border rounded-xl bg-card overflow-hidden mb-8">
           <div className="p-4 border-b bg-muted/50">
-            <h2 className="font-semibold">Events by Status</h2>
+            <h2 className="font-semibold">{t('admin.dashboard.events_by_status')}</h2>
           </div>
           <div className="p-4 flex flex-wrap gap-3">
             {eventsByStatus.map((s) => (
@@ -142,7 +144,7 @@ export default function AdminDashboard({
                 key={s.status}
                 className={`text-xs font-medium px-3 py-1.5 rounded-full ${statusClass(s.status)}`}
               >
-                {s.status}: {s.count}
+                {t('status.' + s.status)}: {s.count}
               </span>
             ))}
           </div>
@@ -153,7 +155,7 @@ export default function AdminDashboard({
         {recentUsers.length > 0 && (
           <div className="border rounded-xl bg-card overflow-hidden">
             <div className="p-4 border-b bg-muted/50">
-              <h2 className="font-semibold">Recent Users</h2>
+              <h2 className="font-semibold">{t('admin.dashboard.recent_users')}</h2>
             </div>
             <div className="divide-y">
               {recentUsers.map((u: any) => (
@@ -175,7 +177,7 @@ export default function AdminDashboard({
                           : 'bg-muted text-muted-foreground'
                     }`}
                   >
-                    {u.role ?? 'buyer'}
+                    {t('role.' + (u.role ?? 'buyer'))}
                   </span>
                 </a>
               ))}
@@ -186,7 +188,7 @@ export default function AdminDashboard({
         {recentOrders.length > 0 && (
           <div className="border rounded-xl bg-card overflow-hidden">
             <div className="p-4 border-b bg-muted/50">
-              <h2 className="font-semibold">Recent Orders</h2>
+              <h2 className="font-semibold">{t('admin.dashboard.recent_orders')}</h2>
             </div>
             <div className="divide-y">
               {recentOrders.map((o: any) => (
@@ -208,12 +210,12 @@ export default function AdminDashboard({
                               : 'bg-muted text-muted-foreground'
                       }`}
                     >
-                      {o.status}
+                      {t('status.' + o.status)}
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-muted-foreground text-xs">
-                      {o.buyer?.fullName ?? o.guestEmail ?? 'Guest'}
+                      {o.buyer?.fullName ?? o.guestEmail ?? t('common.guest')}
                     </span>
                     <span className="font-medium text-foreground">
                       ${Number(o.totalGrossAmount).toFixed(2)}
@@ -227,8 +229,8 @@ export default function AdminDashboard({
 
         {!recentUsers.length && !recentOrders.length && (
           <div className="lg:col-span-2 text-center py-16 text-muted-foreground border rounded-xl bg-card">
-            <p className="text-lg font-medium mb-1">Welcome!</p>
-            <p className="text-sm">Manage your platform from this dashboard.</p>
+            <p className="text-lg font-medium mb-1">{t('admin.dashboard.welcome')}</p>
+            <p className="text-sm">{t('admin.dashboard.welcome_subtitle')}</p>
           </div>
         )}
       </div>

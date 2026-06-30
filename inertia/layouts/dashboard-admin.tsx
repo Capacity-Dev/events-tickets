@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import { useTranslation } from '~/lib/i18n'
 
 export default function DashboardAdminLayout({
   children,
@@ -17,6 +18,7 @@ export default function DashboardAdminLayout({
   children: ReactElement<Data.SharedProps>
 }) {
   const { url, props } = usePage() as any
+  const { t } = useTranslation()
   const adminPrefix = props.adminPrefix
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -24,7 +26,7 @@ export default function DashboardAdminLayout({
 
   const navItems = [
     {
-      label: 'Dashboard',
+      label: t('nav.dashboard'),
       href: `/${prefix}`,
       icon: (
         <svg
@@ -45,7 +47,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Moderation',
+      label: t('nav.moderation'),
       href: `/${prefix}/events/pending`,
       icon: (
         <svg
@@ -64,7 +66,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Users',
+      label: t('nav.users'),
       href: `/${prefix}/users`,
       icon: (
         <svg
@@ -85,7 +87,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Transactions',
+      label: t('nav.transactions'),
       href: `/${prefix}/transactions`,
       icon: (
         <svg
@@ -106,7 +108,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Fee Rules',
+      label: t('nav.fee_rules'),
       href: `/${prefix}/fee-rules`,
       icon: (
         <svg
@@ -125,7 +127,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Finances',
+      label: t('nav.finances'),
       href: `/${prefix}/finances`,
       icon: (
         <svg
@@ -145,7 +147,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Homepage',
+      label: t('nav.homepage'),
       href: `/${prefix}/homepage`,
       icon: (
         <svg
@@ -164,7 +166,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Categories',
+      label: t('nav.categories'),
       href: `/${prefix}/categories`,
       icon: (
         <svg
@@ -186,7 +188,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Notifications',
+      label: t('nav.notifications'),
       href: `/${prefix}/notifications`,
       icon: (
         <svg
@@ -205,7 +207,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Currencies',
+      label: t('nav.currencies'),
       href: `/${prefix}/currencies`,
       icon: (
         <svg
@@ -224,7 +226,7 @@ export default function DashboardAdminLayout({
       ),
     },
     {
-      label: 'Settings',
+      label: t('nav.settings'),
       href: `/${prefix}/settings`,
       icon: (
         <svg
@@ -279,7 +281,7 @@ export default function DashboardAdminLayout({
       >
         <div className="flex h-14 items-center gap-2 px-6 border-b shrink-0">
           <a href="/" className="font-heading text-lg text-primary no-underline">
-            Admin
+            {t('nav.admin_title')}
           </a>
         </div>
 
@@ -306,7 +308,7 @@ export default function DashboardAdminLayout({
         </nav>
 
         <div className="p-4 border-t shrink-0">
-          <p className="text-xs text-muted-foreground">Admin Panel</p>
+          <p className="text-xs text-muted-foreground">{t('admin.sidebar_footer')}</p>
         </div>
       </aside>
 
@@ -314,7 +316,7 @@ export default function DashboardAdminLayout({
         <header className="flex h-14 items-center gap-4 border-b bg-card px-4 sm:px-6 shrink-0">
           <button
             type="button"
-            aria-label="Toggle menu"
+            aria-label={t('common.toggle_menu')}
             className="lg:hidden inline-flex items-center justify-center rounded-lg hover:bg-muted size-9"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
@@ -336,11 +338,11 @@ export default function DashboardAdminLayout({
           <DropdownMenu>
             <DropdownMenuTrigger
               className="rounded-full hover:opacity-80 transition-opacity"
-              aria-label="User menu"
+              aria-label={t('common.user_menu')}
             >
               <Avatar className="size-8">
                 <AvatarFallback className="text-xs">
-                  {children.props.user?.initials ?? 'A'}
+                  {children.props.user?.initials ?? t('common.admin_initial_fallback')}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -353,13 +355,13 @@ export default function DashboardAdminLayout({
                 href="/dashboard"
                 className="block px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-muted no-underline text-foreground"
               >
-                Dashboard
+                {t('nav.dashboard')}
               </a>
               <a
                 href="/"
                 className="block px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-muted no-underline text-foreground"
               >
-                View Site
+                {t('nav.view_site')}
               </a>
               <DropdownMenuSeparator />
               <button
@@ -367,7 +369,7 @@ export default function DashboardAdminLayout({
                 onClick={() => router.post('/logout')}
                 className="w-full text-left px-2 py-1.5 text-sm rounded cursor-pointer bg-transparent border-none font-inherit hover:bg-muted"
               >
-                Logout
+                {t('nav.logout')}
               </button>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -6,39 +6,43 @@ import { Separator } from '~/components/ui/separator'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
+import { useTranslation } from '~/lib/i18n'
 
 export default function Settings() {
   const { props } = usePage() as any
+  const { t } = useTranslation()
   const user = props.user
 
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-heading">Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage your account settings and preferences.
-        </p>
+        <h1 className="text-2xl font-heading">{t('settings.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('settings.subtitle')}</p>
       </div>
 
       <FieldGroup>
         <Card>
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
-            <CardDescription>Your personal information.</CardDescription>
+            <CardTitle>{t('settings.profile')}</CardTitle>
+            <CardDescription>{t('settings.profile_description')}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-4 items-center">
-              <span className="text-sm font-medium text-muted-foreground">Name</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                {t('settings.name')}
+              </span>
               <span className="text-sm">{user?.fullName || '\u2014'}</span>
             </div>
             <Separator />
             <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-4 items-center">
-              <span className="text-sm font-medium text-muted-foreground">Email</span>
+              <span className="text-sm font-medium text-muted-foreground">{t('common.email')}</span>
               <span className="text-sm">{user?.email || '\u2014'}</span>
             </div>
             <Separator />
             <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-4 items-center">
-              <span className="text-sm font-medium text-muted-foreground">Member since</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                {t('settings.member_since')}
+              </span>
               <span className="text-sm">
                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '\u2014'}
               </span>
@@ -48,14 +52,14 @@ export default function Settings() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Password</CardTitle>
-            <CardDescription>Change your password.</CardDescription>
+            <CardTitle>{t('settings.password')}</CardTitle>
+            <CardDescription>{t('settings.password_description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <form action="/dashboard/settings/password" method="POST">
               <FieldGroup className="max-w-sm">
                 <Field>
-                  <Label htmlFor="currentPassword">Current password</Label>
+                  <Label htmlFor="currentPassword">{t('settings.current_password')}</Label>
                   <Input
                     type="password"
                     id="currentPassword"
@@ -64,17 +68,17 @@ export default function Settings() {
                   />
                 </Field>
                 <Field>
-                  <Label htmlFor="newPassword">New password</Label>
+                  <Label htmlFor="newPassword">{t('settings.new_password')}</Label>
                   <Input
                     type="password"
                     id="newPassword"
                     name="newPassword"
                     autoComplete="new-password"
-                    placeholder="At least 8 characters"
+                    placeholder={t('auth.password_placeholder')}
                   />
                 </Field>
                 <Field>
-                  <Label htmlFor="confirmPassword">Confirm new password</Label>
+                  <Label htmlFor="confirmPassword">{t('settings.confirm_new_password')}</Label>
                   <Input
                     type="password"
                     id="confirmPassword"
@@ -82,7 +86,7 @@ export default function Settings() {
                     autoComplete="new-password"
                   />
                 </Field>
-                <Button type="submit">Change password</Button>
+                <Button type="submit">{t('settings.change_password')}</Button>
               </FieldGroup>
             </form>
           </CardContent>
@@ -90,8 +94,8 @@ export default function Settings() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Notifications</CardTitle>
-            <CardDescription>Manage your notification preferences.</CardDescription>
+            <CardTitle>{t('settings.notifications')}</CardTitle>
+            <CardDescription>{t('settings.notifications_description')}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <Field>
@@ -101,7 +105,7 @@ export default function Settings() {
                   defaultChecked
                   className="size-4 rounded border-input accent-primary"
                 />
-                Email notifications for ticket purchases
+                {t('settings.notif_ticket_purchases')}
               </label>
             </Field>
             <Separator />
@@ -112,7 +116,7 @@ export default function Settings() {
                   defaultChecked
                   className="size-4 rounded border-input accent-primary"
                 />
-                Email notifications for event updates
+                {t('settings.notif_event_updates')}
               </label>
             </Field>
             <Separator />
@@ -123,7 +127,7 @@ export default function Settings() {
                   defaultChecked
                   className="size-4 rounded border-input accent-primary"
                 />
-                WhatsApp notifications
+                {t('settings.notif_whatsapp')}
               </label>
             </Field>
           </CardContent>

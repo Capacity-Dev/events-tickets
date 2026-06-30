@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { router } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Input } from '~/components/ui/input'
 import { formatCurrency, type CurrencyInfo } from '~/lib/currency'
 import {
@@ -38,6 +39,7 @@ export default function OrganizerClients({
   search: string
   eventId: string
 }) {
+  const { t } = useTranslation()
   const searchRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -70,7 +72,7 @@ export default function OrganizerClients({
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-heading">Clients</h1>
+          <h1 className="text-2xl font-heading">{t('organizer.clients.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {clients.length} buyer{clients.length !== 1 ? 's' : ''}
           </p>
@@ -80,7 +82,7 @@ export default function OrganizerClients({
           onChange={handleEventFilter}
           className="h-9 rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <option value="">All events</option>
+          <option value="">{t('organizer.clients.all_events')}</option>
           {allEvents.map((ev) => (
             <option key={ev.id} value={ev.id}>
               {ev.title}
@@ -93,7 +95,7 @@ export default function OrganizerClients({
         <Input
           ref={searchRef}
           type="text"
-          placeholder="Search by name or email..."
+          placeholder={t('organizer.clients.search_placeholder')}
           defaultValue={search}
           onChange={doSearch}
           className="max-w-sm"
@@ -104,10 +106,12 @@ export default function OrganizerClients({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name / Email</TableHead>
-              <TableHead className="text-right">Tickets</TableHead>
-              <TableHead className="text-right">Total Spent</TableHead>
-              <TableHead className="text-right">Events</TableHead>
+              <TableHead>{t('organizer.clients.table_name_email')}</TableHead>
+              <TableHead className="text-right">{t('organizer.clients.table_tickets')}</TableHead>
+              <TableHead className="text-right">
+                {t('organizer.clients.table_total_spent')}
+              </TableHead>
+              <TableHead className="text-right">{t('organizer.clients.table_events')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -115,8 +119,8 @@ export default function OrganizerClients({
               <TableRow>
                 <TableCell colSpan={4} className="text-center text-muted-foreground py-12">
                   {search || eventId
-                    ? 'No buyers match your filters'
-                    : 'No buyers yet. Sell your first ticket to see clients here.'}
+                    ? t('organizer.clients.no_results')
+                    : t('organizer.clients.empty_state')}
                 </TableCell>
               </TableRow>
             ) : (

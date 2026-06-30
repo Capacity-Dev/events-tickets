@@ -1,3 +1,4 @@
+import { useTranslation } from '~/lib/i18n'
 import { usePage } from '@inertiajs/react'
 import { Form } from '@adonisjs/inertia/react'
 import { Input } from '~/components/ui/input'
@@ -13,28 +14,29 @@ import {
 } from '~/components/ui/table'
 
 export default function AdminCategories({ categories }: { categories: any[] }) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
 
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">Categories</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.categories.title')}</h1>
 
       <div className="border rounded-xl p-5 bg-card mb-8 max-w-sm">
-        <h2 className="text-lg font-semibold mb-4">New Category</h2>
+        <h2 className="text-lg font-semibold mb-4">{t('admin.categories.new_category')}</h2>
         <Form route="admin.categories.store" className="space-y-4">
           <div>
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t('admin.categories.name')}</Label>
             <Input id="name" name="name" required />
           </div>
           <div>
-            <Label htmlFor="slug">Slug (leave blank to auto-generate)</Label>
+            <Label htmlFor="slug">{t('admin.categories.slug_hint')}</Label>
             <Input id="slug" name="slug" />
           </div>
           <div>
-            <Label htmlFor="displayOrder">Display Order</Label>
+            <Label htmlFor="displayOrder">{t('admin.categories.display_order')}</Label>
             <Input id="displayOrder" name="displayOrder" type="number" defaultValue="0" />
           </div>
-          <Button type="submit">Create Category</Button>
+          <Button type="submit">{t('admin.categories.create')}</Button>
         </Form>
       </div>
 
@@ -42,10 +44,10 @@ export default function AdminCategories({ categories }: { categories: any[] }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Order</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('admin.categories.name')}</TableHead>
+              <TableHead>{t('admin.categories.slug')}</TableHead>
+              <TableHead>{t('admin.categories.order_col')}</TableHead>
+              <TableHead className="text-right">{t('common.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -65,7 +67,7 @@ export default function AdminCategories({ categories }: { categories: any[] }) {
                       type="submit"
                       className="inline-flex items-center justify-center rounded-lg border border-destructive text-destructive h-7 px-2 text-xs font-medium bg-transparent cursor-pointer hover:bg-destructive/10"
                     >
-                      Delete
+                      {t('common.delete')}
                     </button>
                   </form>
                 </TableCell>

@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Badge } from '~/components/ui/badge'
 import { toast } from 'sonner'
 
@@ -23,11 +24,13 @@ interface EventSummary {
 }
 
 export default function OrganizerEvents({ events }: { events: EventSummary[] }) {
+  const { t } = useTranslation()
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-heading">My Events</h1>
+          <h1 className="text-2xl font-heading">{t('organizer.events.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {events.length} event{events.length !== 1 ? 's' : ''}
           </p>
@@ -36,20 +39,22 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
           href="/dashboard/events/create"
           className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-9 px-3 text-sm font-medium no-underline"
         >
-          Create Event
+          {t('organizer.events.create_event')}
         </a>
       </div>
 
       {events.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground border rounded-xl bg-card">
-          <p className="text-lg font-medium mb-1">No events yet</p>
-          <p className="text-sm">Create your first event to start selling tickets.</p>
+          <p className="text-lg font-medium mb-1">{t('organizer.events.empty_title')}</p>
+          <p className="text-sm">{t('organizer.events.empty_description')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {events.map((event) => {
-            const totalSold = event.ticketTypes?.reduce((s, t) => s + (t.quantitySold ?? 0), 0) ?? 0
-            const totalCapacity = event.ticketTypes?.reduce((s, t) => s + t.quantityTotal, 0) ?? 0
+            const totalSold =
+              event.ticketTypes?.reduce((s, ticket) => s + (ticket.quantitySold ?? 0), 0) ?? 0
+            const totalCapacity =
+              event.ticketTypes?.reduce((s, ticket) => s + ticket.quantityTotal, 0) ?? 0
             const fillRate = totalCapacity > 0 ? Math.round((totalSold / totalCapacity) * 100) : 0
 
             return (
@@ -57,18 +62,25 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                 <div>
                   <h3 className="font-semibold text-foreground">{event.title}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {event.startDate ? new Date(event.startDate).toLocaleDateString() : 'No date'}
+                    {event.startDate
+                      ? new Date(event.startDate).toLocaleDateString()
+                      : t('organizer.events.no_date')}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
                   <Badge variant={statusVariant[event.status] ?? 'outline'}>
-                    {event.status.replace('_', ' ')}
+                    {t('status.' + event.status)}
                   </Badge>
-                  {event.visibility === 'unlisted' && <Badge variant="outline">private</Badge>}
+                  {event.visibility === 'unlisted' && (
+                    <Badge variant="outline">{t('organizer.events.badge_private')}</Badge>
+                  )}
                   {event.ticketTypes && event.ticketTypes.length > 0 && (
                     <span className="text-xs text-muted-foreground">
-                      {totalSold} / {totalCapacity} sold
+                      {t('organizer.events.sold_count', {
+                        sold: totalSold,
+                        capacity: totalCapacity,
+                      })}
                     </span>
                   )}
                 </div>
@@ -88,7 +100,7 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                     onClick={!event.id ? (e) => e.preventDefault() : undefined}
                     className="text-xs text-primary font-medium hover:underline"
                   >
-                    View details &rarr;
+                    {t('organizer.events.view_details')} &rarr;
                   </a>
 
                   <div className="flex-1" />
@@ -99,7 +111,7 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                       onClick={!event.id ? (e) => e.preventDefault() : undefined}
                       className="inline-flex items-center justify-center rounded-lg border border-success text-success bg-transparent hover:bg-success/10 h-7 px-2 text-xs font-medium no-underline"
                     >
-                      Check-in
+                      {t('organizer.events.check_in')}
                     </a>
                   )}
 
@@ -108,7 +120,7 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                     onClick={!event.id ? (e) => e.preventDefault() : undefined}
                     className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-2 text-xs font-medium no-underline text-foreground"
                   >
-                    Edit
+                    {t('common.edit')}
                   </a>
 
                   {event.status === 'draft' && (
@@ -119,7 +131,7 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                       }
                       className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-7 px-2 text-xs font-medium border-none cursor-pointer"
                     >
-                      Publish
+                      {t('organizer.events.publish')}
                     </button>
                   )}
 
@@ -133,7 +145,7 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                         }
                         className="inline-flex items-center justify-center rounded-lg border border-primary text-primary bg-transparent hover:bg-primary/10 h-7 px-2 text-xs font-medium cursor-pointer"
                       >
-                        Pay Fee
+                        {t('organizer.events.pay_fee')}
                       </button>
                     )}
 
@@ -144,11 +156,11 @@ export default function OrganizerEvents({ events }: { events: EventSummary[] }) 
                         navigator.clipboard.writeText(
                           `${window.location.origin}/e/${event.privateSlug}`
                         )
-                        toast.success('Private link copied')
+                        toast.success(t('organizer.events.toast_private_link_copied'))
                       }}
                       className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-7 px-2 text-xs font-medium cursor-pointer"
                     >
-                      Copy Link
+                      {t('organizer.events.copy_link')}
                     </button>
                   )}
                 </div>

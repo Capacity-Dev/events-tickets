@@ -1,25 +1,28 @@
+import { useTranslation } from '~/lib/i18n'
+
 export default function Home() {
+  const { t } = useTranslation()
   return (
     <>
       <div className="hero">
-        <h1>Bienvenue sur Mbiyo Events</h1>
-        <p>Votre plateforme de billetterie événementielle — rapide, sécurisée et sans friction.</p>
+        <h1>{t('home.hero_title')}</h1>
+        <p>{t('home.hero_subtitle')}</p>
       </div>
 
       <div className="cards">
         <a href="/events" target="_blank" rel="noreferrer">
-          <h3>Événements &nbsp;›</h3>
-          <p>Parcourez les événements disponibles</p>
+          <h3>{t('home.card_events_title')} &nbsp;&rsaquo;</h3>
+          <p>{t('home.card_events_desc')}</p>
         </a>
 
         <a href="/signup" target="_blank" rel="noreferrer">
-          <h3>Créer un compte &nbsp;›</h3>
-          <p>Organisez vos propres événements</p>
+          <h3>{t('home.card_signup_title')} &nbsp;&rsaquo;</h3>
+          <p>{t('home.card_signup_desc')}</p>
         </a>
 
         <a href="/dashboard" target="_blank" rel="noreferrer">
-          <h3>Tableau de bord &nbsp;›</h3>
-          <p>Gérez vos événements et vos billets</p>
+          <h3>{t('home.card_dashboard_title')} &nbsp;&rsaquo;</h3>
+          <p>{t('home.card_dashboard_desc')}</p>
         </a>
       </div>
     </>

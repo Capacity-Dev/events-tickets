@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react'
 import { formatCurrency, type CurrencyInfo } from '~/lib/currency'
+import { useTranslation } from '~/lib/i18n'
 
 export default function DashboardIndex({
   stats,
@@ -9,14 +10,13 @@ export default function DashboardIndex({
   currencies: CurrencyInfo[]
 }) {
   const { isAdmin, adminPrefix } = usePage().props as any
+  const { t } = useTranslation()
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-heading">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Overview of your events, orders and tickets.
-        </p>
+        <h1 className="text-2xl font-heading">{t('dashboard.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('dashboard.subtitle')}</p>
       </div>
 
       {isAdmin && (
@@ -37,28 +37,28 @@ export default function DashboardIndex({
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            Go to Admin Dashboard
+            {t('nav.go_to_admin_dashboard')}
           </a>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Events</p>
+          <p className="text-sm text-muted-foreground">{t('dashboard.stats_events')}</p>
           <p className="text-3xl font-heading mt-2">{stats.totalEvents ?? 0}</p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Tickets Sold</p>
+          <p className="text-sm text-muted-foreground">{t('dashboard.stats_tickets_sold')}</p>
           <p className="text-3xl font-heading mt-2">{stats.totalSold ?? 0}</p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Volume total</p>
+          <p className="text-sm text-muted-foreground">{t('dashboard.stats_volume_total')}</p>
           <p className="text-3xl font-heading mt-2">
             {formatCurrency(Math.round(stats.totalRevenue ?? 0), undefined, currencies)}
           </p>
         </div>
         <div className="border rounded-xl p-5 bg-card">
-          <p className="text-sm text-muted-foreground">Orders</p>
+          <p className="text-sm text-muted-foreground">{t('dashboard.stats_orders')}</p>
           <p className="text-3xl font-heading mt-2">{stats.totalOrders ?? 0}</p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function DashboardIndex({
             <line x1="12" y1="8" x2="12" y2="16" />
             <line x1="8" y1="12" x2="16" y2="12" />
           </svg>
-          Create Event
+          {t('dashboard.create_event')}
         </a>
         <a href="/dashboard/tickets" className="btn-outline btn-sm no-underline">
           <svg
@@ -94,7 +94,7 @@ export default function DashboardIndex({
           >
             <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 0 0-2 2v3a2 2 0 1 1 0 4v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a2 2 0 1 1 0-4V7a2 2 0 0 0-2-2H5z" />
           </svg>
-          My Tickets
+          {t('nav.my_tickets')}
         </a>
         <a href="/dashboard/orders" className="btn-outline btn-sm no-underline">
           <svg
@@ -112,10 +112,10 @@ export default function DashboardIndex({
             <line x1="16" y1="13" x2="8" y2="13" />
             <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
-          My Orders
+          {t('nav.my_orders')}
         </a>
         <a href="/dashboard/events" className="btn-ghost btn-sm no-underline">
-          View All Events &rarr;
+          {t('dashboard.view_all_events')} &rarr;
         </a>
       </div>
 
@@ -123,7 +123,7 @@ export default function DashboardIndex({
         {stats.recentEvents?.length > 0 && (
           <div className="border rounded-xl bg-card overflow-hidden">
             <div className="p-4 border-b bg-muted/50">
-              <h2 className="font-semibold">Recent Events</h2>
+              <h2 className="font-semibold">{t('dashboard.recent_events')}</h2>
             </div>
             <div className="divide-y">
               {stats.recentEvents.map((event: any) => (
@@ -144,7 +144,7 @@ export default function DashboardIndex({
                             : 'bg-primary/10 text-primary'
                       }`}
                     >
-                      {event.status}
+                      {t('status.' + event.status)}
                     </span>
                   </div>
                   <span className="text-muted-foreground text-xs">
@@ -159,7 +159,7 @@ export default function DashboardIndex({
         {stats.recentOrders?.length > 0 && (
           <div className="border rounded-xl bg-card overflow-hidden">
             <div className="p-4 border-b bg-muted/50">
-              <h2 className="font-semibold">Recent Orders</h2>
+              <h2 className="font-semibold">{t('dashboard.recent_orders')}</h2>
             </div>
             <div className="divide-y">
               {stats.recentOrders.map((order: any) => (
@@ -181,11 +181,13 @@ export default function DashboardIndex({
                             : 'bg-muted text-muted-foreground'
                       }`}
                     >
-                      {order.status}
+                      {t('status.' + order.status)}
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-muted-foreground text-xs">{order.itemsCount} items</span>
+                    <span className="text-muted-foreground text-xs">
+                      {order.itemsCount} {t('common.items')}
+                    </span>
                     <span className="font-medium text-foreground">
                       {formatCurrency(order.totalGrossAmount, order.currency, currencies)}
                     </span>
@@ -198,8 +200,8 @@ export default function DashboardIndex({
 
         {!stats.recentEvents?.length && !stats.recentOrders?.length && (
           <div className="lg:col-span-2 text-center py-16 text-muted-foreground border rounded-xl bg-card">
-            <p className="text-lg font-medium mb-1">Welcome!</p>
-            <p className="text-sm">Create your first event or browse events to buy tickets.</p>
+            <p className="text-lg font-medium mb-1">{t('dashboard.empty_state_title')}</p>
+            <p className="text-sm">{t('dashboard.empty_state_subtitle')}</p>
           </div>
         )}
       </div>

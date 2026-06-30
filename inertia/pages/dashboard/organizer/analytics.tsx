@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
@@ -83,14 +84,15 @@ export default function OrganizerAnalytics({
   stats: Stats
   currencies: CurrencyInfo[]
 }) {
+  const { t } = useTranslation()
   const [editDialog, setEditDialog] = useState<TicketTypeData | null>(null)
   const [editPrice, setEditPrice] = useState('')
   const [editQty, setEditQty] = useState('')
 
-  const openEdit = (t: TicketTypeData) => {
-    setEditDialog(t)
-    setEditPrice(t.basePrice)
-    setEditQty(String(t.quantityTotal))
+  const openEdit = (ticket: TicketTypeData) => {
+    setEditDialog(ticket)
+    setEditPrice(ticket.basePrice)
+    setEditQty(String(ticket.quantityTotal))
   }
 
   const submitEdit = () => {
@@ -108,14 +110,16 @@ export default function OrganizerAnalytics({
         <div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
             <a href="/dashboard/events" className="hover:text-foreground">
-              Events
+              {t('organizer.analytics.breadcrumb_events')}
             </a>
             <span>/</span>
             <span className="text-foreground font-medium">{event.title}</span>
           </div>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-heading">{event.title}</h1>
-            <Badge variant={statusVariant[event.status] ?? 'outline'}>{event.status}</Badge>
+            <Badge variant={statusVariant[event.status] ?? 'outline'}>
+              {t('status.' + event.status)}
+            </Badge>
           </div>
           {event.venueName && (
             <p className="text-sm text-muted-foreground mt-1">
@@ -130,7 +134,7 @@ export default function OrganizerAnalytics({
             onClick={!event.id ? (e) => e.preventDefault() : undefined}
             className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-9 px-3 text-sm font-medium"
           >
-            Edit Event
+            {t('organizer.analytics.edit_event')}
           </a>
           {event.status === 'published' && (
             <a
@@ -138,7 +142,7 @@ export default function OrganizerAnalytics({
               onClick={!event.id ? (e) => e.preventDefault() : undefined}
               className="inline-flex items-center justify-center rounded-lg border border-success text-success bg-transparent hover:bg-success/10 h-9 px-3 text-sm font-medium no-underline"
             >
-              Check-in
+              {t('organizer.analytics.check_in')}
             </a>
           )}
           {event.slug && (
@@ -149,14 +153,14 @@ export default function OrganizerAnalytics({
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 h-9 px-3 text-sm font-medium"
               >
-                View Public Page
+                {t('organizer.analytics.view_public_page')}
               </a>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
                   navigator.clipboard.writeText(`${window.location.origin}/events/${event.slug}`)
-                  toast.success('Link copied!')
+                  toast.success(t('organizer.analytics.toast_link_copied'))
                 }}
               >
                 <svg
@@ -173,7 +177,7 @@ export default function OrganizerAnalytics({
                   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                   <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                 </svg>
-                Copy Link
+                {t('common.copy_link')}
               </Button>
               <a
                 href={`/dashboard/events/${event.id}/boost`}
@@ -193,7 +197,7 @@ export default function OrganizerAnalytics({
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                 </svg>
-                Boost
+                {t('organizer.analytics.boost')}
               </a>
             </>
           )}
@@ -204,19 +208,21 @@ export default function OrganizerAnalytics({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Tickets Sold
+              {t('organizer.analytics.stat_tickets_sold')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-heading">{stats.totalSold}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">of {stats.totalCapacity} total</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {t('organizer.analytics.stat_of_total', { total: stats.totalCapacity })}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Fill Rate
+              {t('organizer.analytics.stat_fill_rate')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -233,7 +239,7 @@ export default function OrganizerAnalytics({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Revenue
+              {t('organizer.analytics.stat_revenue')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -246,7 +252,7 @@ export default function OrganizerAnalytics({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Unique Buyers
+              {t('organizer.analytics.stat_unique_buyers')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -257,12 +263,14 @@ export default function OrganizerAnalytics({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-normal text-muted-foreground uppercase tracking-wider">
-              Checked In
+              {t('organizer.analytics.stat_checked_in')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-heading">{stats.checkedInCount}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">of {stats.ticketCount} tickets</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {t('organizer.analytics.stat_of_tickets', { count: stats.ticketCount })}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -270,31 +278,39 @@ export default function OrganizerAnalytics({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <Card>
           <CardHeader>
-            <CardTitle>Ticket Types</CardTitle>
+            <CardTitle>{t('organizer.analytics.section_ticket_types')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead className="text-right">Sold</TableHead>
-                  <TableHead className="text-right">Capacity</TableHead>
-                  <TableHead className="text-right">Revenue</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t('organizer.analytics.table_type')}</TableHead>
+                  <TableHead>{t('organizer.analytics.table_price')}</TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_sold')}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_capacity')}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_revenue')}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_actions')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {event.ticketTypes?.length > 0 ? (
-                  event.ticketTypes.map((t: any) => {
-                    const sold = t.quantitySold ?? 0
-                    const rev = sold * Number(t.basePrice)
+                  event.ticketTypes.map((tt: any) => {
+                    const sold = tt.quantitySold ?? 0
+                    const rev = sold * Number(tt.basePrice)
                     const fill =
-                      t.quantityTotal > 0 ? Math.round((sold / t.quantityTotal) * 100) : 0
+                      tt.quantityTotal > 0 ? Math.round((sold / tt.quantityTotal) * 100) : 0
                     return (
-                      <TableRow key={t.id}>
+                      <TableRow key={tt.id}>
                         <TableCell className="font-medium">
-                          {t.name}
+                          {tt.name}
                           <div className="flex items-center gap-1 mt-1">
                             <div className="h-1.5 flex-1 min-w-12 rounded-full bg-muted">
                               <div
@@ -306,16 +322,16 @@ export default function OrganizerAnalytics({
                           </div>
                         </TableCell>
                         <TableCell className="text-sm">
-                          {formatCurrency(t.basePrice, t.currency, currencies)}
+                          {formatCurrency(tt.basePrice, tt.currency, currencies)}
                         </TableCell>
                         <TableCell className="text-right text-sm">{sold}</TableCell>
-                        <TableCell className="text-right text-sm">{t.quantityTotal}</TableCell>
+                        <TableCell className="text-right text-sm">{tt.quantityTotal}</TableCell>
                         <TableCell className="text-right text-sm font-medium">
-                          {formatCurrency(rev, t.currency, currencies)}
+                          {formatCurrency(rev, tt.currency, currencies)}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button variant="outline" size="xs" onClick={() => openEdit(t)}>
-                            Edit
+                          <Button variant="outline" size="xs" onClick={() => openEdit(tt)}>
+                            {t('common.edit')}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -324,7 +340,7 @@ export default function OrganizerAnalytics({
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      No ticket types defined
+                      {t('organizer.analytics.no_ticket_types')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -335,7 +351,7 @@ export default function OrganizerAnalytics({
 
         <Card>
           <CardHeader>
-            <CardTitle>Sales Timeline</CardTitle>
+            <CardTitle>{t('organizer.analytics.section_sales_timeline')}</CardTitle>
           </CardHeader>
           <CardContent>
             {stats.salesTimeline.length > 0 ? (
@@ -349,7 +365,9 @@ export default function OrganizerAnalytics({
                       })}
                     </span>
                     <div className="flex items-center gap-4">
-                      <span>{entry.count} tickets</span>
+                      <span>
+                        {t('organizer.analytics.timeline_tickets', { count: entry.count })}
+                      </span>
                       <span className="font-medium">
                         {formatCurrency(entry.revenue, undefined, currencies)}
                       </span>
@@ -358,7 +376,9 @@ export default function OrganizerAnalytics({
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground py-8 text-center">No sales data yet</p>
+              <p className="text-sm text-muted-foreground py-8 text-center">
+                {t('organizer.analytics.no_sales_data')}
+              </p>
             )}
           </CardContent>
         </Card>
@@ -367,17 +387,23 @@ export default function OrganizerAnalytics({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
+            <CardTitle>{t('organizer.analytics.section_recent_orders')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order</TableHead>
-                  <TableHead>Buyer</TableHead>
-                  <TableHead className="text-right">Tickets</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">Date</TableHead>
+                  <TableHead>{t('organizer.analytics.table_order')}</TableHead>
+                  <TableHead>{t('organizer.analytics.table_buyer')}</TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_tickets')}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_amount')}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_date')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -405,7 +431,7 @@ export default function OrganizerAnalytics({
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                      No orders yet
+                      {t('organizer.analytics.no_orders')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -416,15 +442,19 @@ export default function OrganizerAnalytics({
 
         <Card>
           <CardHeader>
-            <CardTitle>Buyers</CardTitle>
+            <CardTitle>{t('organizer.analytics.section_buyers')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name / Email</TableHead>
-                  <TableHead className="text-right">Tickets</TableHead>
-                  <TableHead className="text-right">Total Spent</TableHead>
+                  <TableHead>{t('organizer.analytics.table_name_email')}</TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_tickets')}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t('organizer.analytics.table_total_spent')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -446,7 +476,7 @@ export default function OrganizerAnalytics({
                 ) : (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
-                      No buyers yet
+                      {t('organizer.analytics.no_buyers')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -459,11 +489,13 @@ export default function OrganizerAnalytics({
       <Dialog open={!!editDialog} onOpenChange={() => setEditDialog(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Edit Ticket Type — {editDialog?.name}</DialogTitle>
+            <DialogTitle>
+              {t('organizer.analytics.edit_ticket_type_title', { name: editDialog?.name ?? '' })}
+            </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <div>
-              <Label htmlFor="editPrice">Price</Label>
+              <Label htmlFor="editPrice">{t('organizer.analytics.field_price')}</Label>
               <Input
                 id="editPrice"
                 type="number"
@@ -474,7 +506,7 @@ export default function OrganizerAnalytics({
               />
             </div>
             <div>
-              <Label htmlFor="editQty">Total Capacity</Label>
+              <Label htmlFor="editQty">{t('organizer.analytics.field_total_capacity')}</Label>
               <Input
                 id="editQty"
                 type="number"
@@ -483,16 +515,18 @@ export default function OrganizerAnalytics({
                 onChange={(e) => setEditQty(e.target.value)}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                {editDialog?.quantitySold ?? 0} already sold. Minimum:{' '}
-                {editDialog?.quantitySold ?? 0}.
+                {t('organizer.analytics.already_sold_min', {
+                  sold: editDialog?.quantitySold ?? 0,
+                  min: editDialog?.quantitySold ?? 0,
+                })}
               </p>
             </div>
             <Separator />
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setEditDialog(null)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
-              <Button onClick={submitEdit}>Save Changes</Button>
+              <Button onClick={submitEdit}>{t('common.save_changes')}</Button>
             </div>
           </div>
         </DialogContent>

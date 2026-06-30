@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react'
 import { useState } from 'react'
+import { useTranslation } from '~/lib/i18n'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'
@@ -34,6 +35,7 @@ export default function OrganizerPayouts({
   currencies: CurrencyData[]
   events: any[]
 }) {
+  const { t } = useTranslation()
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]?.code ?? 'USD')
   const activeCurrency = currencies.find((c) => c.code === selectedCurrency)
   const networks: string[] = activeCurrency?.networks ?? []
@@ -47,16 +49,16 @@ export default function OrganizerPayouts({
 
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">Payouts</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('organizer.payouts.title')}</h1>
 
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Request Payout</CardTitle>
+          <CardTitle>{t('organizer.payouts.section_request')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
             <div>
-              <Label htmlFor="currency">Currency</Label>
+              <Label htmlFor="currency">{t('organizer.payouts.field_currency')}</Label>
               <select
                 id="currency"
                 name="currency"
@@ -73,18 +75,18 @@ export default function OrganizerPayouts({
             </div>
 
             <div>
-              <Label htmlFor="amount">Amount</Label>
+              <Label htmlFor="amount">{t('organizer.payouts.field_amount')}</Label>
               <Input id="amount" name="amount" type="number" step="0.01" min="0" required />
             </div>
 
             <div>
-              <Label htmlFor="eventId">Event (optional)</Label>
+              <Label htmlFor="eventId">{t('organizer.payouts.field_event')}</Label>
               <select
                 id="eventId"
                 name="eventId"
                 className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">All events</option>
+                <option value="">{t('organizer.payouts.all_events')}</option>
                 {events.map((ev: any) => (
                   <option key={ev.id} value={ev.id}>
                     {ev.title}
@@ -96,12 +98,17 @@ export default function OrganizerPayouts({
             <Separator />
 
             <div>
-              <Label htmlFor="beneficiary">Beneficiary Name</Label>
-              <Input id="beneficiary" name="beneficiary" required placeholder="Full name" />
+              <Label htmlFor="beneficiary">{t('organizer.payouts.field_beneficiary')}</Label>
+              <Input
+                id="beneficiary"
+                name="beneficiary"
+                required
+                placeholder={t('organizer.payouts.placeholder_full_name')}
+              />
             </div>
 
             <div>
-              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <Label htmlFor="phoneNumber">{t('organizer.payouts.field_phone')}</Label>
               <Input
                 id="phoneNumber"
                 name="phoneNumber"
@@ -110,19 +117,19 @@ export default function OrganizerPayouts({
                 placeholder="+243XXXXXXXXX"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Mobile money phone number to receive payout
+                {t('organizer.payouts.phone_hint')}
               </p>
             </div>
 
             <div>
-              <Label htmlFor="network">Mobile Network</Label>
+              <Label htmlFor="network">{t('organizer.payouts.field_network')}</Label>
               <select
                 id="network"
                 name="network"
                 required
                 className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">Select network</option>
+                <option value="">{t('organizer.payouts.select_network')}</option>
                 {networks.map((n: string) => (
                   <option key={n} value={n}>
                     {n.charAt(0).toUpperCase() + n.slice(1)}
@@ -134,10 +141,10 @@ export default function OrganizerPayouts({
             <Separator />
 
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Payout via mobile money</span>
+              <span>{t('organizer.payouts.via_mobile_money')}</span>
             </div>
 
-            <Button type="submit">Request Payout</Button>
+            <Button type="submit">{t('organizer.payouts.button_request')}</Button>
           </form>
         </CardContent>
       </Card>
@@ -146,19 +153,19 @@ export default function OrganizerPayouts({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Amount</TableHead>
-              <TableHead>Currency</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Beneficiary</TableHead>
-              <TableHead>Network</TableHead>
-              <TableHead>Requested</TableHead>
+              <TableHead>{t('organizer.payouts.table_amount')}</TableHead>
+              <TableHead>{t('organizer.payouts.table_currency')}</TableHead>
+              <TableHead>{t('organizer.payouts.table_status')}</TableHead>
+              <TableHead>{t('organizer.payouts.table_beneficiary')}</TableHead>
+              <TableHead>{t('organizer.payouts.table_network')}</TableHead>
+              <TableHead>{t('organizer.payouts.table_requested')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {payouts.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  No payouts yet
+                  {t('organizer.payouts.no_payouts')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -178,7 +185,7 @@ export default function OrganizerPayouts({
                             : 'outline'
                       }
                     >
-                      {p.status}
+                      {t('status.' + p.status)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm">{p.beneficiary ?? '-'}</TableCell>

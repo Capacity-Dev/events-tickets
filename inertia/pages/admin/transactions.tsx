@@ -1,4 +1,5 @@
 import { usePage } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { formatCurrency } from '~/lib/currency'
 
 interface Props {
@@ -18,6 +19,7 @@ export default function AdminTransactions({
   dateFrom,
   dateTo,
 }: Props) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
 
   const statusClass = (status: string) => {
@@ -60,8 +62,10 @@ export default function AdminTransactions({
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-heading">Transactions</h1>
-        <p className="text-sm text-muted-foreground mt-1">{pagination.total} orders</p>
+        <h1 className="text-2xl font-heading">{t('admin.transactions.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {t('admin.transactions.orders_count', { n: pagination.total })}
+        </p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -74,7 +78,7 @@ export default function AdminTransactions({
             type="text"
             name="q"
             defaultValue={search}
-            placeholder="Search order #, email, phone..."
+            placeholder={t('admin.transactions.search_placeholder')}
             className="input-field min-h-10 w-full sm:w-64 text-sm"
           />
           {currentStatus && <input type="hidden" name="status" value={currentStatus} />}
@@ -83,24 +87,24 @@ export default function AdminTransactions({
             name="dateFrom"
             defaultValue={dateFrom}
             className="input-field min-h-10 w-auto text-sm"
-            title="From date"
+            title={t('admin.transactions.from_date')}
           />
           <input
             type="date"
             name="dateTo"
             defaultValue={dateTo}
             className="input-field min-h-10 w-auto text-sm"
-            title="To date"
+            title={t('admin.transactions.to_date')}
           />
           <button type="submit" className="btn-primary btn-sm">
-            Search
+            {t('common.search')}
           </button>
           {(search || dateFrom || dateTo) && (
             <a
               href={buildUrl({ q: '', dateFrom: '', dateTo: '' })}
               className="btn-outline btn-sm no-underline"
             >
-              Clear
+              {t('common.clear')}
             </a>
           )}
         </form>
@@ -117,35 +121,37 @@ export default function AdminTransactions({
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            {s || 'All'}
+            {s ? t('status.' + s) : t('common.all')}
           </a>
         ))}
       </div>
 
       <div className="border rounded-xl bg-card overflow-hidden">
         {orders.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">No transactions found</div>
+          <div className="p-8 text-center text-muted-foreground">
+            {t('admin.transactions.no_transactions')}
+          </div>
         ) : (
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/50 text-left">
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Order #
+                  {t('admin.transactions.order_num')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Buyer
+                  {t('admin.transactions.buyer')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Amount
+                  {t('admin.transactions.amount')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Status
+                  {t('common.status')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Method
+                  {t('admin.transactions.method')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Date
+                  {t('admin.transactions.date')}
                 </th>
               </tr>
             </thead>
@@ -161,7 +167,7 @@ export default function AdminTransactions({
                     </a>
                   </td>
                   <td className="p-3 text-sm">
-                    <div>{o.buyer?.fullName ?? 'Guest'}</div>
+                    <div>{o.buyer?.fullName ?? t('common.guest')}</div>
                     <div className="text-xs text-muted-foreground">
                       {o.buyer?.email ?? o.guestEmail ?? o.guestPhone ?? ''}
                     </div>
@@ -171,7 +177,7 @@ export default function AdminTransactions({
                   </td>
                   <td className="p-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${statusClass(o.status)}`}>
-                      {o.status}
+                      {t('status.' + o.status)}
                     </span>
                   </td>
                   <td className="p-3 text-sm text-muted-foreground">{o.paymentMethod ?? '—'}</td>
@@ -192,18 +198,21 @@ export default function AdminTransactions({
               href={buildUrl({ page: String(pagination.currentPage - 1) })}
               className="btn-outline btn-sm no-underline"
             >
-              Previous
+              {t('common.previous')}
             </a>
           )}
           <span className="text-sm text-muted-foreground self-center">
-            Page {pagination.currentPage} of {pagination.lastPage}
+            {t('common.page_x_of_y', {
+              current: pagination.currentPage,
+              last: pagination.lastPage,
+            })}
           </span>
           {pagination.currentPage < pagination.lastPage && (
             <a
               href={buildUrl({ page: String(pagination.currentPage + 1) })}
               className="btn-outline btn-sm no-underline"
             >
-              Next
+              {t('common.next')}
             </a>
           )}
         </div>

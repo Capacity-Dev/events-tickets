@@ -1,7 +1,9 @@
 import { router } from '@inertiajs/react'
 import { useRef } from 'react'
+import { useTranslation } from '~/lib/i18n'
 
 export default function Login() {
+  const { t } = useTranslation()
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
 
@@ -17,8 +19,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-heading">Sign in</h1>
-          <p className="text-sm text-muted-foreground mt-1">Enter your details or use Google</p>
+          <h1 className="text-2xl font-heading">{t('auth.signin_title')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('auth.signin_subtitle')}</p>
         </div>
 
         <a
@@ -43,7 +45,7 @@ export default function Login() {
               fill="#EA4335"
             />
           </svg>
-          Continue with Google
+          {t('auth.google_button')}
         </a>
 
         <div className="relative">
@@ -51,14 +53,14 @@ export default function Login() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+            <span className="bg-background px-2 text-muted-foreground">{t('auth.or_email')}</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="text-sm font-medium">
-              Email
+              {t('auth.email_label')}
             </label>
             <input
               ref={emailRef}
@@ -72,7 +74,7 @@ export default function Login() {
 
           <div>
             <label htmlFor="password" className="text-sm font-medium">
-              Password
+              {t('auth.password_label')}
             </label>
             <input
               ref={passwordRef}
@@ -88,14 +90,14 @@ export default function Login() {
             type="submit"
             className="w-full rounded-lg bg-primary text-primary-foreground h-10 text-sm font-medium hover:bg-primary/80 transition-colors border-none cursor-pointer"
           >
-            Sign in
+            {t('auth.signin_submit')}
           </button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          No account?{' '}
+          {t('auth.no_account')}{' '}
           <a href="/signup" className="text-primary font-medium hover:underline">
-            Sign up
+            {t('auth.signup_link')}
           </a>
         </p>
       </div>

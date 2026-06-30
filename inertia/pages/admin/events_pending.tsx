@@ -1,6 +1,8 @@
 import { usePage } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 
 export default function AdminPendingEvents({ events }: { events: any[] }) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
 
   const statusClass = (status: string) => {
@@ -18,32 +20,34 @@ export default function AdminPendingEvents({ events }: { events: any[] }) {
 
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">Event Moderation</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.events_pending.title')}</h1>
 
       <div className="border rounded-xl bg-card overflow-hidden">
         {events.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">No events yet</div>
+          <div className="p-8 text-center text-muted-foreground">
+            {t('admin.events_pending.no_events')}
+          </div>
         ) : (
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/50 text-left">
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Title
+                  {t('admin.events_pending.title_col')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Organizer
+                  {t('admin.events_pending.organizer')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Status
+                  {t('admin.events_pending.status')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Frozen
+                  {t('admin.events_pending.frozen')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Created
+                  {t('admin.events_pending.created')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">
-                  Actions
+                  {t('admin.events_pending.actions')}
                 </th>
               </tr>
             </thead>
@@ -58,13 +62,13 @@ export default function AdminPendingEvents({ events }: { events: any[] }) {
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full ${statusClass(event.status)}`}
                     >
-                      {event.status}
+                      {t('status.' + event.status)}
                     </span>
                   </td>
                   <td className="p-3">
                     {event.isFrozen ? (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-amber/10 text-amber">
-                        Frozen
+                        {t('admin.events_pending.frozen')}
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
@@ -85,7 +89,7 @@ export default function AdminPendingEvents({ events }: { events: any[] }) {
                             type="submit"
                             className="inline-flex items-center justify-center rounded-lg bg-success text-success-foreground h-7 px-2.5 text-xs font-medium border-none cursor-pointer hover:brightness-90"
                           >
-                            Publish
+                            {t('admin.events_pending.publish')}
                           </button>
                         </form>
                       )}
@@ -99,7 +103,7 @@ export default function AdminPendingEvents({ events }: { events: any[] }) {
                             type="submit"
                             className="inline-flex items-center justify-center rounded-lg border border-destructive text-destructive h-7 px-2.5 text-xs font-medium bg-transparent cursor-pointer hover:bg-destructive/10"
                           >
-                            Reject
+                            {t('admin.events_pending.reject')}
                           </button>
                         </form>
                       )}
@@ -113,7 +117,7 @@ export default function AdminPendingEvents({ events }: { events: any[] }) {
                             type="submit"
                             className="inline-flex items-center justify-center rounded-lg border border-success text-success h-7 px-2.5 text-xs font-medium bg-transparent cursor-pointer hover:bg-success/10"
                           >
-                            Unfreeze
+                            {t('admin.events_pending.unfreeze')}
                           </button>
                         </form>
                       ) : (
@@ -126,7 +130,7 @@ export default function AdminPendingEvents({ events }: { events: any[] }) {
                             type="submit"
                             className="inline-flex items-center justify-center rounded-lg border border-amber text-amber h-7 px-2.5 text-xs font-medium bg-transparent cursor-pointer hover:bg-amber/10"
                           >
-                            Freeze
+                            {t('admin.events_pending.freeze')}
                           </button>
                         </form>
                       )}

@@ -1,3 +1,4 @@
+import { useTranslation } from '~/lib/i18n'
 import { Form } from '@adonisjs/inertia/react'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
@@ -13,39 +14,41 @@ import {
 } from '~/components/ui/table'
 
 export default function AdminWhatsApp({ templates }: { templates: any[] }) {
+  const { t } = useTranslation()
+
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">WhatsApp Templates</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.whatsapp.title')}</h1>
 
       <div className="border rounded-xl p-5 bg-card mb-8 max-w-md">
-        <h2 className="text-lg font-semibold mb-4">New Template</h2>
+        <h2 className="text-lg font-semibold mb-4">{t('admin.whatsapp.new_template')}</h2>
         <Form route="admin.whatsapp.store" className="space-y-4">
           <div>
-            <Label htmlFor="name">Template Name</Label>
+            <Label htmlFor="name">{t('admin.whatsapp.template_name')}</Label>
             <Input id="name" name="name" required />
           </div>
           <div>
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">{t('admin.whatsapp.category')}</Label>
             <select
               id="category"
               name="category"
               className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
               required
             >
-              <option value="utility">Utility</option>
-              <option value="authentication">Authentication</option>
-              <option value="marketing">Marketing</option>
+              <option value="utility">{t('admin.whatsapp.category_utility')}</option>
+              <option value="authentication">{t('admin.whatsapp.category_authentication')}</option>
+              <option value="marketing">{t('admin.whatsapp.category_marketing')}</option>
             </select>
           </div>
           <div>
-            <Label htmlFor="languageCode">Language</Label>
+            <Label htmlFor="languageCode">{t('admin.whatsapp.language')}</Label>
             <Input id="languageCode" name="languageCode" defaultValue="en_US" />
           </div>
           <div>
-            <Label htmlFor="variables">Variables (JSON array)</Label>
+            <Label htmlFor="variables">{t('admin.whatsapp.variables')}</Label>
             <Input id="variables" name="variables" placeholder='["event_name","ticket_type"]' />
           </div>
-          <Button type="submit">Create Template</Button>
+          <Button type="submit">{t('admin.whatsapp.create_template')}</Button>
         </Form>
       </div>
 
@@ -53,41 +56,41 @@ export default function AdminWhatsApp({ templates }: { templates: any[] }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Language</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>{t('common.name')}</TableHead>
+              <TableHead>{t('admin.whatsapp.category')}</TableHead>
+              <TableHead>{t('admin.whatsapp.language')}</TableHead>
+              <TableHead>{t('common.status')}</TableHead>
+              <TableHead>{t('admin.whatsapp.created')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {templates.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No templates
+                  {t('admin.whatsapp.no_templates')}
                 </TableCell>
               </TableRow>
             ) : (
-              templates.map((t: any) => (
-                <TableRow key={t.id}>
-                  <TableCell className="font-medium">{t.name}</TableCell>
-                  <TableCell className="text-sm capitalize">{t.category}</TableCell>
-                  <TableCell className="text-sm">{t.languageCode}</TableCell>
+              templates.map((tp: any) => (
+                <TableRow key={tp.id}>
+                  <TableCell className="font-medium">{tp.name}</TableCell>
+                  <TableCell className="text-sm capitalize">{tp.category}</TableCell>
+                  <TableCell className="text-sm">{tp.languageCode}</TableCell>
                   <TableCell>
                     <Badge
                       variant={
-                        t.status === 'approved'
+                        tp.status === 'approved'
                           ? 'default'
-                          : t.status === 'rejected'
+                          : tp.status === 'rejected'
                             ? 'destructive'
                             : 'outline'
                       }
                     >
-                      {t.status.replace('_', ' ')}
+                      {tp.status.replace('_', ' ')}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '-'}
+                    {tp.createdAt ? new Date(tp.createdAt).toLocaleDateString() : '-'}
                   </TableCell>
                 </TableRow>
               ))

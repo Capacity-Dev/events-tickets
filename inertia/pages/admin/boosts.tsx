@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '~/lib/i18n'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
@@ -25,6 +26,7 @@ export default function AdminBoosts({
   privateEventFee?: string
   privateEventCurrency?: string
 }) {
+  const { t } = useTranslation()
   const [fee, setFee] = useState(privateEventFee)
   const [currency, setCurrency] = useState(privateEventCurrency)
   const [saving, setSaving] = useState(false)
@@ -38,12 +40,12 @@ export default function AdminBoosts({
         body: JSON.stringify({ fee, currency }),
       })
       if (res.ok) {
-        toast.success('Private event fee updated')
+        toast.success(t('admin.boosts.fee_updated'))
       } else {
-        toast.error('Failed to save')
+        toast.error(t('common.save_failed'))
       }
     } catch {
-      toast.error('Failed to save')
+      toast.error(t('common.save_failed'))
     } finally {
       setSaving(false)
     }
@@ -51,19 +53,19 @@ export default function AdminBoosts({
 
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">Boosts &amp; Private Events</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.boosts.title')}</h1>
 
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Private Event Fee</CardTitle>
+          <CardTitle>{t('admin.boosts.private_event_fee')}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">
-            Organizers must pay this fee before publishing a private (unlisted) event.
+            {t('admin.boosts.private_event_fee_desc')}
           </p>
           <div className="flex items-end gap-3 flex-wrap">
             <div>
-              <Label htmlFor="privateFee">Price</Label>
+              <Label htmlFor="privateFee">{t('admin.boosts.price')}</Label>
               <Input
                 id="privateFee"
                 type="number"
@@ -75,7 +77,7 @@ export default function AdminBoosts({
               />
             </div>
             <div>
-              <Label htmlFor="privateCurrency">Currency</Label>
+              <Label htmlFor="privateCurrency">{t('admin.boosts.currency')}</Label>
               <Input
                 id="privateCurrency"
                 value={currency}
@@ -85,7 +87,7 @@ export default function AdminBoosts({
               />
             </div>
             <Button size="sm" onClick={handleSaveFee} disabled={saving}>
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? t('common.saving') : t('common.save')}
             </Button>
           </div>
         </CardContent>
@@ -97,14 +99,14 @@ export default function AdminBoosts({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Event</TableHead>
-              <TableHead>Organizer</TableHead>
-              <TableHead>Budget</TableHead>
-              <TableHead>Markup</TableHead>
-              <TableHead>Meta Spent</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Impr.</TableHead>
-              <TableHead>Clicks</TableHead>
+              <TableHead>{t('admin.boosts.event')}</TableHead>
+              <TableHead>{t('admin.boosts.organizer')}</TableHead>
+              <TableHead>{t('admin.boosts.budget')}</TableHead>
+              <TableHead>{t('admin.boosts.markup')}</TableHead>
+              <TableHead>{t('admin.boosts.meta_spent')}</TableHead>
+              <TableHead>{t('common.status')}</TableHead>
+              <TableHead>{t('admin.boosts.impressions')}</TableHead>
+              <TableHead>{t('admin.boosts.clicks')}</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -112,7 +114,7 @@ export default function AdminBoosts({
             {boosts.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                  No boosts
+                  {t('admin.boosts.no_boosts')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -128,7 +130,9 @@ export default function AdminBoosts({
                   <TableCell className="text-sm">${Number(b.markupAmount).toFixed(2)}</TableCell>
                   <TableCell className="text-sm">${Number(b.metaSpent).toFixed(2)}</TableCell>
                   <TableCell>
-                    <Badge variant={boostStatusVariant[b.status] || 'outline'}>{b.status}</Badge>
+                    <Badge variant={boostStatusVariant[b.status] || 'outline'}>
+                      {t('status.' + b.status)}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-sm">{b.metaImpressions.toLocaleString()}</TableCell>
                   <TableCell className="text-sm">{b.metaClicks.toLocaleString()}</TableCell>
@@ -138,12 +142,12 @@ export default function AdminBoosts({
                         action={`/admin/boosts/${b.id}/cancel`}
                         method="POST"
                         onSubmit={(e) => {
-                          if (!confirm('Cancel this boost?')) e.preventDefault()
+                          if (!confirm(t('admin.boosts.cancel_confirm'))) e.preventDefault()
                         }}
                       >
                         <input type="hidden" name="_method" value="POST" />
                         <Button type="submit" variant="destructive" size="sm">
-                          Cancel
+                          {t('common.cancel')}
                         </Button>
                       </form>
                     )}

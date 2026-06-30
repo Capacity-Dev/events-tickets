@@ -1,4 +1,5 @@
 import { usePage } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 
 interface Props {
   user: any
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function AdminUserShow({ user, events, orders, payouts }: Props) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
 
   const statusClass = (status: string) => {
@@ -46,26 +48,26 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
           href={`/${adminPrefix}/users/${user.id}/edit`}
           className="btn-primary btn-sm no-underline"
         >
-          Edit User
+          {t('admin.user_show.edit_user')}
         </a>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-1 border rounded-xl bg-card overflow-hidden">
           <div className="p-4 border-b bg-muted/50">
-            <h2 className="font-semibold">Profile</h2>
+            <h2 className="font-semibold">{t('admin.user_show.profile')}</h2>
           </div>
           <div className="p-4 space-y-3">
             <div>
-              <p className="text-xs text-muted-foreground">Name</p>
+              <p className="text-xs text-muted-foreground">{t('admin.user_show.name')}</p>
               <p className="text-sm font-medium">{user.fullName}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Email</p>
+              <p className="text-xs text-muted-foreground">{t('admin.user_show.email')}</p>
               <p className="text-sm font-medium">{user.email}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Role</p>
+              <p className="text-xs text-muted-foreground">{t('admin.user_show.role')}</p>
               <span
                 className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${
                   user.role?.name === 'admin'
@@ -75,11 +77,11 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
                       : 'bg-muted text-muted-foreground'
                 }`}
               >
-                {user.role?.name ?? 'buyer'}
+                {t('role.' + (user.role?.name ?? 'buyer'))}
               </span>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Joined</p>
+              <p className="text-xs text-muted-foreground">{t('admin.user_show.joined')}</p>
               <p className="text-sm">
                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—'}
               </p>
@@ -91,7 +93,9 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
           {events.length > 0 && (
             <div className="border rounded-xl bg-card overflow-hidden">
               <div className="p-4 border-b bg-muted/50">
-                <h2 className="font-semibold">Events ({events.length})</h2>
+                <h2 className="font-semibold">
+                  {t('admin.user_show.events_count')} ({events.length})
+                </h2>
               </div>
               <div className="divide-y">
                 {events.map((e: any) => (
@@ -101,7 +105,7 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
                       <span
                         className={`ml-3 text-xs px-2 py-0.5 rounded-full ${statusClass(e.status)}`}
                       >
-                        {e.status}
+                        {t('status.' + e.status)}
                       </span>
                     </div>
                     <span className="text-muted-foreground text-xs">
@@ -116,7 +120,9 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
           {orders.length > 0 && (
             <div className="border rounded-xl bg-card overflow-hidden">
               <div className="p-4 border-b bg-muted/50">
-                <h2 className="font-semibold">Orders ({orders.length})</h2>
+                <h2 className="font-semibold">
+                  {t('admin.user_show.orders_count')} ({orders.length})
+                </h2>
               </div>
               <div className="divide-y">
                 {orders.map((o: any) => (
@@ -130,7 +136,7 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
                       <span
                         className={`ml-3 text-xs px-2 py-0.5 rounded-full ${orderStatusClass(o.status)}`}
                       >
-                        {o.status}
+                        {t('status.' + o.status)}
                       </span>
                     </div>
                     <span className="font-medium text-foreground">
@@ -145,7 +151,9 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
           {payouts.length > 0 && (
             <div className="border rounded-xl bg-card overflow-hidden">
               <div className="p-4 border-b bg-muted/50">
-                <h2 className="font-semibold">Payouts ({payouts.length})</h2>
+                <h2 className="font-semibold">
+                  {t('admin.user_show.payouts_count')} ({payouts.length})
+                </h2>
               </div>
               <div className="divide-y">
                 {payouts.map((p: any) => (
@@ -163,7 +171,7 @@ export default function AdminUserShow({ user, events, orders, payouts }: Props) 
                               : 'bg-muted text-muted-foreground'
                         }`}
                       >
-                        {p.status}
+                        {t('status.' + p.status)}
                       </span>
                     </div>
                     <span className="font-medium text-foreground">

@@ -1,3 +1,4 @@
+import { useTranslation } from '~/lib/i18n'
 import { Badge } from '~/components/ui/badge'
 import {
   Table,
@@ -9,17 +10,19 @@ import {
 } from '~/components/ui/table'
 
 export default function AdminUsers({ users }: { users: any[] }) {
+  const { t } = useTranslation()
+
   return (
     <div>
-      <h1 className="text-2xl font-heading mb-6">User Management</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.users.title')}</h1>
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead>{t('admin.users.name')}</TableHead>
+              <TableHead>{t('admin.users.email')}</TableHead>
+              <TableHead>{t('admin.users.role')}</TableHead>
+              <TableHead>{t('admin.users.joined')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -37,7 +40,7 @@ export default function AdminUsers({ users }: { users: any[] }) {
                           : 'outline'
                     }
                   >
-                    {user.role?.name ?? 'none'}
+                    {t('role.' + (user.role?.name ?? 'none'))}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">

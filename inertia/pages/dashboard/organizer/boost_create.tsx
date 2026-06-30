@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
@@ -14,14 +15,17 @@ const CHANNELS = [
   { key: 'instagram', label: 'Instagram' },
   { key: 'messenger', label: 'Messenger' },
 ]
-const CTA_OPTIONS = [
-  { value: 'LEARN_MORE', label: 'Learn More' },
-  { value: 'BOOK_NOW', label: 'Book Now' },
-  { value: 'SHOP_NOW', label: 'Buy Tickets' },
-  { value: 'SIGN_UP', label: 'Sign Up' },
-]
 
 export default function BoostCreate({ event, appUrl }: { event: any; appUrl: string }) {
+  const { t } = useTranslation()
+
+  const CTA_OPTIONS = [
+    { value: 'LEARN_MORE', label: t('organizer.boost_create.cta_learn_more') },
+    { value: 'BOOK_NOW', label: t('organizer.boost_create.cta_book_now') },
+    { value: 'SHOP_NOW', label: t('organizer.boost_create.cta_buy_tickets') },
+    { value: 'SIGN_UP', label: t('organizer.boost_create.cta_sign_up') },
+  ]
+
   const [budget, setBudget] = useState(25)
   const [budgetType, setBudgetType] = useState('daily')
   const [durationDays, setDurationDays] = useState(7)
@@ -40,7 +44,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
 
   const handleCreateBoost = async () => {
     if (channels.length === 0) {
-      toast.error('Select at least one channel')
+      toast.error(t('organizer.boost_create.toast_select_channel'))
       return
     }
     setLoading(true)
@@ -79,10 +83,10 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
         body: JSON.stringify(payload),
       })
 
-      toast.success('Boost created! Confirm payment?')
+      toast.success(t('organizer.boost_create.toast_boost_created'))
       router.visit('/dashboard/boosts')
     } catch (err: any) {
-      toast.error(err?.message ?? 'Failed to create boost')
+      toast.error(err?.message ?? t('organizer.boost_create.toast_create_failed'))
     } finally {
       setLoading(false)
     }
@@ -97,14 +101,14 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-heading mb-2">Boost Event</h1>
+      <h1 className="text-2xl font-heading mb-2">{t('organizer.boost_create.title')}</h1>
       <p className="text-muted-foreground mb-8">{event.title}</p>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8">
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Budget</CardTitle>
+              <CardTitle>{t('organizer.boost_create.section_budget')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex gap-2 flex-wrap">
@@ -123,12 +127,14 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                   size="sm"
                   onClick={() => setBudget(0)}
                 >
-                  Custom
+                  {t('organizer.boost_create.custom_budget')}
                 </Button>
               </div>
               {!BUDGET_PRESETS.includes(budget) && (
                 <div>
-                  <Label htmlFor="custom-budget">Custom Budget ($)</Label>
+                  <Label htmlFor="custom-budget">
+                    {t('organizer.boost_create.custom_budget_label')}
+                  </Label>
                   <Input
                     id="custom-budget"
                     type="number"
@@ -146,7 +152,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                     checked={budgetType === 'daily'}
                     onChange={() => setBudgetType('daily')}
                   />
-                  <span className="text-sm">Daily</span>
+                  <span className="text-sm">{t('organizer.boost_create.budget_daily')}</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -155,11 +161,11 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                     checked={budgetType === 'lifetime'}
                     onChange={() => setBudgetType('lifetime')}
                   />
-                  <span className="text-sm">Lifetime</span>
+                  <span className="text-sm">{t('organizer.boost_create.budget_lifetime')}</span>
                 </label>
               </div>
               <div>
-                <Label htmlFor="duration">Duration (days)</Label>
+                <Label htmlFor="duration">{t('organizer.boost_create.duration_days')}</Label>
                 <Input
                   id="duration"
                   type="number"
@@ -174,11 +180,11 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
 
           <Card className="overflow-visible">
             <CardHeader>
-              <CardTitle>Channels & Targeting</CardTitle>
+              <CardTitle>{t('organizer.boost_create.section_channels')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div>
-                <Label className="mb-2 block">Channels</Label>
+                <Label className="mb-2 block">{t('organizer.boost_create.field_channels')}</Label>
                 <div className="flex gap-2 flex-wrap">
                   {CHANNELS.map((ch) => (
                     <Button
@@ -195,12 +201,14 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
               <Separator />
               <div className="flex flex-col gap-4">
                 <div>
-                  <Label className="mb-2 block">Countries</Label>
+                  <Label className="mb-2 block">
+                    {t('organizer.boost_create.field_countries')}
+                  </Label>
                   <CountrySelect selected={countries} onChange={setCountries} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="age-min">Age Min</Label>
+                    <Label htmlFor="age-min">{t('organizer.boost_create.field_age_min')}</Label>
                     <Input
                       id="age-min"
                       type="number"
@@ -211,7 +219,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                     />
                   </div>
                   <div>
-                    <Label htmlFor="age-max">Age Max</Label>
+                    <Label htmlFor="age-max">{t('organizer.boost_create.field_age_max')}</Label>
                     <Input
                       id="age-max"
                       type="number"
@@ -228,11 +236,11 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
 
           <Card>
             <CardHeader>
-              <CardTitle>Ad Content</CardTitle>
+              <CardTitle>{t('organizer.boost_create.section_ad_content')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div>
-                <Label htmlFor="headline">Headline (max 40 chars)</Label>
+                <Label htmlFor="headline">{t('organizer.boost_create.field_headline')}</Label>
                 <Input
                   id="headline"
                   maxLength={40}
@@ -242,7 +250,9 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                 <span className="text-xs text-muted-foreground">{headline.length}/40</span>
               </div>
               <div>
-                <Label htmlFor="primary-text">Primary Text (max 125 chars)</Label>
+                <Label htmlFor="primary-text">
+                  {t('organizer.boost_create.field_primary_text')}
+                </Label>
                 <Input
                   id="primary-text"
                   maxLength={125}
@@ -252,7 +262,7 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
                 <span className="text-xs text-muted-foreground">{primaryText.length}/125</span>
               </div>
               <div>
-                <Label htmlFor="cta">Call to Action</Label>
+                <Label htmlFor="cta">{t('organizer.boost_create.field_cta')}</Label>
                 <select
                   id="cta"
                   value={callToAction}
@@ -273,11 +283,11 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
         <div className="flex flex-col gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Preview</CardTitle>
+              <CardTitle>{t('organizer.boost_create.section_preview')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-                Facebook Feed
+                {t('organizer.boost_create.preview_facebook_feed')}
               </p>
               <div className="bg-muted rounded-lg overflow-hidden">
                 {coverUrl ? (
@@ -311,7 +321,9 @@ export default function BoostCreate({ event, appUrl }: { event: any; appUrl: str
           </Card>
 
           <Button onClick={handleCreateBoost} disabled={loading || channels.length === 0} size="lg">
-            {loading ? 'Creating...' : 'Create Boost'}
+            {loading
+              ? t('organizer.boost_create.creating')
+              : t('organizer.boost_create.create_boost')}
           </Button>
         </div>
       </div>

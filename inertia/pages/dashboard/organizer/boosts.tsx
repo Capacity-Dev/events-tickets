@@ -1,3 +1,4 @@
+import { useTranslation } from '~/lib/i18n'
 import { Badge } from '~/components/ui/badge'
 import { Card, CardContent } from '~/components/ui/card'
 import {
@@ -10,16 +11,18 @@ import {
 } from '~/components/ui/table'
 
 export default function Boosts({ boosts }: { boosts: any[] }) {
+  const { t } = useTranslation()
+
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-heading mb-2">My Boosts</h1>
-      <p className="text-muted-foreground mb-8">Promoted events</p>
+      <h1 className="text-2xl font-heading mb-2">{t('organizer.boosts.title')}</h1>
+      <p className="text-muted-foreground mb-8">{t('organizer.boosts.subtitle')}</p>
 
       {boosts.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
-            <p className="text-lg font-semibold mb-1">No boosts yet</p>
-            <p className="text-sm">Go to an event analytics page to boost it.</p>
+            <p className="text-lg font-semibold mb-1">{t('organizer.boosts.empty_title')}</p>
+            <p className="text-sm">{t('organizer.boosts.empty_description')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -27,13 +30,13 @@ export default function Boosts({ boosts }: { boosts: any[] }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Event</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Budget</TableHead>
-                <TableHead>Spent</TableHead>
-                <TableHead>Impressions</TableHead>
-                <TableHead>Clicks</TableHead>
-                <TableHead>CTR</TableHead>
+                <TableHead>{t('organizer.boosts.table_event')}</TableHead>
+                <TableHead>{t('organizer.boosts.table_status')}</TableHead>
+                <TableHead>{t('organizer.boosts.table_budget')}</TableHead>
+                <TableHead>{t('organizer.boosts.table_spent')}</TableHead>
+                <TableHead>{t('organizer.boosts.table_impressions')}</TableHead>
+                <TableHead>{t('organizer.boosts.table_clicks')}</TableHead>
+                <TableHead>{t('organizer.boosts.table_ctr')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -44,7 +47,7 @@ export default function Boosts({ boosts }: { boosts: any[] }) {
                       href={`/dashboard/boosts/${b.id}`}
                       className="font-medium hover:text-primary transition-colors"
                     >
-                      {b.event?.title ?? b.headline ?? 'Boost'}
+                      {b.event?.title ?? b.headline ?? t('organizer.boosts.fallback_title')}
                     </a>
                   </TableCell>
                   <TableCell>
@@ -57,7 +60,7 @@ export default function Boosts({ boosts }: { boosts: any[] }) {
                             : 'outline'
                       }
                     >
-                      {b.status}
+                      {t('status.' + b.status)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm">${b.budget}</TableCell>

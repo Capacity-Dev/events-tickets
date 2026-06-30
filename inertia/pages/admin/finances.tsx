@@ -1,4 +1,5 @@
 import { usePage } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { formatCurrency, type CurrencyInfo } from '~/lib/currency'
 
 interface RevenueEntry {
@@ -37,6 +38,7 @@ export default function AdminFinances({
   sortField,
   sortDir,
 }: Props) {
+  const { t } = useTranslation()
   const { adminPrefix } = usePage().props as any
 
   const statusClass = (status: string) => {
@@ -92,16 +94,20 @@ export default function AdminFinances({
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-heading">Financial Overview</h1>
-        <p className="text-sm text-muted-foreground mt-1">{pagination.total} orders</p>
+        <h1 className="text-2xl font-heading">{t('admin.finances.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {t('admin.finances.orders_count', { n: pagination.total })}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <div className="border rounded-xl p-4 bg-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-            Volume total
+            {t('admin.finances.volume_total')}
           </p>
-          <p className="text-2xl font-heading">{formatCurrency(totalRevenueUSD, 'USD', currencies)}</p>
+          <p className="text-2xl font-heading">
+            {formatCurrency(totalRevenueUSD, 'USD', currencies)}
+          </p>
         </div>
         {revenueByCurrency.map((entry) => (
           <div key={entry.currency} className="border rounded-xl p-4 bg-card">
@@ -118,13 +124,13 @@ export default function AdminFinances({
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
         <div className="border rounded-xl p-4 bg-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-            Platform Fees
+            {t('admin.finances.platform_fees')}
           </p>
           <p className="text-xl font-heading">{formatCurrency(platformFees, 'USD', currencies)}</p>
         </div>
         <div className="border rounded-xl p-4 bg-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-            Payouts Processed
+            {t('admin.finances.payouts_processed')}
           </p>
           <p className="text-xl font-heading">
             {formatCurrency(payoutsProcessed, 'USD', currencies)}
@@ -132,7 +138,7 @@ export default function AdminFinances({
         </div>
         <div className="border rounded-xl p-4 bg-card">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-            Net Revenue
+            {t('admin.finances.net_revenue')}
           </p>
           <p className="text-xl font-heading">{formatCurrency(platformFees, 'USD', currencies)}</p>
         </div>
@@ -148,7 +154,7 @@ export default function AdminFinances({
             type="text"
             name="q"
             defaultValue={search}
-            placeholder="Search order #, email, phone..."
+            placeholder={t('admin.finances.search_placeholder')}
             className="input-field min-h-10 w-full sm:w-64 text-sm"
           />
           {currentStatus && <input type="hidden" name="status" value={currentStatus} />}
@@ -157,24 +163,24 @@ export default function AdminFinances({
             name="dateFrom"
             defaultValue={dateFrom}
             className="input-field min-h-10 w-auto text-sm"
-            title="From date"
+            title={t('admin.finances.from_date')}
           />
           <input
             type="date"
             name="dateTo"
             defaultValue={dateTo}
             className="input-field min-h-10 w-auto text-sm"
-            title="To date"
+            title={t('admin.finances.to_date')}
           />
           <button type="submit" className="btn-primary btn-sm">
-            Search
+            {t('common.search')}
           </button>
           {(search || dateFrom || dateTo) && (
             <a
               href={buildUrl({ q: '', dateFrom: '', dateTo: '' })}
               className="btn-outline btn-sm no-underline"
             >
-              Clear
+              {t('common.clear')}
             </a>
           )}
         </form>
@@ -191,53 +197,57 @@ export default function AdminFinances({
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            {s || 'All'}
+            {s ? t('status.' + s) : t('common.all')}
           </a>
         ))}
       </div>
 
       <div className="border rounded-xl bg-card overflow-hidden">
         {orders.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">No orders found</div>
+          <div className="p-8 text-center text-muted-foreground">
+            {t('admin.finances.no_orders')}
+          </div>
         ) : (
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/50 text-left">
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Order #
+                  {t('admin.finances.order_num')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Buyer
+                  {t('admin.finances.buyer')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Currency
+                  {t('admin.finances.currency')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   <a
                     href={sortLink('totalGrossAmount')}
                     className="no-underline text-muted-foreground hover:text-foreground"
                   >
-                    Amount{sortIndicator('totalGrossAmount')}
+                    {t('admin.finances.amount')}
+                    {sortIndicator('totalGrossAmount')}
                   </a>
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Platform Fee
+                  {t('admin.finances.platform_fee')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Organizer Net
+                  {t('admin.finances.organizer_net')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Status
+                  {t('common.status')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Method
+                  {t('admin.finances.method')}
                 </th>
                 <th className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   <a
                     href={sortLink('createdAt')}
                     className="no-underline text-muted-foreground hover:text-foreground"
                   >
-                    Date{sortIndicator('createdAt')}
+                    {t('admin.finances.date')}
+                    {sortIndicator('createdAt')}
                   </a>
                 </th>
               </tr>
@@ -254,7 +264,7 @@ export default function AdminFinances({
                     </a>
                   </td>
                   <td className="p-3 text-sm">
-                    <div>{o.buyer?.fullName ?? 'Guest'}</div>
+                    <div>{o.buyer?.fullName ?? t('common.guest')}</div>
                     <div className="text-xs text-muted-foreground">
                       {o.buyer?.email ?? o.guestEmail ?? o.guestPhone ?? ''}
                     </div>
@@ -271,7 +281,7 @@ export default function AdminFinances({
                   </td>
                   <td className="p-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${statusClass(o.status)}`}>
-                      {o.status}
+                      {t('status.' + o.status)}
                     </span>
                   </td>
                   <td className="p-3 text-sm text-muted-foreground">{o.paymentMethod ?? '—'}</td>
@@ -292,18 +302,21 @@ export default function AdminFinances({
               href={buildUrl({ page: String(pagination.currentPage - 1) })}
               className="btn-outline btn-sm no-underline"
             >
-              Previous
+              {t('common.previous')}
             </a>
           )}
           <span className="text-sm text-muted-foreground self-center">
-            Page {pagination.currentPage} of {pagination.lastPage}
+            {t('common.page_x_of_y', {
+              current: pagination.currentPage,
+              last: pagination.lastPage,
+            })}
           </span>
           {pagination.currentPage < pagination.lastPage && (
             <a
               href={buildUrl({ page: String(pagination.currentPage + 1) })}
               className="btn-outline btn-sm no-underline"
             >
-              Next
+              {t('common.next')}
             </a>
           )}
         </div>

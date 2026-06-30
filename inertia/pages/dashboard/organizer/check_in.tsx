@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from '~/lib/i18n'
 import { Scanner } from '@yudiel/react-qr-scanner'
 
 interface Props {
@@ -16,6 +17,7 @@ interface ScanLog {
 }
 
 export default function OrganizerCheckIn({ event }: Props) {
+  const { t } = useTranslation()
   const [paused, setPaused] = useState(false)
   const [manualUuid, setManualUuid] = useState('')
   const [lastResult, setLastResult] = useState<null | {
@@ -45,7 +47,11 @@ export default function OrganizerCheckIn({ event }: Props) {
         const data = await res.json()
 
         if (data.success && data.ticket) {
-          setLastResult({ success: true, message: 'Ticket validated', ticket: data.ticket })
+          setLastResult({
+            success: true,
+            message: t('organizer.check_in.ticket_validated'),
+            ticket: data.ticket,
+          })
           setScans((prev) => [
             {
               id: data.ticket.uuid,
@@ -58,7 +64,10 @@ export default function OrganizerCheckIn({ event }: Props) {
             ...prev.slice(0, 99),
           ])
         } else {
-          setLastResult({ success: false, message: data.error || 'Invalid ticket' })
+          setLastResult({
+            success: false,
+            message: data.error || t('organizer.check_in.invalid_ticket'),
+          })
           setScans((prev) => [
             {
               id: uuid,
@@ -66,7 +75,7 @@ export default function OrganizerCheckIn({ event }: Props) {
               ticketType: '—',
               buyerName: '—',
               success: false,
-              error: data.error || 'Unknown error',
+              error: data.error || t('organizer.check_in.unknown_error'),
             },
             ...prev.slice(0, 99),
           ])
@@ -74,11 +83,11 @@ export default function OrganizerCheckIn({ event }: Props) {
 
         setManualUuid('')
       } catch {
-        setLastResult({ success: false, message: 'Network error. Try again.' })
+        setLastResult({ success: false, message: t('organizer.check_in.network_error') })
       }
       setScanning(false)
     },
-    [event.id, getCsrfToken]
+    [event.id, getCsrfToken, t]
   )
 
   const handleScan = useCallback(
@@ -116,11 +125,13 @@ export default function OrganizerCheckIn({ event }: Props) {
     <div className="max-w-xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-heading">Check-in</h1>
+          <h1 className="text-2xl font-heading">{t('organizer.check_in.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{event.title}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-muted-foreground">Checked in</p>
+          <p className="text-xs text-muted-foreground">
+            {t('organizer.check_in.checked_in_label')}
+          </p>
           <p className="text-xl font-heading">{checkedIn}</p>
         </div>
       </div>
@@ -187,7 +198,7 @@ export default function OrganizerCheckIn({ event }: Props) {
             <button
               onClick={handleDismiss}
               className="text-muted-foreground hover:text-foreground bg-transparent border-none cursor-pointer p-1"
-              aria-label="Dismiss"
+              aria-label={t('organizer.check_in.dismiss')}
             >
               <svg
                 width="16"
@@ -224,14 +235,14 @@ export default function OrganizerCheckIn({ event }: Props) {
 
       <div className="border rounded-xl bg-card overflow-hidden mb-6">
         <div className="p-4 border-b bg-muted/50">
-          <h2 className="font-semibold text-sm">Manual Entry</h2>
+          <h2 className="font-semibold text-sm">{t('organizer.check_in.manual_entry')}</h2>
         </div>
         <form onSubmit={handleManualSubmit} className="p-4 flex gap-2">
           <input
             type="text"
             value={manualUuid}
             onChange={(e) => setManualUuid(e.target.value)}
-            placeholder="Ticket UUID or /tickets/xxx"
+            placeholder={t('organizer.check_in.manual_entry_placeholder')}
             className="input-field min-h-10 flex-1 text-sm"
           />
           <button
@@ -239,7 +250,7 @@ export default function OrganizerCheckIn({ event }: Props) {
             disabled={scanning || !manualUuid.trim()}
             className="btn-primary btn-sm"
           >
-            Validate
+            {t('organizer.check_in.validate')}
           </button>
         </form>
       </div>
@@ -247,8 +258,10 @@ export default function OrganizerCheckIn({ event }: Props) {
       {scans.length > 0 && (
         <div className="border rounded-xl bg-card overflow-hidden">
           <div className="p-4 border-b bg-muted/50 flex items-center justify-between">
-            <h2 className="font-semibold text-sm">Recent Scans</h2>
-            <span className="text-xs text-muted-foreground">{scans.length} scans</span>
+            <h2 className="font-semibold text-sm">{t('organizer.check_in.recent_scans')}</h2>
+            <span className="text-xs text-muted-foreground">
+              {t('organizer.check_in.scans_count', { count: scans.length })}
+            </span>
           </div>
           <div className="divide-y max-h-96 overflow-y-auto">
             {scans.map((s, i) => (

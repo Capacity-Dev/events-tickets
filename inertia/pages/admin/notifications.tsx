@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Head } from '@inertiajs/react'
+import { useTranslation } from '~/lib/i18n'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
@@ -33,6 +34,7 @@ export default function Notifications({
   settings,
   adminPrefix,
 }: Props) {
+  const { t } = useTranslation()
   const [connectionStatus, setConnectionStatus] = useState(initialStatus)
   const [polling, setPolling] = useState(false)
   const [provider, setProvider] = useState(settings.whatsapp_provider ?? 'baileys')
@@ -130,10 +132,10 @@ export default function Notifications({
           notify_reminder_1d: notifyReminder1d ? '1' : '0',
         }),
       })
-      if (res.ok) toast.success('Settings saved')
-      else toast.error('Failed to save settings')
+      if (res.ok) toast.success(t('admin.notifications.settings_saved'))
+      else toast.error(t('admin.notifications.settings_save_failed'))
     } catch {
-      toast.error('Failed to save settings')
+      toast.error(t('admin.notifications.settings_save_failed'))
     } finally {
       setSaving(false)
     }
@@ -167,10 +169,10 @@ export default function Notifications({
   const isConnecting = connectionStatus.status === 'connecting'
   const statusLabel =
     connectionStatus.status === 'connected'
-      ? 'Connected'
+      ? t('admin.notifications.connected')
       : connectionStatus.status === 'connecting'
-        ? 'Connecting...'
-        : 'Disconnected'
+        ? t('admin.notifications.connecting')
+        : t('admin.notifications.disconnected')
 
   const statusVariant: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
     connected: 'default',
@@ -180,21 +182,21 @@ export default function Notifications({
 
   return (
     <div>
-      <Head title="Notifications" />
+      <Head title={t('admin.notifications.title')} />
 
-      <h1 className="text-2xl font-heading mb-6">Notifications</h1>
+      <h1 className="text-2xl font-heading mb-6">{t('admin.notifications.title')}</h1>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-6">
-          <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="whatsapp">{t('admin.notifications.whatsapp')}</TabsTrigger>
+          <TabsTrigger value="email">{t('admin.notifications.email')}</TabsTrigger>
+          <TabsTrigger value="notifications">{t('admin.notifications.notifications_tab')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="whatsapp" className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Provider</CardTitle>
+              <CardTitle>{t('admin.notifications.provider')}</CardTitle>
             </CardHeader>
             <CardContent>
               <select
@@ -202,9 +204,9 @@ export default function Notifications({
                 onChange={(e) => setProvider(e.target.value)}
                 className="flex h-10 w-full max-w-xs rounded-lg border border-input bg-background px-3 py-2 text-sm"
               >
-                <option value="baileys">Local (Baileys)</option>
-                <option value="meta">Meta API</option>
-                <option value="disabled">Disabled</option>
+                <option value="baileys">{t('admin.notifications.provider_baileys')}</option>
+                <option value="meta">{t('admin.notifications.provider_meta')}</option>
+                <option value="disabled">{t('admin.notifications.provider_disabled')}</option>
               </select>
             </CardContent>
           </Card>
@@ -213,7 +215,7 @@ export default function Notifications({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  Connection Status
+                  {t('admin.notifications.connection_status')}
                   <Badge variant={statusVariant[connectionStatus.status] || 'outline'}>
                     {statusLabel}
                   </Badge>
@@ -234,7 +236,7 @@ export default function Notifications({
                     >
                       <path d="M20 6L9 17l-5-5" />
                     </svg>
-                    WhatsApp connected
+                    {t('admin.notifications.whatsapp_connected')}
                   </div>
                 )}
                 {connectionStatus.qrCode && (
@@ -245,7 +247,7 @@ export default function Notifications({
                   />
                 )}
                 {polling && (
-                  <p className="text-sm text-muted-foreground">Polling for connection...</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.notifications.polling')}</p>
                 )}
                 <div className="flex gap-2 flex-wrap">
                   <Button
@@ -254,7 +256,7 @@ export default function Notifications({
                     onClick={handleConnect}
                     disabled={isConnected || isConnecting}
                   >
-                    Connect
+                    {t('admin.notifications.connect')}
                   </Button>
                   <Button
                     variant="outline"
@@ -262,7 +264,7 @@ export default function Notifications({
                     onClick={handleDisconnect}
                     disabled={!isConnected}
                   >
-                    Disconnect
+                    {t('admin.notifications.disconnect')}
                   </Button>
                   <Button
                     variant="outline"
@@ -270,7 +272,7 @@ export default function Notifications({
                     onClick={handleReset}
                     className="text-destructive hover:text-destructive"
                   >
-                    Reset Session
+                    {t('admin.notifications.reset_session')}
                   </Button>
                 </div>
               </CardContent>
@@ -280,11 +282,11 @@ export default function Notifications({
           {provider === 'meta' && (
             <Card>
               <CardHeader>
-                <CardTitle>Meta API</CardTitle>
+                <CardTitle>{t('admin.notifications.provider_meta')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Meta WhatsApp Cloud API will be available soon.
+                  {t('admin.notifications.meta_coming_soon')}
                 </p>
               </CardContent>
             </Card>
@@ -294,14 +296,14 @@ export default function Notifications({
 
           <Card>
             <CardHeader>
-              <CardTitle>WhatsApp Templates</CardTitle>
+              <CardTitle>{t('admin.notifications.whatsapp_templates')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="rounded-lg border p-4">
-                <h3 className="font-semibold mb-3">New Template</h3>
+                <h3 className="font-semibold mb-3">{t('admin.notifications.new_template')}</h3>
                 <div className="flex flex-col gap-3 max-w-md">
                   <div>
-                    <Label htmlFor="tpl-name">Name</Label>
+                    <Label htmlFor="tpl-name">{t('common.name')}</Label>
                     <Input
                       id="tpl-name"
                       value={templateName}
@@ -310,20 +312,20 @@ export default function Notifications({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="tpl-category">Category</Label>
+                    <Label htmlFor="tpl-category">{t('admin.notifications.category')}</Label>
                     <select
                       id="tpl-category"
                       value={templateCategory}
                       onChange={(e) => setTemplateCategory(e.target.value)}
                       className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                     >
-                      <option value="utility">Utility</option>
-                      <option value="authentication">Authentication</option>
-                      <option value="marketing">Marketing</option>
+                      <option value="utility">{t('admin.notifications.category_utility')}</option>
+                      <option value="authentication">{t('admin.notifications.category_authentication')}</option>
+                      <option value="marketing">{t('admin.notifications.category_marketing')}</option>
                     </select>
                   </div>
                   <div>
-                    <Label htmlFor="tpl-lang">Language Code</Label>
+                    <Label htmlFor="tpl-lang">{t('admin.notifications.language_code')}</Label>
                     <Input
                       id="tpl-lang"
                       value={templateLanguage}
@@ -331,7 +333,7 @@ export default function Notifications({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="tpl-vars">Variables (JSON array)</Label>
+                    <Label htmlFor="tpl-vars">{t('admin.notifications.variables_json')}</Label>
                     <Input
                       id="tpl-vars"
                       value={templateVariables}
@@ -340,7 +342,7 @@ export default function Notifications({
                     />
                   </div>
                   <Button onClick={handleCreateTemplate} size="sm">
-                    Create Template
+                    {t('admin.notifications.create_template')}
                   </Button>
                 </div>
               </div>
@@ -349,10 +351,10 @@ export default function Notifications({
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>{t('common.name')}</TableHead>
+                      <TableHead>{t('admin.notifications.type')}</TableHead>
+                      <TableHead>{t('admin.notifications.category')}</TableHead>
+                      <TableHead>{t('common.status')}</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -360,35 +362,35 @@ export default function Notifications({
                     {whatsappTemplates.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          No templates
+                          {t('admin.notifications.no_templates')}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      whatsappTemplates.map((t) => (
-                        <TableRow key={t.id}>
-                          <TableCell className="font-medium">{t.name}</TableCell>
-                          <TableCell className="text-sm capitalize">{t.type}</TableCell>
-                          <TableCell className="text-sm capitalize">{t.category}</TableCell>
+                      whatsappTemplates.map((tpl) => (
+                        <TableRow key={tpl.id}>
+                          <TableCell className="font-medium">{tpl.name}</TableCell>
+                          <TableCell className="text-sm capitalize">{tpl.type}</TableCell>
+                          <TableCell className="text-sm capitalize">{tpl.category}</TableCell>
                           <TableCell>
                             <Badge
                               variant={
-                                t.status === 'approved'
+                                tpl.status === 'approved'
                                   ? 'default'
-                                  : t.status === 'rejected'
+                                  : tpl.status === 'rejected'
                                     ? 'destructive'
                                     : 'outline'
                               }
                             >
-                              {t.status}
+                              {tpl.status}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setEditingWhatsApp(t)}
+                              onClick={() => setEditingWhatsApp(tpl)}
                             >
-                              Edit
+                              {t('common.edit')}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -401,21 +403,21 @@ export default function Notifications({
           </Card>
 
           <Button onClick={handleSaveSettings} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Settings'}
+            {saving ? t('common.saving') : t('admin.notifications.save_settings')}
           </Button>
         </TabsContent>
 
         <TabsContent value="email" className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Email Templates</CardTitle>
+              <CardTitle>{t('admin.notifications.email_templates')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="rounded-lg border p-4">
-                <h3 className="font-semibold mb-3">New Email Template</h3>
+                <h3 className="font-semibold mb-3">{t('admin.notifications.new_email_template')}</h3>
                 <div className="flex flex-col gap-3 max-w-md">
                   <div>
-                    <Label htmlFor="email-tpl-name">Name</Label>
+                    <Label htmlFor="email-tpl-name">{t('common.name')}</Label>
                     <Input
                       id="email-tpl-name"
                       value={templateName}
@@ -424,20 +426,20 @@ export default function Notifications({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email-tpl-type">Type</Label>
+                    <Label htmlFor="email-tpl-type">{t('admin.notifications.type')}</Label>
                     <select
                       id="email-tpl-type"
                       value={templateCategory}
                       onChange={(e) => setTemplateCategory(e.target.value)}
                       className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                     >
-                      <option value="purchase_confirmation">Purchase Confirmation</option>
-                      <option value="reminder_3d">Reminder J-3</option>
-                      <option value="reminder_1d">Reminder J-1</option>
+                      <option value="purchase_confirmation">{t('admin.notifications.type_purchase_confirmation')}</option>
+                      <option value="reminder_3d">{t('admin.notifications.type_reminder_3d')}</option>
+                      <option value="reminder_1d">{t('admin.notifications.type_reminder_1d')}</option>
                     </select>
                   </div>
                   <div>
-                    <Label htmlFor="email-tpl-lang">Language Code</Label>
+                    <Label htmlFor="email-tpl-lang">{t('admin.notifications.language_code')}</Label>
                     <Input
                       id="email-tpl-lang"
                       value={templateLanguage}
@@ -451,7 +453,7 @@ export default function Notifications({
                     }}
                     size="sm"
                   >
-                    Create Template
+                    {t('admin.notifications.create_template')}
                   </Button>
                 </div>
               </div>
@@ -460,10 +462,10 @@ export default function Notifications({
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Subject</TableHead>
-                      <TableHead>Language</TableHead>
+                      <TableHead>{t('common.name')}</TableHead>
+                      <TableHead>{t('admin.notifications.type')}</TableHead>
+                      <TableHead>{t('admin.notifications.subject')}</TableHead>
+                      <TableHead>{t('admin.notifications.language')}</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -471,19 +473,19 @@ export default function Notifications({
                     {emailTemplates.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          No email templates
+                          {t('admin.notifications.no_email_templates')}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      emailTemplates.map((t) => (
-                        <TableRow key={t.id}>
-                          <TableCell className="font-medium">{t.name}</TableCell>
-                          <TableCell className="text-sm capitalize">{t.type}</TableCell>
-                          <TableCell className="text-sm">{t.subject || '—'}</TableCell>
-                          <TableCell className="text-sm">{t.languageCode}</TableCell>
+                      emailTemplates.map((tpl) => (
+                        <TableRow key={tpl.id}>
+                          <TableCell className="font-medium">{tpl.name}</TableCell>
+                          <TableCell className="text-sm capitalize">{tpl.type}</TableCell>
+                          <TableCell className="text-sm">{tpl.subject || '—'}</TableCell>
+                          <TableCell className="text-sm">{tpl.languageCode}</TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm" onClick={() => setEditingEmail(t)}>
-                              Edit
+                            <Button variant="outline" size="sm" onClick={() => setEditingEmail(tpl)}>
+                              {t('common.edit')}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -496,21 +498,21 @@ export default function Notifications({
           </Card>
 
           <Button onClick={handleSaveSettings} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Settings'}
+            {saving ? t('common.saving') : t('admin.notifications.save_settings')}
           </Button>
         </TabsContent>
 
         <TabsContent value="notifications" className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Confirmation d'achat</CardTitle>
+              <CardTitle>{t('admin.notifications.purchase_confirmation')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>WhatsApp</Label>
+                  <Label>{t('admin.notifications.whatsapp_channel')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Envoyer une confirmation WhatsApp après achat
+                    {t('admin.notifications.whatsapp_purchase_desc')}
                   </p>
                 </div>
                 <Switch
@@ -520,9 +522,9 @@ export default function Notifications({
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Email</Label>
+                  <Label>{t('admin.notifications.email')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Envoyer un email de confirmation après achat
+                    {t('admin.notifications.email_purchase_desc')}
                   </p>
                 </div>
                 <Switch checked={notifyPurchaseEmail} onCheckedChange={setNotifyPurchaseEmail} />
@@ -531,23 +533,23 @@ export default function Notifications({
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Rappels d'événement</CardTitle>
+              <CardTitle>{t('admin.notifications.event_reminders')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Rappel J-3</Label>
+                  <Label>{t('admin.notifications.reminder_3d')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Notification WhatsApp 3 jours avant l'événement
+                    {t('admin.notifications.reminder_3d_desc')}
                   </p>
                 </div>
                 <Switch checked={notifyReminder3d} onCheckedChange={setNotifyReminder3d} />
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Rappel J-1</Label>
+                  <Label>{t('admin.notifications.reminder_1d')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Notification WhatsApp 1 jour avant l'événement
+                    {t('admin.notifications.reminder_1d_desc')}
                   </p>
                 </div>
                 <Switch checked={notifyReminder1d} onCheckedChange={setNotifyReminder1d} />
@@ -555,7 +557,7 @@ export default function Notifications({
             </CardContent>
           </Card>
           <Button onClick={handleSaveSettings} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Settings'}
+            {saving ? t('common.saving') : t('admin.notifications.save_settings')}
           </Button>
         </TabsContent>
       </Tabs>

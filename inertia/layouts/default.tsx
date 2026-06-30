@@ -3,9 +3,11 @@ import { toast, Toaster } from 'sonner'
 import { usePage } from '@inertiajs/react'
 import { type ReactElement, useEffect } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
+import { useTranslation } from '~/lib/i18n'
 
 export default function Layout({ children }: { children: ReactElement<Data.SharedProps> }) {
   const { url } = usePage()
+  const { t } = useTranslation()
   useEffect(() => {
     toast.dismiss()
   }, [url])
@@ -44,7 +46,7 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
                 href="/events"
                 className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg transition-colors no-underline"
               >
-                Browse
+                {t('nav.browse')}
               </Link>
               {children.props.user && (
                 <>
@@ -52,19 +54,19 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
                     href="/dashboard"
                     className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg transition-colors no-underline"
                   >
-                    Dashboard
+                    {t('nav.dashboard')}
                   </Link>
                   <Link
                     href="/dashboard/tickets"
                     className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg transition-colors no-underline"
                   >
-                    My Tickets
+                    {t('nav.my_tickets')}
                   </Link>
                   <Link
                     href="/dashboard/orders"
                     className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg transition-colors no-underline"
                   >
-                    My Orders
+                    {t('nav.my_orders')}
                   </Link>
                 </>
               )}
@@ -75,14 +77,14 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
             {children.props.user ? (
               <>
                 <span className="hidden sm:inline-flex items-center justify-center size-8 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                  {children.props.user.initials ?? 'U'}
+                  {children.props.user.initials ?? t('common.user_initial_fallback')}
                 </span>
                 <Form route="session.destroy">
                   <button
                     type="submit"
                     className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg transition-colors bg-transparent border-none cursor-pointer"
                   >
-                    Logout
+                    {t('common.logout')}
                   </button>
                 </Form>
               </>
@@ -92,13 +94,13 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
                   route="session.create"
                   className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg transition-colors no-underline"
                 >
-                  Sign in
+                  {t('nav.signin')}
                 </Link>
                 <Link
                   route="new_account.create"
                   className="px-3 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 transition-colors no-underline"
                 >
-                  Sign up
+                  {t('nav.signup')}
                 </Link>
               </>
             )}
